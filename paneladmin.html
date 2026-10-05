@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - DJ TV Estación Mix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800|poppins:400,600,700,800" rel="stylesheet">
+</head>
+<body class="bg-gray-950 text-white font-['Inter'] min-h-screen">
+
+    <!-- Login -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
+        <div class="bg-gray-900 rounded-2xl border border-gray-800 p-8 w-full max-w-sm shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl mb-4">🔐</div>
+                <h1 class="text-xl font-bold font-['Poppins']">Panel de Moderación</h1>
+                <p class="text-sm text-gray-400 mt-1">DJ TV Estación Mix</p>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">Clave de acceso</label>
+                    <input type="password" id="inputPassword" required
+                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition"
+                        placeholder="Ingresa la clave">
+                </div>
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 rounded-lg text-sm">
+                    Ingresar al Panel
+                </button>
+                <p id="loginError" class="text-red-400 text-xs text-center hidden">Clave incorrecta</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Panel de control -->
+    <div id="adminPanel" class="hidden">
+        <header class="bg-gray-900/80 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-base font-bold font-['Poppins']">Panel de Control</h1>
+                </div>
+                <button id="btnLogout" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition">Salir</button>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+            <!-- Envio Directo Admin -->
+            <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+                <h3 class="font-bold text-sm mb-3">📢 Enviar Anuncio Directo a Pantalla</h3>
+                <form id="adminMsgForm" class="flex gap-3">
+                    <input type="text" id="adminNombre" placeholder="Nombre" value="DJ TV" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm w-36">
+                    <input type="text" id="adminLugar" placeholder="Lugar" value="Estudio" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm w-36">
+                    <input type="text" id="adminMensaje" placeholder="Mensaje..." maxlength="150" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm flex-1">
+                    <button type="submit" class="bg-yellow-500 text-black font-bold px-5 py-2 rounded-lg text-sm">Publicar</button>
+                </form>
+            </div>
+
+            <!-- Listas -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="bg-gray-900 rounded-2xl border border-gray-800 p-4">
+                    <h3 class="font-bold text-sm mb-3 text-yellow-400">⏳ Pendientes</h3>
+                    <div id="listPendientes" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+                </div>
+                <div class="bg-gray-900 rounded-2xl border border-gray-800 p-4">
+                    <h3 class="font-bold text-sm mb-3 text-green-400">✅ Aprobados</h3>
+                    <div id="listAprobados" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+                </div>
+                <div class="bg-gray-900 rounded-2xl border border-gray-800 p-4">
+                    <h3 class="font-bold text-sm mb-3 text-red-400">🚫 Rechazados</h3>
+                    <div id="listRechazados" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, query, where, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // ⚠️ COLOCA TU CONFIGURACIÓN DE FIREBASE AQUÍ
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            projectId: "TU_PROYECTO_ID",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const ADMIN_KEY = "you120"; // Clave requerida
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (document.getElementById('inputPassword').value === ADMIN_KEY) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                startListening();
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        });
+
+        function startListening() {
+            onSnapshot(query(collection(db, "mensajes"), where("estado", "==", "pendiente"), orderBy("timestamp", "desc")), snap => {
+                renderList('listPendientes', snap, 'pendiente');
+            });
+            onSnapshot(query(collection(db, "mensajes"), where("estado", "==", "aprobado"), orderBy("timestamp", "desc")), snap => {
+                renderList('listAprobados', snap, 'aprobado');
+            });
+            onSnapshot(query(collection(db, "mensajes"), where("estado", "==", "rechazado"), orderBy("timestamp", "desc")), snap => {
+                renderList('listRechazados', snap, 'rechazado');
+            });
+        }
+
+        function renderList(elemId, snapshot, tipo) {
+            const container = document.getElementById(elemId);
+            container.innerHTML = '';
+            snapshot.forEach(d => {
+                const data = d.data();
+                const card = document.createElement('div');
+                card.className = "bg-gray-800 p-3 rounded-lg border border-gray-700 text-xs space-y-1";
+                card.innerHTML = `
+                    <div class="font-bold text-white">${data.nombre} (${data.lugar})</div>
+                    <div class="text-gray-300">${data.msj}</div>
+                    <div class="flex gap-2 pt-2">
+                        ${tipo === 'pendiente' ? `<button onclick="approve('${d.id}')" class="bg-green-600 px-2 py-1 rounded">Aprobar</button><button onclick="reject('${d.id}')" class="bg-red-600 px-2 py-1 rounded">Rechazar</button>` : ''}
+                        <button onclick="removeMsg('${d.id}')" class="bg-gray-700 px-2 py-1 rounded">Borrar</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.approve = id => updateDoc(doc(db, "mensajes", id), { estado: "aprobado" });
+        window.reject = id => updateDoc(doc(db, "mensajes", id), { estado: "rechazado" });
+        window.removeMsg = id => deleteDoc(doc(db, "mensajes", id));
+
+        document.getElementById('adminMsgForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "mensajes"), {
+                nombre: document.getElementById('adminNombre').value,
+                lugar: document.getElementById('adminLugar').value,
+                msj: document.getElementById('adminMensaje').value,
+                timestamp: serverTimestamp(),
+                estado: "aprobado",
+                esAdmin: true
+            });
+            document.getElementById('adminMensaje').value = '';
+        });
+    </script>
+</body>
+</html>

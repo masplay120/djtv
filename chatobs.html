@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ TV - OBS Overlay</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800|poppins:400,600,700,800" rel="stylesheet">
+    <style>
+        html, body {
+            background: transparent !important;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #obsOverlay {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .lower-third {
+            display: none;
+            animation: slideUpFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .lower-third.fade-out {
+            animation: slideDownFadeOut 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+        }
+
+        .lower-third-inner {
+            background: linear-gradient(135deg, rgba(15, 10, 30, 0.88) 0%, rgba(30, 15, 60, 0.82) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 16px;
+            padding: 20px 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lower-third-inner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #a855f7, #ec4899, #a855f7);
+        }
+
+        .obs-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .obs-badge {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .obs-channel {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .obs-nombre {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .obs-lugar {
+            font-size: 13px;
+            color: #c084fc;
+        }
+
+        .obs-mensaje {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 8px;
+            font-style: italic;
+            border-left: 2px solid rgba(168, 85, 247, 0.4);
+            padding-left: 12px;
+        }
+
+        @keyframes slideUpFadeIn {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDownFadeOut {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(30px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="obsOverlay">
+        <div id="lowerThird" class="lower-third">
+            <div class="lower-third-inner">
+                <div class="obs-header">
+                    <span class="obs-badge">📺 Saludo al Aire</span>
+                    <span class="obs-channel">DJ TV Estación Mix</span>
+                </div>
+                <div class="obs-nombre" id="obsNombre">—</div>
+                <div class="obs-lugar" id="obsLugar">—</div>
+                <div class="obs-mensaje" id="obsMensaje">—</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // ⚠️ COLOCA TU CONFIGURACIÓN DE FIREBASE AQUÍ
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            projectId: "TU_PROYECTO_ID",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const DISPLAY_TIME = 8000;
+        const lowerThird = document.getElementById('lowerThird');
+        const obsNombre = document.getElementById('obsNombre');
+        const obsLugar = document.getElementById('obsLugar');
+        const obsMensaje = document.getElementById('obsMensaje');
+
+        let messageQueue = [];
+        let isDisplaying = false;
+
+        const q = query(
+            collection(db, "mensajes"),
+            where("estado", "==", "aprobado"),
+            orderBy("timestamp", "desc")
+        );
+
+        onSnapshot(q, (snapshot) => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === "added") {
+                    const data = change.doc.data();
+                    messageQueue.push(data);
+                    if (!isDisplaying) displayNext();
+                }
+            });
+        });
+
+        function displayNext() {
+            if (messageQueue.length === 0) {
+                isDisplaying = false;
+                lowerThird.style.display = 'none';
+                return;
+            }
+
+            isDisplaying = true;
+            const msg = messageQueue.shift();
+
+            obsNombre.textContent = msg.nombre || 'Anónimo';
+            obsLugar.textContent = `📍 ${msg.lugar || ''}`;
+            obsMensaje.textContent = `"${msg.msj || ''}"`;
+
+            lowerThird.classList.remove('fade-out');
+            lowerThird.style.display = 'block';
+
+            setTimeout(() => {
+                lowerThird.classList.add('fade-out');
+                setTimeout(() => {
+                    lowerThird.style.display = 'none';
+                    displayNext();
+                }, 500);
+            }, DISPLAY_TIME);
+        }
+    </script>
+</body>
+</html>
