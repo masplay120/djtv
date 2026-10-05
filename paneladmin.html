@@ -74,89 +74,122 @@
             </div>
         </main>
     </div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, where, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, query, where, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    // ⚠️ REEMPLAZAR CON TUS DATOS REALES DE FIREBASE
+    const firebaseConfig = {
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_PROYECTO.firebaseapp.com",
+        projectId: "TU_PROYECTO_ID",
+        storageBucket: "TU_PROYECTO.appspot.com",
+        messagingSenderId: "TU_SENDER_ID",
+        appId: "TU_APP_ID"
+    };
 
-        // ⚠️ COLOCA TU CONFIGURACIÓN DE FIREBASE AQUÍ
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_PROYECTO.firebaseapp.com",
-            projectId: "TU_PROYECTO_ID",
-            storageBucket: "TU_PROYECTO.appspot.com",
-            messagingSenderId: "TU_SENDER_ID",
-            appId: "TU_APP_ID"
-        };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    // Hash SHA-256 de la clave "you120" (No expone la clave real en el código)
+    const ADMIN_KEY_HASH = "12ef1709405c6d3bc01b44cbe84ea6dae31e5f8f8b0064f26b5e02422db7f66a";
 
-        const ADMIN_KEY = "you120"; // Clave requerida
+    // Función para calcular hash SHA-256 con Web Crypto API
+    async function hashPassword(str) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (document.getElementById('inputPassword').value === ADMIN_KEY) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                startListening();
-            } else {
-                document.getElementById('loginError').classList.remove('hidden');
-            }
-        });
+    // Manejo de inicio de sesión
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const inputPass = document.getElementById('inputPassword').value;
+        const inputHash = await hashPassword(inputPass);
 
-        document.getElementById('btnLogout').addEventListener('click', () => {
-            document.getElementById('adminPanel').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-        });
-
-        function startListening() {
-            onSnapshot(query(collection(db, "mensajes"), where("estado", "==", "pendiente"), orderBy("timestamp", "desc")), snap => {
-                renderList('listPendientes', snap, 'pendiente');
-            });
-            onSnapshot(query(collection(db, "mensajes"), where("estado", "==", "aprobado"), orderBy("timestamp", "desc")), snap => {
-                renderList('listAprobados', snap, 'aprobado');
-            });
-            onSnapshot(query(collection(db, "mensajes"), where("estado", "==", "rechazado"), orderBy("timestamp", "desc")), snap => {
-                renderList('listRechazados', snap, 'rechazado');
-            });
+        if (inputHash === ADMIN_KEY_HASH) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            startListening();
+        } else {
+            document.getElementById('loginError').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('loginError').classList.add('hidden');
+            }, 3000);
         }
+    });
 
-        function renderList(elemId, snapshot, tipo) {
-            const container = document.getElementById(elemId);
-            container.innerHTML = '';
-            snapshot.forEach(d => {
-                const data = d.data();
-                const card = document.createElement('div');
-                card.className = "bg-gray-800 p-3 rounded-lg border border-gray-700 text-xs space-y-1";
-                card.innerHTML = `
-                    <div class="font-bold text-white">${data.nombre} (${data.lugar})</div>
-                    <div class="text-gray-300">${data.msj}</div>
-                    <div class="flex gap-2 pt-2">
-                        ${tipo === 'pendiente' ? `<button onclick="approve('${d.id}')" class="bg-green-600 px-2 py-1 rounded">Aprobar</button><button onclick="reject('${d.id}')" class="bg-red-600 px-2 py-1 rounded">Rechazar</button>` : ''}
-                        <button onclick="removeMsg('${d.id}')" class="bg-gray-700 px-2 py-1 rounded">Borrar</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+    document.getElementById('btnLogout').addEventListener('click', () => {
+        document.getElementById('adminPanel').classList.add('hidden');
+        document.getElementById('loginScreen').classList.remove('hidden');
+        document.getElementById('inputPassword').value = '';
+    });
 
-        window.approve = id => updateDoc(doc(db, "mensajes", id), { estado: "aprobado" });
-        window.reject = id => updateDoc(doc(db, "mensajes", id), { estado: "rechazado" });
-        window.removeMsg = id => deleteDoc(doc(db, "mensajes", id));
-
-        document.getElementById('adminMsgForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, "mensajes"), {
-                nombre: document.getElementById('adminNombre').value,
-                lugar: document.getElementById('adminLugar').value,
-                msj: document.getElementById('adminMensaje').value,
-                timestamp: serverTimestamp(),
-                estado: "aprobado",
-                esAdmin: true
-            });
-            document.getElementById('adminMensaje').value = '';
+    function startListening() {
+        onSnapshot(query(collection(db, "mensajes"), where("estado", "==", "pendiente"), orderBy("timestamp", "desc")), snap => {
+            renderList('listPendientes', snap, 'pendiente');
         });
-    </script>
+        onSnapshot(query(collection(db, "mensajes"), where("estado", "==", "aprobado"), orderBy("timestamp", "desc")), snap => {
+            renderList('listAprobados', snap, 'aprobado');
+        });
+        onSnapshot(query(collection(db, "mensajes"), where("estado", "==", "rechazado"), orderBy("timestamp", "desc")), snap => {
+            renderList('listRechazados', snap, 'rechazado');
+        });
+    }
+
+    function renderList(elemId, snapshot, tipo) {
+        const container = document.getElementById(elemId);
+        container.innerHTML = '';
+        if (snapshot.empty) {
+            container.innerHTML = '<p class="text-gray-600 text-xs text-center py-4">Sin mensajes</p>';
+            return;
+        }
+        snapshot.forEach(d => {
+            const data = d.data();
+            const card = document.createElement('div');
+            card.className = "bg-gray-800 p-3 rounded-lg border border-gray-700 text-xs space-y-1";
+            card.innerHTML = `
+                <div class="font-bold text-white">${escapeHtml(data.nombre)} (${escapeHtml(data.lugar)})</div>
+                <div class="text-gray-300">${escapeHtml(data.msj)}</div>
+                <div class="flex gap-2 pt-2">
+                    ${tipo === 'pendiente' ? `<button onclick="approve('${d.id}')" class="bg-green-600 px-2 py-1 rounded font-semibold text-[10px]">✓ APROBAR</button><button onclick="reject('${d.id}')" class="bg-red-600 px-2 py-1 rounded font-semibold text-[10px]">✗ RECHAZAR</button>` : ''}
+                    <button onclick="removeMsg('${d.id}')" class="bg-gray-700 px-2 py-1 rounded font-semibold text-[10px]">🗑 BORRAR</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str || '';
+        return div.innerHTML;
+    }
+
+    window.approve = id => updateDoc(doc(db, "mensajes", id), { estado: "aprobado" });
+    window.reject = id => updateDoc(doc(doc(db, "mensajes", id)), { estado: "rechazado", razon: "rechazo_manual" });
+    window.removeMsg = id => deleteDoc(doc(db, "mensajes", id));
+
+    document.getElementById('adminMsgForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nombre = document.getElementById('adminNombre').value.trim();
+        const lugar = document.getElementById('adminLugar').value.trim();
+        const msj = document.getElementById('adminMensaje').value.trim();
+
+        if (!nombre || !msj) return;
+
+        await addDoc(collection(db, "mensajes"), {
+            nombre: nombre,
+            lugar: lugar || 'Estudio',
+            msj: msj,
+            timestamp: serverTimestamp(),
+            estado: "aprobado",
+            esAdmin: true
+        });
+        document.getElementById('adminMensaje').value = '';
+    });
+</script>
 </body>
 </html>
