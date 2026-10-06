@@ -16,8 +16,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ============================================
-// CONFIGURACIÓN FIREBASE
-// ⚠️ REEMPLAZAR CON TUS DATOS REALES DE FIREBASE
+// CONFIGURACIÓN FIREBASE (CORREGIDO)
 // ============================================
 const firebaseConfig = {
   apiKey: "AIzaSyARhC07Q4CvEqB1JytYK_AkY2_HQw4ToSY",
