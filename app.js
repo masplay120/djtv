@@ -20,12 +20,12 @@ import {
 // ⚠️ REEMPLAZAR CON TUS DATOS REALES DE FIREBASE
 // ============================================
 const firebaseConfig = {
-    apiKey: "TU_API_KEY",
-    authDomain: "TU_PROYECTO.firebaseapp.com",
-    projectId: "TU_PROYECTO_ID",
-    storageBucket: "TU_PROYECTO.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+  apiKey: "AIzaSyARhC07Q4CvEqB1JytYK_AkY2_HQw4ToSY",
+  authDomain: "dj-tv-estacion-mix.firebaseapp.com",
+  projectId: "dj-tv-estacion-mix",
+  storageBucket: "dj-tv-estacion-mix.firebasestorage.app",
+  messagingSenderId: "955348774578",
+  appId: "1:955348774578:web:221c8f8edac25a53e023ab"
 };
 
 const app = initializeApp(firebaseConfig);
