@@ -3,131 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DJ TV - OBS Overlay</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800|poppins:400,600,700,800" rel="stylesheet">
+    <title>DJ TV - OBS Lower Third</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
     <style>
-        html, body {
-            background: transparent !important;
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        html, body {
+            background: transparent !important;
             overflow: hidden;
             width: 100vw;
             height: 100vh;
+            font-family: 'Montserrat', sans-serif;
         }
 
+        /* Zócalo Televisivo */
         #obsOverlay {
             position: fixed;
-            bottom: 50px;
+            bottom: 40px;
             left: 50px;
             right: 50px;
             pointer-events: none;
             z-index: 9999;
         }
 
-        .lower-third {
+        .tv-banner {
             display: none;
-            animation: slideUpFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .lower-third.fade-out {
-            animation: slideDownFadeOut 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards;
-        }
-
-        .lower-third-inner {
-            background: linear-gradient(135deg, rgba(15, 10, 30, 0.93) 0%, rgba(30, 15, 60, 0.88) 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 2px solid rgba(168, 85, 247, 0.5);
-            border-radius: 20px;
-            padding: 28px 36px;
-            position: relative;
+            background: rgba(12, 10, 24, 0.92);
+            border-left: 8px solid #ec4899;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(236, 72, 153, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .lower-third-inner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #a855f7, #ec4899, #a855f7);
+        .tv-banner.fade-out {
+            animation: slideOut 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards;
         }
 
-        .obs-header {
+        /* Encabezado del Zócalo */
+        .tv-header {
+            background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%);
+            padding: 8px 24px;
             display: flex;
             align-items: center;
-            gap: 14px;
-            margin-bottom: 12px;
+            justify-content: space-between;
         }
 
-        .obs-badge {
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-            color: white;
-            font-size: 14px;
-            font-weight: 800;
-            padding: 5px 16px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            font-family: 'Poppins', sans-serif;
-            letter-spacing: 0.5px;
-        }
-
-        .obs-channel {
-            font-size: 16px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .obs-nombre {
-            font-size: 34px;
-            font-weight: 800;
+        .tv-badge {
             color: #fff;
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.2;
+            font-size: 15px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .obs-lugar {
+        .tv-badge-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff66;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff66;
+        }
+
+        .tv-station {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Cuerpo principal del Zócalo */
+        .tv-body {
+            padding: 20px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tv-author-row {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+        }
+
+        .tv-nombre {
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .tv-lugar {
+            color: #f472b6;
             font-size: 20px;
-            font-weight: 600;
-            color: #c084fc;
-            margin-top: 2px;
+            font-weight: 700;
         }
 
-        .obs-mensaje {
-            font-size: 24px;
-            line-height: 1.4;
-            color: rgba(255, 255, 255, 0.95);
-            margin-top: 14px;
+        .tv-mensaje {
+            color: #e2e8f0;
+            font-size: 26px;
+            font-weight: 500;
+            line-height: 1.35;
             font-style: italic;
-            border-left: 4px solid #a855f7;
-            padding-left: 18px;
         }
 
-        @keyframes slideUpFadeIn {
-            0% { opacity: 0; transform: translateY(40px); }
-            100% { opacity: 1; transform: translateY(0); }
+        /* Animaciones estilo TV */
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateX(-60px); }
+            100% { opacity: 1; transform: translateX(0); }
         }
 
-        @keyframes slideDownFadeOut {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(30px); }
+        @keyframes slideOut {
+            0% { opacity: 1; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(60px); }
         }
     </style>
 </head>
 <body>
+
     <div id="obsOverlay">
-        <div id="lowerThird" class="lower-third">
-            <div class="lower-third-inner">
-                <div class="obs-header">
-                    <span class="obs-badge">📺 Saludo al Aire</span>
-                    <span class="obs-channel">DJ TV Estación Mix</span>
+        <div id="tvBanner" class="tv-banner">
+            <div class="tv-header">
+                <div class="tv-badge">
+                    <span class="tv-badge-dot"></span>
+                    MENSAJE AL AIRE
                 </div>
-                <div class="obs-nombre" id="obsNombre">—</div>
-                <div class="obs-lugar" id="obsLugar">—</div>
-                <div class="obs-mensaje" id="obsMensaje">—</div>
+                <div class="tv-station">DJ TV Estación Mix</div>
+            </div>
+            <div class="tv-body">
+                <div class="tv-author-row">
+                    <span class="tv-nombre" id="obsNombre">—</span>
+                    <span class="tv-lugar" id="obsLugar"></span>
+                </div>
+                <div class="tv-mensaje" id="obsMensaje">—</div>
             </div>
         </div>
     </div>
@@ -153,13 +173,14 @@
         const PAUSE_TIME = 30000;   // 30 segundos de pausa entre saludos
         const EXPIRATION_MS = 24 * 60 * 60 * 1000; // 24 horas
 
-        const lowerThird = document.getElementById('lowerThird');
+        const tvBanner = document.getElementById('tvBanner');
         const obsNombre = document.getElementById('obsNombre');
         const obsLugar = document.getElementById('obsLugar');
         const obsMensaje = document.getElementById('obsMensaje');
 
-        let messageQueue = [];
-        let isDisplaying = false;
+        let messageList = [];
+        let currentIndex = 0;
+        let isLoopRunning = false;
 
         const q = query(
             collection(db, "mensajes"),
@@ -167,65 +188,79 @@
             orderBy("timestamp", "desc")
         );
 
+        // Escuchar cambios en la base de datos en tiempo real
         onSnapshot(q, (snapshot) => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === "added") {
-                    const data = change.doc.data();
-                    
-                    // Verificar si el mensaje tiene menos de 24 horas
-                    if (isValidMessage(data)) {
-                        messageQueue.push(data);
-                        if (!isDisplaying) displayNext();
-                    }
-                }
+            const rawList = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                data.id = doc.id;
+                rawList.push(data);
             });
+
+            // Filtrar solo los mensajes que tengan menos de 24 horas
+            messageList = rawList.filter(isValidMessage);
+
+            // Iniciar el bucle de reproducción si hay mensajes y no estaba corriendo
+            if (messageList.length > 0 && !isLoopRunning) {
+                currentIndex = 0;
+                startLoop();
+            }
         }, (error) => {
-            console.error("Error en la lectura de Firestore para OBS:", error);
+            console.error("Error cargando mensajes para OBS:", error);
         });
 
-        // Comprueba si el mensaje se envió dentro de las últimas 24hs
+        // Verifica si el mensaje fue enviado dentro de las últimas 24 horas
         function isValidMessage(msg) {
-            if (!msg.timestamp) return true; // Si es muy reciente y no procesó timestamp aún
+            if (!msg.timestamp) return true;
             const msgTime = msg.timestamp.toDate ? msg.timestamp.toDate().getTime() : Date.now();
-            const now = Date.now();
-            return (now - msgTime) <= EXPIRATION_MS;
+            return (Date.now() - msgTime) <= EXPIRATION_MS;
         }
 
-        function displayNext() {
-            // Filtrar mensajes vencidos acumulados en la cola
-            messageQueue = messageQueue.filter(isValidMessage);
+        function startLoop() {
+            // Filtrar nuevamente para descartar vencidos en cada ciclo
+            messageList = messageList.filter(isValidMessage);
 
-            if (messageQueue.length === 0) {
-                isDisplaying = false;
-                lowerThird.style.display = 'none';
+            if (messageList.length === 0) {
+                isLoopRunning = false;
+                tvBanner.style.display = 'none';
                 return;
             }
 
-            isDisplaying = true;
-            const msg = messageQueue.shift();
+            isLoopRunning = true;
 
-            obsNombre.textContent = msg.nombre || 'Anónimo';
+            // Reiniciar índice si excedió el tamaño actual de la lista
+            if (currentIndex >= messageList.length) {
+                currentIndex = 0;
+            }
+
+            const msg = messageList[currentIndex];
+
+            // Cargar datos en el zócalo
+            obsNombre.textContent = msg.nombre || 'ANÓNIMO';
             obsLugar.textContent = msg.lugar ? `📍 ${msg.lugar}` : '';
             obsMensaje.textContent = `"${msg.msj || ''}"`;
 
-            // Mostrar el gráfico
-            lowerThird.classList.remove('fade-out');
-            lowerThird.style.display = 'block';
+            // Mostrar zócalo
+            tvBanner.classList.remove('fade-out');
+            tvBanner.style.display = 'block';
 
-            // Mantiene el saludo visible por 30 segundos
+            // Mantiene el saludo visible 30 segundos
             setTimeout(() => {
-                lowerThird.classList.add('fade-out');
-                
-                // Ocultar e iniciar la pausa de 30 segundos antes del próximo
+                tvBanner.classList.add('fade-out');
+
+                // Ocultar e iniciar los 30 segundos de pausa
                 setTimeout(() => {
-                    lowerThird.style.display = 'none';
-                    
-                    // Espera 30 segundos en pantalla limpia antes de mostrar otro
+                    tvBanner.style.display = 'none';
+
+                    // Avanzar al siguiente mensaje para la próxima vuelta (bucle)
+                    currentIndex = (currentIndex + 1) % messageList.length;
+
+                    // Espera 30 segundos limpia la pantalla antes del próximo saludo
                     setTimeout(() => {
-                        displayNext();
+                        startLoop();
                     }, PAUSE_TIME);
 
-                }, 600); // 600ms de animación de salida
+                }, 500); // Duración de animación de salida
 
             }, DISPLAY_TIME);
         }
