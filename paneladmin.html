@@ -74,42 +74,32 @@
             </div>
         </main>
     </div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, query, where, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // ⚠️ REEMPLAZAR CON TUS DATOS REALES DE FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyARhC07Q4CvEqB1JytYK_AkY2_HQw4ToSY",
-  authDomain: "dj-tv-estacion-mix.firebaseapp.com",
-  projectId: "dj-tv-estacion-mix",
-  storageBucket: "dj-tv-estacion-mix.firebasestorage.app",
-  messagingSenderId: "955348774578",
-  appId: "1:955348774578:web:221c8f8edac25a53e023ab"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyARhC07Q4CvEqB1JytYK_AkY2_HQw4ToSY",
+      authDomain: "dj-tv-estacion-mix.firebaseapp.com",
+      projectId: "dj-tv-estacion-mix",
+      storageBucket: "dj-tv-estacion-mix.firebasestorage.app",
+      messagingSenderId: "955348774578",
+      appId: "1:955348774578:web:221c8f8edac25a53e023ab"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Hash SHA-256 de la clave "" (No expone la clave real en el código)
-    const ADMIN_KEY_HASH = "12ef1709405c6d3bc01b44cbe84ea6dae31e5f8f8b0064f26b5e02422db7f66a";
-
-    // Función para calcular hash SHA-256 con Web Crypto API
-    async function hashPassword(str) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(str);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
+    // CONTRASEÑA DIRECTA
+    const ADMIN_KEY = "you120";
 
     // Manejo de inicio de sesión
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
         e.preventDefault();
-        const inputPass = document.getElementById('inputPassword').value;
-        const inputHash = await hashPassword(inputPass);
+        const inputPass = document.getElementById('inputPassword').value.trim().toLowerCase();
 
-        if (inputHash === ADMIN_KEY_HASH) {
+        if (inputPass === ADMIN_KEY) {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
             startListening();
@@ -154,8 +144,8 @@ const firebaseConfig = {
                 <div class="font-bold text-white">${escapeHtml(data.nombre)} (${escapeHtml(data.lugar)})</div>
                 <div class="text-gray-300">${escapeHtml(data.msj)}</div>
                 <div class="flex gap-2 pt-2">
-                    ${tipo === 'pendiente' ? `<button onclick="approve('${d.id}')" class="bg-green-600 px-2 py-1 rounded font-semibold text-[10px]">✓ APROBAR</button><button onclick="reject('${d.id}')" class="bg-red-600 px-2 py-1 rounded font-semibold text-[10px]">✗ RECHAZAR</button>` : ''}
-                    <button onclick="removeMsg('${d.id}')" class="bg-gray-700 px-2 py-1 rounded font-semibold text-[10px]">🗑 BORRAR</button>
+                    ${tipo === 'pendiente' ? `<button onclick="approve('${d.id}')" class="bg-green-600 hover:bg-green-500 px-2 py-1 rounded font-semibold text-[10px]">✓ APROBAR</button><button onclick="reject('${d.id}')" class="bg-red-600 hover:bg-red-500 px-2 py-1 rounded font-semibold text-[10px]">✗ RECHAZAR</button>` : ''}
+                    <button onclick="removeMsg('${d.id}')" class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded font-semibold text-[10px]">🗑 BORRAR</button>
                 </div>
             `;
             container.appendChild(card);
@@ -168,8 +158,9 @@ const firebaseConfig = {
         return div.innerHTML;
     }
 
+    // Funciones globales corregidas
     window.approve = id => updateDoc(doc(db, "mensajes", id), { estado: "aprobado" });
-    window.reject = id => updateDoc(doc(doc(db, "mensajes", id)), { estado: "rechazado", razon: "rechazo_manual" });
+    window.reject = id => updateDoc(doc(db, "mensajes", id), { estado: "rechazado", razon: "rechazo_manual" });
     window.removeMsg = id => deleteDoc(doc(db, "mensajes", id));
 
     document.getElementById('adminMsgForm').addEventListener('submit', async (e) => {
