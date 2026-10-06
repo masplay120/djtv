@@ -20,16 +20,21 @@
             </div>
             <form id="loginForm" class="space-y-4">
                 <div>
+                    <label class="text-xs text-gray-400 mb-1 block">Correo electrónico</label>
+                    <input type="email" id="inputEmail" required
+                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition mb-3"
+                        placeholder="admin@estacionmix.com">
+
                     <label class="text-xs text-gray-400 mb-1 block">Clave de acceso</label>
                     <input type="password" id="inputPassword" required
                         class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition"
                         placeholder="Ingresa la clave">
                 </div>
-                <button type="submit"
+                <button type="submit" id="btnLoginSubmit"
                     class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 rounded-lg text-sm">
                     Ingresar al Panel
                 </button>
-                <p id="loginError" class="text-red-400 text-xs text-center hidden">Clave incorrecta</p>
+                <p id="loginError" class="text-red-400 text-xs text-center hidden">Datos incorrectos</p>
             </form>
         </div>
     </div>
@@ -41,7 +46,7 @@
                 <div class="flex items-center gap-3">
                     <h1 class="text-base font-bold font-['Poppins']">Panel de Control</h1>
                 </div>
-                <button id="btnLogout" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition">Salir</button>
+                <button id="btnLogout" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg transition">Cerrar Sesión</button>
             </div>
         </header>
 
@@ -77,6 +82,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, collection, query, where, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -89,44 +95,39 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Hash SHA-256 de "you120" (Nadie puede saber cuál es la clave viendo este código)
-    const ADMIN_KEY_HASH = "12ef1709405c6d3bc01b44cbe84ea6dae31e5f8f8b0064f26b5e02422db7f66a";
-
-    // Función para convertir texto a SHA-256
-    async function hashPassword(str) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(str);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    // Manejo de inicio de sesión con validación cifrada
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        // Limpiamos espacios y convertimos a minúsculas antes de calcular el hash
-        const inputPass = document.getElementById('inputPassword').value.trim().toLowerCase();
-        const inputHash = await hashPassword(inputPass);
-
-        if (inputHash === ADMIN_KEY_HASH) {
+    // Mantenimiento de estado de sesión persistente
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
             startListening();
         } else {
-            document.getElementById('loginError').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('loginError').classList.add('hidden');
-            }, 3000);
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+    });
+
+    // Inicio de sesión mediante Firebase Auth
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('inputEmail').value.trim();
+        const password = document.getElementById('inputPassword').value;
+        const errElem = document.getElementById('loginError');
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            errElem.classList.add('hidden');
+        } catch (error) {
+            errElem.textContent = "Email o clave incorrecta";
+            errElem.classList.remove('hidden');
         }
     });
 
     document.getElementById('btnLogout').addEventListener('click', () => {
-        document.getElementById('adminPanel').classList.add('hidden');
-        document.getElementById('loginScreen').classList.remove('hidden');
-        document.getElementById('inputPassword').value = '';
+        signOut(auth);
     });
 
     function startListening() {
@@ -193,6 +194,5 @@
         document.getElementById('adminMensaje').value = '';
     });
 </script>
-
 </body>
 </html>
