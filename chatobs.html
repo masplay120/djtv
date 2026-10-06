@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DJ TV - OBS Lower Third</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
-    <style>
+<style>
         * {
             box-sizing: border-box;
             margin: 0;
@@ -20,25 +20,26 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        /* Zócalo Televisivo */
+        /* Contenedor principal ajustado */
         #obsOverlay {
             position: fixed;
-            bottom: 40px;
-            left: 50px;
-            right: 50px;
+            bottom: 35px;
+            left: 40px;
+            right: 40px;
             pointer-events: none;
             z-index: 9999;
         }
 
         .tv-banner {
             display: none;
-            background: rgba(12, 10, 24, 0.92);
+            background: rgba(12, 10, 24, 0.94);
             border-left: 8px solid #ec4899;
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(236, 72, 153, 0.3);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             overflow: hidden;
+            max-height: 220px; /* Evita que crezca desmedidamente hacia arriba */
             animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
@@ -46,10 +47,9 @@
             animation: slideOut 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards;
         }
 
-        /* Encabezado del Zócalo */
         .tv-header {
             background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%);
-            padding: 8px 24px;
+            padding: 6px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -57,7 +57,7 @@
 
         .tv-badge {
             color: #fff;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -67,8 +67,8 @@
         }
 
         .tv-badge-dot {
-            width: 10px;
-            height: 10px;
+            width: 9px;
+            height: 9px;
             background-color: #00ff66;
             border-radius: 50%;
             box-shadow: 0 0 8px #00ff66;
@@ -76,50 +76,57 @@
 
         .tv-station {
             color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        /* Cuerpo principal del Zócalo */
         .tv-body {
-            padding: 20px 28px;
+            padding: 16px 24px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .tv-author-row {
             display: flex;
             align-items: baseline;
-            gap: 16px;
+            gap: 14px;
         }
 
         .tv-nombre {
             color: #ffffff;
-            font-size: 32px;
+            font-size: 26px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            white-space: nowrap;
         }
 
         .tv-lugar {
             color: #f472b6;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
+            white-space: nowrap;
         }
 
+        /* Manejo dinámico para textos largos (150+ caracteres) */
         .tv-mensaje {
             color: #e2e8f0;
-            font-size: 26px;
+            font-size: 22px; /* Reducido levemente para asegurar encuadre perfecto */
             font-weight: 500;
-            line-height: 1.35;
+            line-height: 1.3;
             font-style: italic;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Máximo 3 líneas de texto */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        /* Animaciones estilo TV */
         @keyframes slideIn {
             0% { opacity: 0; transform: translateX(-60px); }
             100% { opacity: 1; transform: translateX(0); }
