@@ -129,15 +129,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getFirestore, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // ⚠️ COLOCA TU CONFIGURACIÓN DE FIREBASE AQUÍ
-  const firebaseConfig = {
-  apiKey: "AIzaSyARhC07Q4CvEqB1JytYK_AkY2_HQw4ToSY",
-  authDomain: "dj-tv-estacion-mix.firebaseapp.com",
-  projectId: "dj-tv-estacion-mix",
-  storageBucket: "dj-tv-estacion-mix.firebasestorage.app",
-  messagingSenderId: "955348774578",
-  appId: "1:955348774578:web:221c8f8edac25a53e023ab"
-};
+        const firebaseConfig = {
+          apiKey: "AIzaSyARhC07Q4CvEqB1JytYK_AkY2_HQw4ToSY",
+          authDomain: "dj-tv-estacion-mix.firebaseapp.com",
+          projectId: "dj-tv-estacion-mix",
+          storageBucket: "dj-tv-estacion-mix.firebasestorage.app",
+          messagingSenderId: "955348774578",
+          appId: "1:955348774578:web:221c8f8edac25a53e023ab"
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -165,6 +164,8 @@
                     if (!isDisplaying) displayNext();
                 }
             });
+        }, (error) => {
+            console.error("Error en la lectura de Firestore para OBS:", error);
         });
 
         function displayNext() {
@@ -178,7 +179,7 @@
             const msg = messageQueue.shift();
 
             obsNombre.textContent = msg.nombre || 'Anónimo';
-            obsLugar.textContent = `📍 ${msg.lugar || ''}`;
+            obsLugar.textContent = msg.lugar ? `📍 ${msg.lugar}` : '';
             obsMensaje.textContent = `"${msg.msj || ''}"`;
 
             lowerThird.classList.remove('fade-out');
@@ -193,5 +194,6 @@
             }, DISPLAY_TIME);
         }
     </script>
+
 </body>
 </html>
