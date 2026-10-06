@@ -13,20 +13,23 @@
 </head>
 <body class="bg-gray-950 text-white font-['Inter'] min-h-screen">
 
+    <!-- Header sin enlaces administrativos -->
     <header class="bg-gray-900/80 backdrop-blur-xl border-b border-gray-800 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-lg font-['Poppins']">
-                    DJ
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-lg font-['Poppins'] shadow-lg shadow-purple-500/20">
+                    TV
                 </div>
                 <div>
                     <h1 class="text-lg font-bold font-['Poppins'] leading-tight">DJ TV Estación Mix</h1>
-                    <p class="text-xs text-gray-400">Transmisión en vivo 24/7</p>
+                    <p class="text-xs text-gray-400">Televisión Musical 24/7</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <a href="paneladmin.html" class="text-xs text-gray-500 hover:text-gray-300 transition">Admin</a>
-                <a href="chatobs.html" class="text-xs text-gray-500 hover:text-gray-300 transition">OBS</a>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 bg-red-600/20 border border-red-500/30 text-red-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                    Transmisión HD
+                </span>
             </div>
         </div>
     </header>
@@ -34,29 +37,42 @@
     <main class="max-w-7xl mx-auto px-4 py-6">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
+            <!-- Columna Principal: Reproductor de TV -->
             <div class="lg:col-span-2">
-                <div class="relative rounded-2xl overflow-hidden bg-black shadow-2xl shadow-purple-500/10 border border-gray-800">
-                    <div class="absolute top-4 left-4 z-10 flex items-center gap-2">
-                        <div class="flex items-center gap-1.5 bg-red-600 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
+                <div class="relative rounded-2xl overflow-hidden bg-black shadow-2xl shadow-purple-500/10 border border-gray-800 group">
+                    
+                    <!-- Etiqueta EN VIVO -->
+                    <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
+                        <div class="flex items-center gap-1.5 bg-red-600 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider shadow-lg">
                             <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                             EN VIVO
                         </div>
                     </div>
 
-                    <div class="aspect-video bg-black" id="playerContainer">
-                        <video id="videoPlayer" class="w-full h-full object-cover" playsinline></video>
+                    <!-- Botón intuitivo para activar audio flotando en el centro -->
+                    <div id="unmuteOverlay" class="absolute inset-0 z-20 bg-black/40 backdrop-blur-[2px] flex items-center justify-center cursor-pointer transition-all duration-300">
+                        <button class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 animate-bounce border border-purple-400/30">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                            <span>Toca para activar el audio</span>
+                        </button>
                     </div>
 
-                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4 opacity-0 hover:opacity-100 transition-opacity duration-300">
+                    <!-- Contenedor del Video (Ajustado para no cortarse) -->
+                    <div class="aspect-video bg-black flex items-center justify-center overflow-hidden" id="playerContainer">
+                        <video id="videoPlayer" class="w-full h-full object-contain" playsinline muted></video>
+                    </div>
+
+                    <!-- Controles del Reproductor -->
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <button id="btnPlayPause" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="Play/Pausa">
                                     <svg id="iconPlay" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                     <svg id="iconPause" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                                 </button>
-                                <button id="btnMute" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="Silenciar">
-                                    <svg id="iconVolume" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-                                    <svg id="iconMuted" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                                <button id="btnMute" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="Silenciar / Activar Sonido">
+                                    <svg id="iconVolume" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                    <svg id="iconMuted" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
                                 </button>
                                 <input type="range" id="volumeSlider" min="0" max="100" value="80" class="w-20 h-1 accent-purple-500 cursor-pointer">
                             </div>
@@ -69,21 +85,23 @@
                     </div>
                 </div>
 
+                <!-- Título del Canal y Slogan Actualizado -->
                 <div class="mt-4 flex items-start gap-4">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                        🎧
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center font-bold text-xl flex-shrink-0 shadow-lg shadow-purple-500/20">
+                        📺
                     </div>
                     <div>
-                        <h2 class="font-bold text-lg">DJ TV Estación Mix - La Radio que se Ve</h2>
-                        <p class="text-gray-400 text-sm">Música las 24 horas • Los mejores éxitos • Envía tu saludo al aire</p>
+                        <h2 class="font-bold text-xl">DJ TV Estación Mix — El Canal que Marca el Ritmo</h2>
+                        <p class="text-gray-400 text-sm">Videoclips, sesiones de DJ en vivo y la mejor música las 24 horas • Envía tu mensaje a la pantalla</p>
                     </div>
                 </div>
             </div>
 
+            <!-- Columna Secundaria: Formulario de Saludos y Chat -->
             <div class="lg:col-span-1 flex flex-col gap-4">
-                <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+                <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5 shadow-xl">
                     <h3 class="font-bold text-base mb-4 flex items-center gap-2">
-                        <span class="text-xl">📨</span> Envía tu Saludo al Aire
+                        <span class="text-xl">📨</span> Envía tu Saludo en Vivo
                     </h3>
                     <form id="greetingForm" class="space-y-3">
                         <div>
@@ -105,17 +123,17 @@
                             </div>
                             <textarea id="inputMensaje" maxlength="150" required rows="3"
                                 class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition resize-none"
-                                placeholder="Escribe tu saludo..."></textarea>
+                                placeholder="Escribe tu mensaje..."></textarea>
                         </div>
                         <button type="submit" id="btnSend"
-                            class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-2.5 rounded-lg transition text-sm flex items-center justify-center gap-2">
-                            Enviar Saludo
+                            class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-2.5 rounded-lg transition text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20">
+                            Enviar Mensaje
                         </button>
                     </form>
                     <p id="formFeedback" class="text-xs mt-2 text-center hidden"></p>
                 </div>
 
-                <div class="bg-gray-900 rounded-2xl border border-gray-800 flex flex-col flex-1 min-h-[300px] max-h-[500px]">
+                <div class="bg-gray-900 rounded-2xl border border-gray-800 flex flex-col flex-1 min-h-[300px] max-h-[500px] shadow-xl">
                     <div class="px-4 py-3 border-b border-gray-800 flex items-center justify-between">
                         <h3 class="font-bold text-sm flex items-center gap-2">
                             <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -125,7 +143,7 @@
                     </div>
                     <div id="chatMessages" class="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
                         <div class="text-center text-gray-600 text-xs py-8">
-                            Los saludos aprobados aparecerán aquí...
+                            Los mensajes aprobados aparecerán aquí...
                         </div>
                     </div>
                 </div>
@@ -137,5 +155,26 @@
         <p>© DJ TV Estación Mix — Todos los derechos reservados</p>
     </footer>
 
+    <!-- Script de control de audio overlay -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('videoPlayer');
+            const overlay = document.getElementById('unmuteOverlay');
+            const btnMute = document.getElementById('btnMute');
+            const iconVolume = document.getElementById('iconVolume');
+            const iconMuted = document.getElementById('iconMuted');
+
+            if (overlay && video) {
+                overlay.addEventListener('click', () => {
+                    video.muted = false;
+                    overlay.classList.add('hidden');
+                    if (iconVolume && iconMuted) {
+                        iconVolume.classList.remove('hidden');
+                        iconMuted.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
