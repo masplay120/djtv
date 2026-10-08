@@ -363,52 +363,29 @@
     }
   </script>
 
-  <!-- SCRIPT RSS NOTICIAS FILTRADO Y RELOJ ONLINE ARGENTINA UTC-3 -->
+  <!-- SCRIPT RSS NOTICIAS Y RELOJ ARGENTINA UTC-3 -->
   <script>
-    let timeOffsetMs = null; // Diferencia de tiempo sincronizada por red
-
-    async function syncArgentinaTime() {
-      try {
-        // Opción 1: Consulta API principal de hora
-        const response = await fetch("https://worldtimeapi.org/api/timezone/America/Argentina/Buenos_Aires");
-        const data = await response.json();
-        const argentinaServerTime = new Date(data.datetime).getTime();
-        timeOffsetMs = argentinaServerTime - Date.now();
-      } catch (e) {
-        try {
-          // Opción 2: Respaldo con TimeAPI en caso de caída
-          const res = await fetch("https://timeapi.io/api/time/current/zone?timeZone=America/Argentina/Buenos_Aires");
-          const data = await res.json();
-          const argentinaServerTime = new Date(`${data.year}-${data.month}-${data.day}T${data.time}`).getTime();
-          timeOffsetMs = argentinaServerTime - Date.now();
-        } catch (err) {
-          console.warn("No se pudo obtener la hora online, recurriendo al reloj local ajustado a UTC-3");
-        }
-      }
-    }
-
     function updateClock() {
-      let now;
-      if (timeOffsetMs !== null) {
-        // Aplica la hora exacta obtenida de Internet
-        now = new Date(Date.now() + timeOffsetMs);
-      } else {
-        // Cálculo matemático directo a UTC-3 en caso de fallar internet
-        const utcNow = Date.now() + (new Date().getTimezoneOffset() * 60000);
-        now = new Date(utcNow + (-3 * 3600000));
-      }
+      // 1. Obtener la fecha/hora actual en milisegundos universales (UTC)
+      const now = new Date();
+      const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+      
+      // 2. Aplicar el desplazamiento de Argentina (UTC -3 Horas)
+      const argOffsetMs = -3 * 60 * 60 * 1000;
+      const argDate = new Date(utcMs + argOffsetMs);
 
-      const hours = String(now.getHours()).padStart(2, '0');
-      const mins = String(now.getMinutes()).padStart(2, '0');
-      const secs = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('liveClock').textContent = `${hours}:${mins}:${secs}`;
+      // 3. Obtener componentes de hora, minutos y segundos
+      const hours = String(argDate.getHours()).padStart(2, '0');
+      const mins = String(argDate.getMinutes()).padStart(2, '0');
+      const secs = String(argDate.getSeconds()).padStart(2, '0');
+
+      // 4. Renderizar en pantalla asegurando valores válidos
+      if (!isNaN(hours) && !isNaN(mins) && !isNaN(secs)) {
+        document.getElementById('liveClock').textContent = `${hours}:${mins}:${secs}`;
+      }
     }
 
-    // Sincronizar hora online al abrir y recargar cada 30 minutos
-    syncArgentinaTime();
-    setInterval(syncArgentinaTime, 1800000);
-
-    // Actualizar reloj cada segundo en pantalla
+    // Ejecutar inmediatamente y actualizar cada 1 segundo
     setInterval(updateClock, 1000);
     updateClock();
 
