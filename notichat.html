@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DJ TV Estación Mix - Zócalo Broadcast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      background-color: rgba(0, 0, 0, 0) !important;
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* CONTENEDOR MAESTRO LIENZO 1920X1080 */
+    .tv-master-lower-third {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 1920px;
+      height: 1080px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    /* ---------------------------------------------------
+       1. PISO SUPERIOR: TARJETA PLACA DE CHAT
+    --------------------------------------------------- */
+    .chat-card {
+      position: absolute;
+      bottom: 35px; /* Ubicado justo arriba de la barra RSS */
+      left: 0px;
+      width: 1275px;
+      background: rgba(12, 10, 24, 0.98);
+      border: 2px solid #ec4899;
+      border-left: 8px solid #ec4899;
+      border-radius: 8px;
+      padding: 16px 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      transition: all 0.4s ease-in-out;
+    }
+
+    .chat-card.hidden-card {
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+    }
+
+    /* CABECERA CON DATOS DE OYENTE */
+    .chat-header {
+      display: block;
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .chat-badge {
+      background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%);
+      padding: 4px 10px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+
+    .chat-badge-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #00ff66;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #00ff66;
+    }
+
+    .chat-author {
+      color: #f472b6;
+      font-weight: 900;
+      font-size: 10px;
+      text-transform: uppercase;
+      vertical-align: middle;
+      margin-right: 10px;
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .chat-location {
+      color: #00f2fe;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      padding: 2px 8px;
+      border-radius: 4px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+
+    /* CUERPO DEL MENSAJE */
+    .chat-body {
+      display: block;
+      width: 100%;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.4;
+      font-style: italic;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+      
+      white-space: normal !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+    }
+
+    /* ---------------------------------------------------
+       2. PISO INFERIOR: TICKER DE NOTICIAS RSS Y RELOJ
+    --------------------------------------------------- */
+    .news-row {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 1920px;
+      height: 35px;
+      background: rgba(8, 8, 14, 0.98);
+      border-top: 2px solid #3b82f6;
+      display: flex;
+      align-items: center;
+    }
+
+    .news-badge {
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      height: 100%;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing: 2px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+      z-index: 30;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.5);
+    }
+
+    .ticker-wrapper {
+      flex: 1 1 0%;
+      min-width: 0;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-content {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      position: absolute;
+      will-change: transform;
+    }
+
+    .news-item {
+      display: inline-flex;
+      align-items: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      padding-right: 40px;
+    }
+
+    .news-source {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #38bdf8;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-right: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .news-separator {
+      color: #2563eb;
+      margin-left: 25px;
+      font-size: 18px;
+    }
+
+    .clock-container {
+      flex-shrink: 0;
+      background: #0f172a;
+      height: 100%;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 1.5px;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 30;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tv-master-lower-third">
+    
+    <!-- TARJETA DE CHAT (ARRIBA) -->
+    <div id="chatCard" class="chat-card hidden-card">
+      <div class="chat-header">
+        <span class="chat-badge">
+          <span class="chat-badge-dot"></span> OYENTE AL AIRE
+        </span>
+        <span class="chat-author" id="obsNombre">—</span>
+        <span class="chat-location" id="obsLugar"></span>
+      </div>
+      <div class="chat-body" id="obsMensaje">—</div>
+    </div>
+
+    <!-- BANNER DE NOTICIAS (ABAJO) -->
+    <div class="news-row">
+      <div class="news-badge">ÚLTIMO MOMENTO</div>
+      <div class="ticker-wrapper">
+        <div id="ticker-text" class="ticker-content">
+          <div class="news-item">
+            <span class="news-source">SISTEMA</span> Cargando noticias automáticas en vivo...
+          </div>
+        </div>
+      </div>
+      <div class="clock-container" id="liveClock">00:00:00</div>
+    </div>
+
+  </div>
+
+  <!-- FIREBASE ENGINE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyARhC07Q4CvEqB1JytYK_AkY2_HQw4ToSY",
+      authDomain: "dj-tv-estacion-mix.firebaseapp.com",
+      projectId: "dj-tv-estacion-mix",
+      storageBucket: "dj-tv-estacion-mix.firebasestorage.app",
+      messagingSenderId: "955348774578",
+      appId: "1:955348774578:web:221c8f8edac25a53e023ab"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const DISPLAY_TIME = 25000;
+    const PAUSE_TIME = 15000;
+    const EXPIRATION_MS = 24 * 60 * 60 * 1000;
+
+    const chatCard = document.getElementById('chatCard');
+    const obsNombre = document.getElementById('obsNombre');
+    const obsLugar = document.getElementById('obsLugar');
+    const obsMensaje = document.getElementById('obsMensaje');
+
+    let messageList = [];
+    let currentIndex = 0;
+    let isLoopRunning = false;
+
+    const q = query(
+      collection(db, "mensajes"),
+      where("estado", "==", "aprobado"),
+      orderBy("timestamp", "desc")
+    );
+
+    onSnapshot(q, (snapshot) => {
+      const rawList = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        data.id = doc.id;
+        rawList.push(data);
+      });
+
+      messageList = rawList.filter(isValidMessage);
+
+      if (messageList.length > 0 && !isLoopRunning) {
+        currentIndex = 0;
+        startLoop();
+      }
+    }, (error) => {
+      console.error("Error cargando mensajes:", error);
+    });
+
+    function isValidMessage(msg) {
+      if (!msg.timestamp) return true;
+      const msgTime = msg.timestamp.toDate ? msg.timestamp.toDate().getTime() : Date.now();
+      return (Date.now() - msgTime) <= EXPIRATION_MS;
+    }
+
+    function startLoop() {
+      messageList = messageList.filter(isValidMessage);
+
+      if (messageList.length === 0) {
+        isLoopRunning = false;
+        chatCard.classList.add('hidden-card');
+        return;
+      }
+
+      isLoopRunning = true;
+
+      if (currentIndex >= messageList.length) {
+        currentIndex = 0;
+      }
+
+      const msg = messageList[currentIndex];
+
+      obsNombre.textContent = msg.nombre || 'ANÓNIMO';
+      
+      if (msg.lugar && msg.lugar.trim() !== '') {
+        obsLugar.textContent = `📍 ${msg.lugar.trim()}`;
+        obsLugar.style.display = 'inline-block';
+      } else {
+        obsLugar.style.display = 'none';
+      }
+
+      obsMensaje.textContent = `"${msg.msj || ''}"`;
+
+      chatCard.classList.remove('hidden-card');
+
+      setTimeout(() => {
+        chatCard.classList.add('hidden-card');
+
+        setTimeout(() => {
+          currentIndex = (currentIndex + 1) % messageList.length;
+          setTimeout(() => {
+            startLoop();
+          }, PAUSE_TIME);
+        }, 500);
+      }, DISPLAY_TIME);
+    }
+  </script>
+
+  <!-- SCRIPT RSS NOTICIAS FILTRADO -->
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const secs = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('liveClock').textContent = `${hours}:${mins}:${secs}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    const rssFeeds = [
+      { name: "INFOBAE", url: "https://www.infobae.com/feeds/rss/" },
+      { name: "LA NACION", url: "https://www.lanacion.com.ar/arc/outboundfeeds/rss/?outputType=xml" },
+      { name: "CLARIN", url: "https://www.clarin.com/rss/lo-ultimo/" },
+      { name: "PAGINA 12", url: "https://www.pagina12.com.ar/rss/portada" }
+    ];
+
+    /* LISTA NEGRA DE PALABRAS Y FRASES INCOMPLETAS / RELLENO */
+    const FORBIDDEN_WORDS = [
+      "horoscopo", "horóscopo", "zodiaco", "zodíaco", "signo", "signos",
+      "quiniela", "quinielas", "lotería", "loteria", "kini 6", "quini 6",
+      "loto", "telekino", "enterate", "entérate", "conocé los resultados",
+      "conoce los resultados", "mira el resultado", "mirá el resultado",
+      "qué dice el tarot", "que dice el tarot", "sudoku", "crucigrama"
+    ];
+
+    function isUsefulNews(text) {
+      if (!text || text.trim().length < 15) return false;
+      const cleanLowerText = text.toLowerCase();
+      
+      // Si contiene alguna palabra o frase de la lista negra, se descarta
+      for (const word of FORBIDDEN_WORDS) {
+        if (cleanLowerText.includes(word)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    let allNews = [];
+    let animationId = null;
+
+    function cleanText(html) {
+      const tmp = document.createElement("DIV");
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || "";
+    }
+
+    async function fetchAllNews() {
+      let collectedNews = [];
+
+      for (const feed of rssFeeds) {
+        try {
+          const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+
+          if (data.status === 'ok' && data.items && data.items.length > 0) {
+            const items = [];
+            
+            for (const item of data.items) {
+              const title = cleanText(item.title).trim();
+              const summary = cleanText(item.description || item.content || "").trim();
+
+              let fullNews = title;
+              if (summary.length > 15 && !summary.includes(title)) {
+                fullNews += ` — ${summary}`;
+              }
+
+              // FILTRAR CONTENIDO INCOMPLETO Y RELLENO
+              if (isUsefulNews(fullNews)) {
+                items.push({
+                  text: fullNews,
+                  source: feed.name
+                });
+              }
+
+              if (items.length >= 8) break; // Límite de notas válidas por medio
+            }
+
+            collectedNews = collectedNews.concat(items);
+          }
+        } catch (e) {
+          console.error(`Error en ${feed.name}:`, e);
+        }
+      }
+
+      if (collectedNews.length > 0) {
+        allNews = collectedNews.sort(() => Math.random() - 0.5);
+        renderAndStartTicker();
+      }
+    }
+
+    function renderAndStartTicker() {
+      const container = document.getElementById('ticker-text');
+      if (animationId) cancelAnimationFrame(animationId);
+
+      let htmlContent = '';
+      allNews.forEach(item => {
+        htmlContent += `
+          <div class="news-item">
+            <span class="news-source">${item.source}</span> ${item.text}
+            <span class="news-separator">•</span>
+          </div>
+        `;
+      });
+
+      container.innerHTML = htmlContent + htmlContent;
+
+      let posX = 0;
+      const speed = 1.4;
+
+      function step() {
+        posX -= speed;
+        const halfWidth = container.scrollWidth / 2;
+
+        if (Math.abs(posX) >= halfWidth) {
+          posX = 0;
+        }
+
+        container.style.transform = `translateX(${posX}px)`;
+        animationId = requestAnimationFrame(step);
+      }
+
+      step();
+    }
+
+    fetchAllNews();
+    setInterval(fetchAllNews, 600000);
+  </script>
+</body>
+</html>
