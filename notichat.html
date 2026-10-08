@@ -133,7 +133,7 @@
     }
 
     /* ---------------------------------------------------
-       2. PISO INFERIOR: TICKER DE NOTICIAS RSS Y RELOJ
+       2. PISO INFERIOR: TICKER DE NOTICIAS RSS
     --------------------------------------------------- */
     .news-row {
       position: absolute;
@@ -210,23 +210,6 @@
       margin-left: 25px;
       font-size: 18px;
     }
-
-    .clock-container {
-      flex-shrink: 0;
-      background: #0f172a;
-      height: 100%;
-      padding: 0 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Orbitron', sans-serif;
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 25px;
-      letter-spacing: 1.5px;
-      border-left: 1px solid rgba(255, 255, 255, 0.1);
-      z-index: 30;
-    }
   </style>
 </head>
 <body>
@@ -255,7 +238,6 @@
           </div>
         </div>
       </div>
-      <div class="clock-container" id="liveClock">00:00:00</div>
     </div>
 
   </div>
@@ -363,32 +345,8 @@
     }
   </script>
 
-  <!-- SCRIPT RSS NOTICIAS Y RELOJ ARGENTINA UTC-3 -->
+  <!-- SCRIPT RSS NOTICIAS FILTRADO -->
   <script>
-    function updateClock() {
-      // 1. Obtener la fecha/hora actual en milisegundos universales (UTC)
-      const now = new Date();
-      const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
-      
-      // 2. Aplicar el desplazamiento de Argentina (UTC -3 Horas)
-      const argOffsetMs = -3 * 60 * 60 * 1000;
-      const argDate = new Date(utcMs + argOffsetMs);
-
-      // 3. Obtener componentes de hora, minutos y segundos
-      const hours = String(argDate.getHours()).padStart(2, '0');
-      const mins = String(argDate.getMinutes()).padStart(2, '0');
-      const secs = String(argDate.getSeconds()).padStart(2, '0');
-
-      // 4. Renderizar en pantalla asegurando valores válidos
-      if (!isNaN(hours) && !isNaN(mins) && !isNaN(secs)) {
-        document.getElementById('liveClock').textContent = `${hours}:${mins}:${secs}`;
-      }
-    }
-
-    // Ejecutar inmediatamente y actualizar cada 1 segundo
-    setInterval(updateClock, 1000);
-    updateClock();
-
     const rssFeeds = [
       { name: "INFOBAE", url: "https://www.infobae.com/feeds/rss/" },
       { name: "LA NACION", url: "https://www.lanacion.com.ar/arc/outboundfeeds/rss/?outputType=xml" },
