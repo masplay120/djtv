@@ -363,21 +363,52 @@
     }
   </script>
 
-  <!-- SCRIPT RSS NOTICIAS FILTRADO CON RELOJ DE ARGENTINA -->
+  <!-- SCRIPT RSS NOTICIAS FILTRADO Y RELOJ ONLINE ARGENTINA UTC-3 -->
   <script>
-    function updateClock() {
-      const now = new Date();
-      const options = {
-        timeZone: 'America/Argentina/Buenos_Aires',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      };
-      
-      const formatter = new Intl.DateTimeFormat('es-AR', options);
-      document.getElementById('liveClock').textContent = formatter.format(now);
+    let timeOffsetMs = null; // Diferencia de tiempo sincronizada por red
+
+    async function syncArgentinaTime() {
+      try {
+        // Opción 1: Consulta API principal de hora
+        const response = await fetch("https://worldtimeapi.org/api/timezone/America/Argentina/Buenos_Aires");
+        const data = await response.json();
+        const argentinaServerTime = new Date(data.datetime).getTime();
+        timeOffsetMs = argentinaServerTime - Date.now();
+      } catch (e) {
+        try {
+          // Opción 2: Respaldo con TimeAPI en caso de caída
+          const res = await fetch("https://timeapi.io/api/time/current/zone?timeZone=America/Argentina/Buenos_Aires");
+          const data = await res.json();
+          const argentinaServerTime = new Date(`${data.year}-${data.month}-${data.day}T${data.time}`).getTime();
+          timeOffsetMs = argentinaServerTime - Date.now();
+        } catch (err) {
+          console.warn("No se pudo obtener la hora online, recurriendo al reloj local ajustado a UTC-3");
+        }
+      }
     }
+
+    function updateClock() {
+      let now;
+      if (timeOffsetMs !== null) {
+        // Aplica la hora exacta obtenida de Internet
+        now = new Date(Date.now() + timeOffsetMs);
+      } else {
+        // Cálculo matemático directo a UTC-3 en caso de fallar internet
+        const utcNow = Date.now() + (new Date().getTimezoneOffset() * 60000);
+        now = new Date(utcNow + (-3 * 3600000));
+      }
+
+      const hours = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const secs = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('liveClock').textContent = `${hours}:${mins}:${secs}`;
+    }
+
+    // Sincronizar hora online al abrir y recargar cada 30 minutos
+    syncArgentinaTime();
+    setInterval(syncArgentinaTime, 1800000);
+
+    // Actualizar reloj cada segundo en pantalla
     setInterval(updateClock, 1000);
     updateClock();
 
@@ -401,7 +432,6 @@
       if (!text || text.trim().length < 15) return false;
       const cleanLowerText = text.toLowerCase();
       
-      // Si contiene alguna palabra o frase de la lista negra, se descarta
       for (const word of FORBIDDEN_WORDS) {
         if (cleanLowerText.includes(word)) {
           return false;
@@ -440,7 +470,6 @@
                 fullNews += ` — ${summary}`;
               }
 
-              // FILTRAR CONTENIDO INCOMPLETO Y RELLENO
               if (isUsefulNews(fullNews)) {
                 items.push({
                   text: fullNews,
@@ -448,7 +477,7 @@
                 });
               }
 
-              if (items.length >= 8) break; // Límite de notas válidas por medio
+              if (items.length >= 8) break;
             }
 
             collectedNews = collectedNews.concat(items);
