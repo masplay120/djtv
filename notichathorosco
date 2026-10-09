@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DJ TV Estación Mix - Master Broadcast Zócalo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Orbitron:wght@700;900&family=Oswald:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      background-color: rgba(0, 0, 0, 0) !important;
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+      width: 1920px;
+      height: 1080px;
+      user-select: none;
+    }
+
+    /* CONTENEDOR MAESTRO LIENZO 1920X1080 */
+    .tv-master-lower-third {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 1920px;
+      height: 1080px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    /* ---------------------------------------------------
+       1. PISO SUPERIOR: PLACA DINÁMICA (CHAT / HORÓSCOPO)
+    --------------------------------------------------- */
+    .upper-card {
+      position: absolute;
+      bottom: 60px; /* Alineado justo arriba del zócalo RSS de 60px */
+      left: 0px;
+      width: 1920px;
+      background: rgba(12, 10, 24, 0.98);
+      border-top: 3px solid #ec4899;
+      border-bottom: 2px solid rgba(236, 72, 153, 0.4);
+      padding: 14px 24px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.85);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .upper-card.hidden-card {
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+    }
+
+    /* ESTILOS DE CHAT / OYENTES AL AIRE */
+    .chat-mode-border {
+      border-top-color: #ec4899;
+      border-left: 8px solid #ec4899;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .chat-badge {
+      background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%);
+      padding: 4px 12px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .chat-badge-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #00ff66;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ff66;
+    }
+
+    .chat-author {
+      color: #f472b6;
+      font-weight: 900;
+      font-size: 24px;
+      text-transform: uppercase;
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+
+    .chat-location {
+      color: #00f2fe;
+      font-size: 24px;
+      font-weight: 700;
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+
+    .chat-body {
+      color: #ffffff;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.35;
+      font-style: italic;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+      white-space: normal !important;
+      word-wrap: break-word !important;
+    }
+
+    /* ESTILOS DE HORÓSCOPO BROADCAST */
+    .horoscope-mode-border {
+      border-top-color: #f59e0b;
+      border-left: 8px solid #f59e0b;
+      background: linear-gradient(180deg, rgba(8, 15, 30, 0.98) 0%, rgba(3, 7, 18, 0.99) 100%);
+      padding: 12px 24px;
+    }
+
+    .horoscope-layout {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 25px;
+    }
+
+    .horoscope-sign-badge {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: linear-gradient(135deg, #1e293b 0%, #0b1329 100%);
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 2px solid #f59e0b;
+      min-width: 380px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+
+    .sign-icon-box {
+      width: 68px;
+      height: 68px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f59e0b;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+    }
+
+    .sign-icon-box svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    .sign-meta-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sign-name-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 42px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+
+    .sign-date-range {
+      font-size: 15px;
+      font-weight: 800;
+      color: #f59e0b;
+      text-transform: uppercase;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    .horoscope-text-wrapper {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 60px;
+    }
+
+    .horoscope-prediction-text {
+      font-size: 34px;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+      position: absolute;
+      left: 0;
+      will-change: transform;
+    }
+
+    .horoscope-counter-badge {
+      background: #090d16;
+      border: 1px solid #f59e0b;
+      color: #f59e0b;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* ---------------------------------------------------
+       2. PISO INFERIOR: TICKER DE NOTICIAS RSS (PERMANENTE)
+    --------------------------------------------------- */
+    .news-row {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 1920px;
+      height: 60px;
+      background: rgba(8, 8, 14, 0.98);
+      border-top: 2px solid #3b82f6;
+      display: flex;
+      align-items: center;
+    }
+
+    .news-badge {
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      height: 100%;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 24px;
+      letter-spacing: 2px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+      z-index: 30;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.5);
+    }
+
+    .ticker-wrapper {
+      flex: 1 1 0%;
+      min-width: 0;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-content {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      position: absolute;
+      will-change: transform;
+    }
+
+    .news-item {
+      display: inline-flex;
+      align-items: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      padding-right: 40px;
+    }
+
+    .news-source {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #38bdf8;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-right: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .news-separator {
+      color: #2563eb;
+      margin-left: 25px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tv-master-lower-third">
+    
+    <!-- TARJETA SUPERIOR DINÁMICA (CHAT / HORÓSCOPO) -->
+    <div id="upperCard" class="upper-card hidden-card chat-mode-border">
+      <div id="cardDynamicContent"></div>
+    </div>
+
+    <!-- BANNER DE NOTICIAS INFERIOR (PERMANENTE 60PX) -->
+    <div class="news-row">
+      <div class="news-badge">ÚLTIMO MOMENTO</div>
+      <div class="ticker-wrapper">
+        <div id="ticker-text" class="ticker-content">
+          <div class="news-item">
+            <span class="news-source">DJ TV</span> Cargando noticias al aire...
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FIREBASE & MASTER BROADCAST MOTOR -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyARhC07Q4CvEqB1JytYK_AkY2_HQw4ToSY",
+      authDomain: "dj-tv-estacion-mix.firebaseapp.com",
+      projectId: "dj-tv-estacion-mix",
+      storageBucket: "dj-tv-estacion-mix.firebasestorage.app",
+      messagingSenderId: "955348774578",
+      appId: "1:955348774578:web:221c8f8edac25a53e023ab"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Vectores SVG limpios para cada signo
+    const ZODIAC_SVGS = {
+      aries: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9"/><path d="M12 9a5 5 0 0 0-5-5c-2.8 0-5 2.2-5 5 0 2.5 2 4.5 4.5 4.5"/><path d="M12 9a5 5 0 0 1 5-5c2.8 0 5 2.2 5 5 0 2.5-2 4.5-4.5 4.5"/></svg>`,
+      taurus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="6"/><path d="M6 4a6 6 0 0 0 12 0"/></svg>`,
+      gemini: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4a16 16 0 0 0 16 0"/><path d="M4 20a16 16 0 0 1 16 0"/><path d="M8 4v16"/><path d="M16 4v16"/></svg>`,
+      cancer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="10" r="3"/><circle cx="18" cy="14" r="3"/><path d="M9 10a7 7 0 0 0 11-4"/><path d="M15 14a7 7 0 0 0-11 4"/></svg>`,
+      leo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><path d="M10 17c0-4 3-7 7-7a4 4 0 0 0 0-8c-2.5 0-4.5 2-4.5 4.5 0 3.5 2 5.5 2 8.5 0 2.5-2 4-4.5 4"/></svg>`,
+      virgo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v10a3 3 0 0 0 6 0V4"/><path d="M10 4v10a3 3 0 0 0 6 0V4"/><path d="M16 4v10a3 3 0 0 0 3 3h1"/><path d="M18 13a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>`,
+      libra: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M4 16h16"/><path d="M8 16a4 4 0 0 1 8 0"/><path d="M12 5v7"/><path d="M9 8h6"/></svg>`,
+      scorpio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v10a3 3 0 0 0 6 0V4"/><path d="M10 4v10a3 3 0 0 0 6 0V4"/><path d="M16 4v11a2 2 0 0 0 2 2h3"/><path d="m19 15 3 2-3 2"/></svg>`,
+      sagittarius: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 5 19"/><path d="M14 5h5v5"/><path d="M9 9 5 5"/><path d="M19 19l-4-4"/></svg>`,
+      capricorn: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l5 13a2 2 0 0 0 4 0l3-8"/><circle cx="18" cy="15" r="3"/><path d="M18 18c0 2-1.5 3.5-3.5 3.5S11 20 11 18"/></svg>`,
+      aquarius: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3-3 4 4 4-4 4 4 3-3"/><path d="m3 16 3-3 4 4 4-4 4 4 3-3"/></svg>`,
+      pisces: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M6 4a16 16 0 0 1 0 16"/><path d="M18 4a16 16 0 0 0 0 16"/></svg>`
+    };
+
+    const ZODIAC_CONFIG = [
+      { key: 'aries',       apiKey: 'aries',       name: 'Aries',       dates: '21 MAR - 19 ABR' },
+      { key: 'taurus',      apiKey: 'Taurus',      name: 'Tauro',       dates: '20 ABR - 20 MAY' },
+      { key: 'gemini',      apiKey: 'Gemini',      name: 'Géminis',     dates: '21 MAY - 20 JUN' },
+      { key: 'cancer',      apiKey: 'Cancer',      name: 'Cáncer',      dates: '21 JUN - 22 JUL' },
+      { key: 'leo',         apiKey: 'leo',         name: 'Leo',         dates: '23 JUL - 22 AGO' },
+      { key: 'virgo',       apiKey: 'Virgo',       name: 'Virgo',       dates: '23 AGO - 22 SEP' },
+      { key: 'libra',       apiKey: 'Libra',       name: 'Libra',       dates: '23 SEP - 22 OCT' },
+      { key: 'scorpio',     apiKey: 'Scorpio',     name: 'Escorpio',    dates: '23 OCT - 21 NOV' },
+      { key: 'sagittarius', apiKey: 'Sagittarius', name: 'Sagitario',   dates: '22 NOV - 21 DIC' },
+      { key: 'capricorn',   apiKey: 'Capricorn',   name: 'Capricornio', dates: '22 DIC - 19 ENE' },
+      { key: 'aquarius',    apiKey: 'Aquarius',    name: 'Acuario',     dates: '20 ENE - 18 FEB' },
+      { key: 'pisces',      apiKey: 'Pisces',      name: 'Piscis',      dates: '19 FEB - 20 MAR' }
+    ];
+
+    let chatMessages = [];
+    let horoscopeList = [];
+    let chatIndex = 0;
+    let horoscopeIndex = 0;
+    let masterCycleStep = 0; // 0 = Chat, 1 = Horóscopo
+    let isMasterLoopRunning = false;
+    let activeMarqueeFrame = null;
+
+    const upperCard = document.getElementById('upperCard');
+    const cardDynamicContent = document.getElementById('cardDynamicContent');
+
+    // Escuchador de Mensajes Firestore
+    const q = query(
+      collection(db, "mensajes"),
+      where("estado", "==", "aprobado"),
+      orderBy("timestamp", "desc")
+    );
+
+    onSnapshot(q, (snapshot) => {
+      const rawList = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        data.id = doc.id;
+        rawList.push(data);
+      });
+
+      chatMessages = rawList.filter(msg => {
+        if (!msg.timestamp) return true;
+        const msgTime = msg.timestamp.toDate ? msg.timestamp.toDate().getTime() : Date.now();
+        return (Date.now() - msgTime) <= 24 * 60 * 60 * 1000;
+      });
+
+      if (!isMasterLoopRunning) {
+        startMasterBroadcastLoop();
+      }
+    });
+
+    // Carga Silenciosa de Horóscopos
+    async function loadHoroscopeAPIs() {
+      const fetched = [];
+      for (const sign of ZODIAC_CONFIG) {
+        try {
+          const url = `https://api.jotform.com/website-widgets/templates/019f365ed74870008e184f2271ab1b90f656/execute-action?action=getHoroscopeData&period=daily&sign=${sign.apiKey}&language=es&widgetID=01a120be41b070008003137f1833c7dc8d78`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const json = await res.json();
+            if (json && json.content && json.content.horoscope) {
+              fetched.push({ ...sign, text: json.content.horoscope.trim() });
+            }
+          }
+        } catch (e) {
+          console.warn(`Horoscope API skip: ${sign.name}`);
+        }
+      }
+      horoscopeList = fetched;
+      if (!isMasterLoopRunning) {
+        startMasterBroadcastLoop();
+      }
+    }
+
+    loadHoroscopeAPIs();
+    setInterval(loadHoroscopeAPIs, 2 * 60 * 60 * 1000);
+
+    // CICLO MAESTRO DE NAVEGACIÓN TV
+    function startMasterBroadcastLoop() {
+      if (activeMarqueeFrame) cancelAnimationFrame(activeMarqueeFrame);
+      isMasterLoopRunning = true;
+
+      if (masterCycleStep === 0 && chatMessages.length > 0) {
+        renderChatCard();
+      } else if (horoscopeList.length > 0) {
+        renderHoroscopeCard();
+      } else if (chatMessages.length > 0) {
+        renderChatCard();
+      } else {
+        upperCard.classList.add('hidden-card');
+        isMasterLoopRunning = false;
+        setTimeout(startMasterBroadcastLoop, 5000);
+      }
+    }
+
+    // RENDERIZADO: CHAT DE OYENTES
+    function renderChatCard() {
+      if (chatIndex >= chatMessages.length) chatIndex = 0;
+      const msg = chatMessages[chatIndex];
+
+      upperCard.className = 'upper-card hidden-card chat-mode-border';
+
+      const lugarHtml = (msg.lugar && msg.lugar.trim() !== '')
+        ? `<span class="chat-location">📍 ${msg.lugar.trim()}</span>`
+        : '';
+
+      cardDynamicContent.innerHTML = `
+        <div class="chat-header">
+          <span class="chat-badge"><span class="chat-badge-dot"></span> OYENTE AL AIRE</span>
+          <span class="chat-author">${msg.nombre || 'ANÓNIMO'}</span>
+          ${lugarHtml}
+        </div>
+        <div class="chat-body">"${msg.msj || ''}"</div>
+      `;
+
+      setTimeout(() => {
+        upperCard.classList.remove('hidden-card');
+      }, 100);
+
+      setTimeout(() => {
+        upperCard.classList.add('hidden-card');
+        setTimeout(() => {
+          chatIndex = (chatIndex + 1) % chatMessages.length;
+          masterCycleStep = 1;
+          setTimeout(startMasterBroadcastLoop, 1200);
+        }, 400);
+      }, 22000);
+    }
+
+    // RENDERIZADO: HORÓSCOPO DIARIO (TEXTO FIJO INICIAL + DESPLAZAMIENTO PERFECTO + SIN PANTALLA VACÍA)
+    function renderHoroscopeCard() {
+      if (horoscopeIndex >= horoscopeList.length) horoscopeIndex = 0;
+      const item = horoscopeList[horoscopeIndex];
+
+      upperCard.className = 'upper-card hidden-card horoscope-mode-border';
+
+      const signNum = String(horoscopeIndex + 1).padStart(2, '0');
+      const totalNum = String(horoscopeList.length).padStart(2, '0');
+
+      cardDynamicContent.innerHTML = `
+        <div class="horoscope-layout">
+          <div class="horoscope-sign-badge">
+            <div class="sign-icon-box">${ZODIAC_SVGS[item.key] || ''}</div>
+            <div class="sign-meta-text">
+              <div class="sign-name-title">${item.name}</div>
+              <div class="sign-date-range">${item.dates}</div>
+            </div>
+          </div>
+          <div class="horoscope-text-wrapper" id="horoscopeWrapper">
+            <div class="horoscope-prediction-text" id="horoscopeText">${item.text}</div>
+          </div>
+          <div class="horoscope-counter-badge">HORÓSCOPO ${signNum}/${totalNum}</div>
+        </div>
+      `;
+
+      setTimeout(() => {
+        upperCard.classList.remove('hidden-card');
+
+        const wrapper = document.getElementById('horoscopeWrapper');
+        const textElem = document.getElementById('horoscopeText');
+
+        if (wrapper && textElem) {
+          const wrapperWidth = wrapper.offsetWidth;
+          const textWidth = textElem.offsetWidth;
+          const overflowDistance = textWidth - wrapperWidth;
+
+          // Si el texto es largo, aplica el efecto de lectura completo con pausa inicial
+          if (overflowDistance > 0) {
+            const speedPxPerSec = 85; // Velocidad suave TV
+            const scrollDurationMs = (overflowDistance / speedPxPerSec) * 1000;
+            const initialPauseMs = 3500; // Pausa inicial para comenzar a leer quieto
+            const finalPauseMs = 2500;   // Pausa final al llegar al último punto
+
+            let startTime = null;
+
+            function animateStep(timestamp) {
+              if (!startTime) startTime = timestamp;
+              const elapsed = timestamp - startTime;
+
+              if (elapsed < initialPauseMs) {
+                // Fase 1: Mantiene el texto en el inicio
+                textElem.style.transform = 'translateX(0px)';
+              } else if (elapsed < (initialPauseMs + scrollDurationMs)) {
+                // Fase 2: Desplaza suavemente hasta el final exacto del texto
+                const progress = (elapsed - initialPauseMs) / scrollDurationMs;
+                const currentX = progress * overflowDistance;
+                textElem.style.transform = `translateX(-${currentX}px)`;
+              } else {
+                // Fase 3: Detiene en el final exacto
+                textElem.style.transform = `translateX(-${overflowDistance}px)`;
+              }
+
+              if (elapsed < (initialPauseMs + scrollDurationMs + finalPauseMs)) {
+                activeMarqueeFrame = requestAnimationFrame(animateStep);
+              } else {
+                // Fin del texto: Oculta la placa inmediatamente sin dejar espacio en blanco
+                upperCard.classList.add('hidden-card');
+                setTimeout(() => {
+                  horoscopeIndex = (horoscopeIndex + 1) % horoscopeList.length;
+                  masterCycleStep = 0; // Cambiar turno a Chat
+                  setTimeout(startMasterBroadcastLoop, 1200);
+                }, 400);
+              }
+            }
+
+            activeMarqueeFrame = requestAnimationFrame(animateStep);
+
+          } else {
+            // Si el texto es corto y cabe entero, mostrarlo fijo durante 15 segundos
+            textElem.style.transform = 'translateX(0px)';
+            setTimeout(() => {
+              upperCard.classList.add('hidden-card');
+              setTimeout(() => {
+                horoscopeIndex = (horoscopeIndex + 1) % horoscopeList.length;
+                masterCycleStep = 0;
+                setTimeout(startMasterBroadcastLoop, 1200);
+              }, 400);
+            }, 15000);
+          }
+        }
+      }, 100);
+    }
+  </script>
+
+  <!-- SCRIPT NOTICIAS RSS INFERIOR (FILTRADO Y CONTINUO) -->
+  <script>
+    const rssFeeds = [
+      { name: "INFOBAE", url: "https://www.infobae.com/feeds/rss/" },
+      { name: "LA NACION", url: "https://www.lanacion.com.ar/arc/outboundfeeds/rss/?outputType=xml" },
+      { name: "CLARIN", url: "https://www.clarin.com/rss/lo-ultimo/" },
+      { name: "PAGINA 12", url: "https://www.pagina12.com.ar/rss/portada" }
+    ];
+
+    const FORBIDDEN_WORDS = [
+      "horoscopo", "horóscopo", "zodiaco", "zodíaco", "signo", "signos",
+      "quiniela", "quinielas", "lotería", "loteria", "kini 6", "quini 6",
+      "loto", "telekino", "enterate", "entérate", "conocé los resultados",
+      "conoce los resultados", "mira el resultado", "mirá el resultado",
+      "qué dice el tarot", "que dice el tarot", "sudoku", "crucigrama"
+    ];
+
+    function isUsefulNews(text) {
+      if (!text || text.trim().length < 15) return false;
+      const cleanLowerText = text.toLowerCase();
+      for (const word of FORBIDDEN_WORDS) {
+        if (cleanLowerText.includes(word)) return false;
+      }
+      return true;
+    }
+
+    let allNews = [];
+    let rssAnimationId = null;
+
+    function cleanText(html) {
+      const tmp = document.createElement("DIV");
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || "";
+    }
+
+    async function fetchAllNews() {
+      let collectedNews = [];
+
+      for (const feed of rssFeeds) {
+        try {
+          const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+
+          if (data.status === 'ok' && data.items && data.items.length > 0) {
+            const items = [];
+            for (const item of data.items) {
+              const title = cleanText(item.title).trim();
+              const summary = cleanText(item.description || item.content || "").trim();
+
+              let fullNews = title;
+              if (summary.length > 15 && !summary.includes(title)) {
+                fullNews += ` — ${summary}`;
+              }
+
+              if (isUsefulNews(fullNews)) {
+                items.push({ text: fullNews, source: feed.name });
+              }
+              if (items.length >= 8) break;
+            }
+            collectedNews = collectedNews.concat(items);
+          }
+        } catch (e) {
+          console.error(`Error RSS ${feed.name}:`, e);
+        }
+      }
+
+      if (collectedNews.length > 0) {
+        allNews = collectedNews.sort(() => Math.random() - 0.5);
+        renderAndStartTicker();
+      }
+    }
+
+    function renderAndStartTicker() {
+      const container = document.getElementById('ticker-text');
+      if (rssAnimationId) cancelAnimationFrame(rssAnimationId);
+
+      let htmlContent = '';
+      allNews.forEach(item => {
+        htmlContent += `
+          <div class="news-item">
+            <span class="news-source">${item.source}</span> ${item.text}
+            <span class="news-separator">•</span>
+          </div>
+        `;
+      });
+
+      container.innerHTML = htmlContent + htmlContent;
+
+      let posX = 0;
+      const speed = 1.4;
+
+      function step() {
+        posX -= speed;
+        const halfWidth = container.scrollWidth / 2;
+
+        if (Math.abs(posX) >= halfWidth) {
+          posX = 0;
+        }
+
+        container.style.transform = `translateX(${posX}px)`;
+        rssAnimationId = requestAnimationFrame(step);
+      }
+
+      step();
+    }
+
+    fetchAllNews();
+    setInterval(fetchAllNews, 600000);
+  </script>
+</body>
+</html>
