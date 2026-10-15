@@ -40,7 +40,7 @@
     --------------------------------------------------- */
     .upper-card {
       position: absolute;
-      bottom: 60px; /* Alineado justo arriba del zócalo RSS de 60px */
+      bottom: 60px; 
       left: 0px;
       width: 1920px;
       background: rgba(12, 10, 24, 0.98);
@@ -284,6 +284,7 @@
       white-space: nowrap;
       position: absolute;
       will-change: transform;
+      left: 0;
     }
 
     .news-item {
@@ -330,7 +331,7 @@
       <div class="ticker-wrapper">
         <div id="ticker-text" class="ticker-content">
           <div class="news-item">
-            <span class="news-source">DJ TV</span> Cargando noticias al aire...
+            <span class="news-source">DJ TV</span> Mezclando noticias de portales argentinos...
           </div>
         </div>
       </div>
@@ -355,7 +356,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Vectores SVG limpios para cada signo
     const ZODIAC_SVGS = {
       aries: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9"/><path d="M12 9a5 5 0 0 0-5-5c-2.8 0-5 2.2-5 5 0 2.5 2 4.5 4.5 4.5"/><path d="M12 9a5 5 0 0 1 5-5c2.8 0 5 2.2 5 5 0 2.5-2 4.5-4.5 4.5"/></svg>`,
       taurus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="6"/><path d="M6 4a6 6 0 0 0 12 0"/></svg>`,
@@ -372,32 +372,31 @@
     };
 
     const ZODIAC_CONFIG = [
-      { key: 'aries',       apiKey: 'aries',       name: 'Aries',       dates: '21 MAR - 19 ABR' },
-      { key: 'taurus',      apiKey: 'Taurus',      name: 'Tauro',       dates: '20 ABR - 20 MAY' },
-      { key: 'gemini',      apiKey: 'Gemini',      name: 'Géminis',     dates: '21 MAY - 20 JUN' },
-      { key: 'cancer',      apiKey: 'Cancer',      name: 'Cáncer',      dates: '21 JUN - 22 JUL' },
-      { key: 'leo',         apiKey: 'leo',         name: 'Leo',         dates: '23 JUL - 22 AGO' },
-      { key: 'virgo',       apiKey: 'Virgo',       name: 'Virgo',       dates: '23 AGO - 22 SEP' },
-      { key: 'libra',       apiKey: 'Libra',       name: 'Libra',       dates: '23 SEP - 22 OCT' },
-      { key: 'scorpio',     apiKey: 'Scorpio',     name: 'Escorpio',    dates: '23 OCT - 21 NOV' },
-      { key: 'sagittarius', apiKey: 'Sagittarius', name: 'Sagitario',   dates: '22 NOV - 21 DIC' },
-      { key: 'capricorn',   apiKey: 'Capricorn',   name: 'Capricornio', dates: '22 DIC - 19 ENE' },
-      { key: 'aquarius',    apiKey: 'Aquarius',    name: 'Acuario',     dates: '20 ENE - 18 FEB' },
-      { key: 'pisces',      apiKey: 'Pisces',      name: 'Piscis',      dates: '19 FEB - 20 MAR' }
+      { key: 'aries', apiKey: 'aries', name: 'Aries', dates: '21 MAR - 19 ABR' },
+      { key: 'taurus', apiKey: 'Taurus', name: 'Tauro', dates: '20 ABR - 20 MAY' },
+      { key: 'gemini', apiKey: 'Gemini', name: 'Géminis', dates: '21 MAY - 20 JUN' },
+      { key: 'cancer', apiKey: 'Cancer', name: 'Cáncer', dates: '21 JUN - 22 JUL' },
+      { key: 'leo', apiKey: 'leo', name: 'Leo', dates: '23 JUL - 22 AGO' },
+      { key: 'virgo', apiKey: 'Virgo', name: 'Virgo', dates: '23 AGO - 22 SEP' },
+      { key: 'libra', apiKey: 'Libra', name: 'Libra', dates: '23 SEP - 22 OCT' },
+      { key: 'scorpio', apiKey: 'Scorpio', name: 'Escorpio', dates: '23 OCT - 21 NOV' },
+      { key: 'sagittarius', apiKey: 'Sagittarius', name: 'Sagitario', dates: '22 NOV - 21 DIC' },
+      { key: 'capricorn', apiKey: 'Capricorn', name: 'Capricornio', dates: '22 DIC - 19 ENE' },
+      { key: 'aquarius', apiKey: 'Aquarius', name: 'Acuario', dates: '20 ENE - 18 FEB' },
+      { key: 'pisces', apiKey: 'Pisces', name: 'Piscis', dates: '19 FEB - 20 MAR' }
     ];
 
     let chatMessages = [];
     let horoscopeList = [];
     let chatIndex = 0;
     let horoscopeIndex = 0;
-    let masterCycleStep = 0; // 0 = Chat, 1 = Horóscopo
+    let masterCycleStep = 0;
     let isMasterLoopRunning = false;
     let activeMarqueeFrame = null;
 
     const upperCard = document.getElementById('upperCard');
     const cardDynamicContent = document.getElementById('cardDynamicContent');
 
-    // Escuchador de Mensajes Firestore
     const q = query(
       collection(db, "mensajes"),
       where("estado", "==", "aprobado"),
@@ -423,7 +422,6 @@
       }
     });
 
-    // Carga Silenciosa de Horóscopos
     async function loadHoroscopeAPIs() {
       const fetched = [];
       for (const sign of ZODIAC_CONFIG) {
@@ -449,7 +447,6 @@
     loadHoroscopeAPIs();
     setInterval(loadHoroscopeAPIs, 2 * 60 * 60 * 1000);
 
-    // CICLO MAESTRO DE NAVEGACIÓN TV
     function startMasterBroadcastLoop() {
       if (activeMarqueeFrame) cancelAnimationFrame(activeMarqueeFrame);
       isMasterLoopRunning = true;
@@ -467,7 +464,6 @@
       }
     }
 
-    // RENDERIZADO: CHAT DE OYENTES
     function renderChatCard() {
       if (chatIndex >= chatMessages.length) chatIndex = 0;
       const msg = chatMessages[chatIndex];
@@ -501,7 +497,6 @@
       }, 22000);
     }
 
-    // RENDERIZADO: HORÓSCOPO DIARIO (TEXTO FIJO INICIAL + DESPLAZAMIENTO PERFECTO + SIN PANTALLA VACÍA)
     function renderHoroscopeCard() {
       if (horoscopeIndex >= horoscopeList.length) horoscopeIndex = 0;
       const item = horoscopeList[horoscopeIndex];
@@ -538,12 +533,11 @@
           const textWidth = textElem.offsetWidth;
           const overflowDistance = textWidth - wrapperWidth;
 
-          // Si el texto es largo, aplica el efecto de lectura completo con pausa inicial
           if (overflowDistance > 0) {
-            const speedPxPerSec = 85; // Velocidad suave TV
+            const speedPxPerSec = 85; 
             const scrollDurationMs = (overflowDistance / speedPxPerSec) * 1000;
-            const initialPauseMs = 3500; // Pausa inicial para comenzar a leer quieto
-            const finalPauseMs = 2500;   // Pausa final al llegar al último punto
+            const initialPauseMs = 3500; 
+            const finalPauseMs = 2500;    
 
             let startTime = null;
 
@@ -552,26 +546,22 @@
               const elapsed = timestamp - startTime;
 
               if (elapsed < initialPauseMs) {
-                // Fase 1: Mantiene el texto en el inicio
                 textElem.style.transform = 'translateX(0px)';
               } else if (elapsed < (initialPauseMs + scrollDurationMs)) {
-                // Fase 2: Desplaza suavemente hasta el final exacto del texto
                 const progress = (elapsed - initialPauseMs) / scrollDurationMs;
                 const currentX = progress * overflowDistance;
                 textElem.style.transform = `translateX(-${currentX}px)`;
               } else {
-                // Fase 3: Detiene en el final exacto
                 textElem.style.transform = `translateX(-${overflowDistance}px)`;
               }
 
               if (elapsed < (initialPauseMs + scrollDurationMs + finalPauseMs)) {
                 activeMarqueeFrame = requestAnimationFrame(animateStep);
               } else {
-                // Fin del texto: Oculta la placa inmediatamente sin dejar espacio en blanco
                 upperCard.classList.add('hidden-card');
                 setTimeout(() => {
                   horoscopeIndex = (horoscopeIndex + 1) % horoscopeList.length;
-                  masterCycleStep = 0; // Cambiar turno a Chat
+                  masterCycleStep = 0; 
                   setTimeout(startMasterBroadcastLoop, 1200);
                 }, 400);
               }
@@ -580,7 +570,6 @@
             activeMarqueeFrame = requestAnimationFrame(animateStep);
 
           } else {
-            // Si el texto es corto y cabe entero, mostrarlo fijo durante 15 segundos
             textElem.style.transform = 'translateX(0px)';
             setTimeout(() => {
               upperCard.classList.add('hidden-card');
@@ -596,85 +585,84 @@
     }
   </script>
 
-  <!-- SCRIPT NOTICIAS RSS INFERIOR (FILTRADO Y CONTINUO) -->
+  <!-- SCRIPT TICKER INFERIOR (MEZCLANDO DIARIOS DE LA API DE FORMA ALEATORIA) -->
   <script>
-    const rssFeeds = [
-      { name: "INFOBAE", url: "https://www.infobae.com/feeds/rss/" },
-      { name: "LA NACION", url: "https://www.lanacion.com.ar/arc/outboundfeeds/rss/?outputType=xml" },
-      { name: "CLARIN", url: "https://www.clarin.com/rss/lo-ultimo/" },
-      { name: "PAGINA 12", url: "https://www.pagina12.com.ar/rss/portada" }
-    ];
-
-    const FORBIDDEN_WORDS = [
-      "horoscopo", "horóscopo", "zodiaco", "zodíaco", "signo", "signos",
-      "quiniela", "quinielas", "lotería", "loteria", "kini 6", "quini 6",
-      "loto", "telekino", "enterate", "entérate", "conocé los resultados",
-      "conoce los resultados", "mira el resultado", "mirá el resultado",
-      "qué dice el tarot", "que dice el tarot", "sudoku", "crucigrama"
-    ];
-
-    function isUsefulNews(text) {
-      if (!text || text.trim().length < 15) return false;
-      const cleanLowerText = text.toLowerCase();
-      for (const word of FORBIDDEN_WORDS) {
-        if (cleanLowerText.includes(word)) return false;
-      }
-      return true;
-    }
-
-    let allNews = [];
     let rssAnimationId = null;
 
-    function cleanText(html) {
-      const tmp = document.createElement("DIV");
-      tmp.innerHTML = html;
-      return tmp.textContent || tmp.innerText || "";
-    }
+    async function fetchJotformNews() {
+      let newsList = [];
 
-    async function fetchAllNews() {
-      let collectedNews = [];
+      try {
+        const apiUrl = "https://api.jotform.com/website-widgets/templates/019f3bae37487000889dd04d159b98b17f3a/execute-action?action=refreshSocialFeed&widgetID=01a13e9789a87000805d60e413b14e37d5b0";
+        const res = await fetch(apiUrl);
+        const data = await res.json();
 
-      for (const feed of rssFeeds) {
-        try {
-          const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
-          const response = await fetch(apiUrl);
-          const data = await response.json();
+        // Verificamos que la API devuelva las fuentes de noticias correctamente
+        if (data && data.content && data.content.feedData && data.content.feedData.sources) {
+          data.content.feedData.sources.forEach(sourceObj => {
+            if (sourceObj.success && sourceObj.posts && sourceObj.posts.length > 0) {
+              
+              // Detectar etiqueta limpia para el banner según el diario
+              let sourceTag = "NOTICIAS";
+              const rawSource = (sourceObj.source || "").toLowerCase();
+              const rawLabel = (sourceObj.sourceLabel || "").toLowerCase();
 
-          if (data.status === 'ok' && data.items && data.items.length > 0) {
-            const items = [];
-            for (const item of data.items) {
-              const title = cleanText(item.title).trim();
-              const summary = cleanText(item.description || item.content || "").trim();
-
-              let fullNews = title;
-              if (summary.length > 15 && !summary.includes(title)) {
-                fullNews += ` — ${summary}`;
+              if (rawSource.includes("clarin") || rawLabel.includes("clarin")) {
+                sourceTag = "CLARÍN";
+              } else if (rawSource.includes("lanoticia") || rawLabel.includes("noticia")) {
+                sourceTag = "LA NOTICIA";
+              } else if (rawSource.includes("infobae") || rawLabel.includes("infobae")) {
+                sourceTag = "INFOBAE";
+              } else if (rawSource.includes("perfil") || rawLabel.includes("perfil")) {
+                sourceTag = "PERFIL";
+              } else if (rawSource.includes("ole") || rawLabel.includes("ole")) {
+                sourceTag = "OLÉ";
+              } else {
+                sourceTag = sourceObj.sourceLabel ? sourceObj.sourceLabel.toUpperCase() : "ARGENTINA";
               }
 
-              if (isUsefulNews(fullNews)) {
-                items.push({ text: fullNews, source: feed.name });
-              }
-              if (items.length >= 8) break;
+              // Tomamos hasta 5 posts de cada fuente disponible
+              sourceObj.posts.slice(0, 5).forEach(post => {
+                if (post.title) {
+                  newsList.push({
+                    text: post.title.trim(),
+                    source: sourceTag
+                  });
+                }
+              });
             }
-            collectedNews = collectedNews.concat(items);
-          }
-        } catch (e) {
-          console.error(`Error RSS ${feed.name}:`, e);
+          });
         }
+      } catch (e) {
+        console.warn("Fallo al conectar con la API de noticias, usando respaldo local.");
       }
 
-      if (collectedNews.length > 0) {
-        allNews = collectedNews.sort(() => Math.random() - 0.5);
-        renderAndStartTicker();
+      // Sistema de respaldo institucional de DJ TV si ocurriera algún inconveniente
+      if (newsList.length === 0) {
+        newsList = [
+          { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas.", source: "DJ TV" },
+          { text: "Seguinos en nuestras redes sociales oficiales y participá de la programación diaria.", source: "REDES" },
+          { text: "Disfrutá de la mejor selección de música retro, pop, reggaeton y rock nacional.", source: "MÚSICA" },
+          { text: "Envianos tus saludos y dedicatorias a través del chat interactivo en pantalla.", source: "CHAT" },
+          { text: "Transmitiendo en vivo desde Posadas, Misiones, con calidad de audio y video HD.", source: "ON AIR" }
+        ];
+      } else {
+        // Mezclamos todas las noticias de forma totalmente aleatoria (shuffle)
+        newsList.sort(() => Math.random() - 0.5);
       }
+
+      startTickerAnimation(newsList);
     }
 
-    function renderAndStartTicker() {
+    function startTickerAnimation(newsList) {
       const container = document.getElementById('ticker-text');
+      if (!container) return;
       if (rssAnimationId) cancelAnimationFrame(rssAnimationId);
 
       let htmlContent = '';
-      allNews.forEach(item => {
+      const newsToRender = [...newsList, ...newsList]; 
+      
+      newsToRender.forEach(item => {
         htmlContent += `
           <div class="news-item">
             <span class="news-source">${item.source}</span> ${item.text}
@@ -683,16 +671,17 @@
         `;
       });
 
-      container.innerHTML = htmlContent + htmlContent;
-
+      container.innerHTML = htmlContent;
+      container.style.transform = 'translateX(0px)';
+      
       let posX = 0;
-      const speed = 1.4;
-
+      const speed = 1.2; 
+      
       function step() {
         posX -= speed;
-        const halfWidth = container.scrollWidth / 2;
+        const contentWidth = container.scrollWidth / 2;
 
-        if (Math.abs(posX) >= halfWidth) {
+        if (contentWidth > 0 && Math.abs(posX) >= contentWidth) {
           posX = 0;
         }
 
@@ -700,11 +689,14 @@
         rssAnimationId = requestAnimationFrame(step);
       }
 
-      step();
+      setTimeout(step, 100);
     }
 
-    fetchAllNews();
-    setInterval(fetchAllNews, 600000);
+    // Iniciar carga de noticias mezcladas
+    fetchJotformNews();
+    
+    // Actualizar noticias cada 30 minutos
+    setInterval(fetchJotformNews, 1800000);
   </script>
 </body>
 </html>
