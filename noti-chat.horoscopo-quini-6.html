@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -33,6 +33,15 @@
       height: 1080px;
       z-index: 9999;
       pointer-events: none;
+    }
+
+    /* WIDGET OCULTO PARA DESBLOQUEO DE API JOTFORM */
+    .hidden-widget-trigger {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
     }
 
     /* ---------------------------------------------------
@@ -224,18 +233,18 @@
 
     .horoscope-counter-badge {
       background: #090d16;
-      border: 1px solid #f59e0b;
+      border: 0px solid #f59e0b;
       color: #f59e0b;
       font-family: 'Orbitron', sans-serif;
-      font-size: 16px;
-      font-weight: 900;
+      font-size: 0px;
+      font-weight: 0;
       padding: 4px 12px;
-      border-radius: 6px;
+      border-radius: 0px;
       margin-left: auto;
       flex-shrink: 0;
     }
 
-    /* ESTILOS DE SORTEOS (QUINI 6 Y BRINCO) - PERFECCIONADOS */
+    /* ESTILOS DE SORTEOS (QUINI 6 Y BRINCO) - MEJORADOS */
     .lottery-mode-border {
       border-top-color: #f97316;
       border-left: 8px solid #f97316;
@@ -269,7 +278,7 @@
     }
 
     .lottery-date {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: #94a3b8;
       text-transform: uppercase;
@@ -283,12 +292,17 @@
     }
 
     .lottery-mod-name {
-      font-size: 32px;
+      font-size: 34px;
       font-weight: 900;
       color: #38bdf8;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 14px rgba(56, 189, 248, 0.4), 0 2px 4px rgba(0,0,0,0.8);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 24px;
+      border-radius: 8px;
+      display: inline-block;
       white-space: nowrap;
     }
 
@@ -306,8 +320,8 @@
     }
 
     .lottery-ball {
-      width: 54px;
-      height: 54px;
+      width: 64px;
+      height: 64px;
       background: radial-gradient(circle at 30% 30%, #ffffff, #cbd5e1);
       color: #0f172a;
       font-weight: 900;
@@ -320,15 +334,15 @@
     }
 
     .lottery-counter-badge {
-      background: #090d16;
-      border: 1px solid #f97316;
-      color: #f97316;
+      background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+      color: #ffffff;
       font-family: 'Orbitron', sans-serif;
-      font-size: 15px;
+      font-size: 0px;
       font-weight: 900;
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 6px 14px;
+      border-radius: 0px;
       white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
     }
 
     /* ---------------------------------------------------
@@ -414,6 +428,12 @@
 </head>
 <body>
 
+  <!-- WIDGET OCULTO PARA DESBLOQUEAR Y MANTENER VIVA LA API DE JOTFORM EN SEGUNDO PLANO -->
+  <div class="hidden-widget-trigger">
+    <div id="JFWebsiteWidget-01a120be41b070008003137f1833c7dc8d78"></div>
+    <script src="https://www.jotform.com/website-widgets/embed/01a120be41b070008003137f1833c7dc8d78" defer></script>
+  </div>
+
   <div class="tv-master-lower-third">
     
     <!-- TARJETA SUPERIOR DINÁMICA (CHAT / HORÓSCOPO / SORTEOS) -->
@@ -425,11 +445,7 @@
     <div class="news-row">
       <div class="news-badge">ÚLTIMO MOMENTO</div>
       <div class="ticker-wrapper">
-        <div id="ticker-text" class="ticker-content">
-          <div class="news-item">
-            <span class="news-source">DJ TV</span>noticias de portales argentinos...
-          </div>
-        </div>
+        <div id="ticker-text" class="ticker-content"></div>
       </div>
     </div>
 
@@ -468,18 +484,18 @@
     };
 
     const ZODIAC_CONFIG = [
-      { key: 'aries', apiKey: 'aries', name: 'Aries', dates: '21 MAR - 19 ABR' },
-      { key: 'taurus', apiKey: 'Taurus', name: 'Tauro', dates: '20 ABR - 20 MAY' },
-      { key: 'gemini', apiKey: 'Gemini', name: 'Géminis', dates: '21 MAY - 20 JUN' },
-      { key: 'cancer', apiKey: 'Cancer', name: 'Cáncer', dates: '21 JUN - 22 JUL' },
-      { key: 'leo', apiKey: 'leo', name: 'Leo', dates: '23 JUL - 22 AGO' },
-      { key: 'virgo', apiKey: 'Virgo', name: 'Virgo', dates: '23 AGO - 22 SEP' },
-      { key: 'libra', apiKey: 'Libra', name: 'Libra', dates: '23 SEP - 22 OCT' },
-      { key: 'scorpio', apiKey: 'Scorpio', name: 'Escorpio', dates: '23 OCT - 21 NOV' },
-      { key: 'sagittarius', apiKey: 'Sagittarius', name: 'Sagitario', dates: '22 NOV - 21 DIC' },
-      { key: 'capricorn', apiKey: 'Capricorn', name: 'Capricornio', dates: '22 DIC - 19 ENE' },
-      { key: 'aquarius', apiKey: 'Aquarius', name: 'Acuario', dates: '20 ENE - 18 FEB' },
-      { key: 'pisces', apiKey: 'Pisces', name: 'Piscis', dates: '19 FEB - 20 MAR' }
+      { key: 'aries', apiKey: 'aries', name: 'Aries', dates: '21 MAR - 19 ABR', defaultText: 'Momentos de gran energía creativa y proyectos que comienzan a dar sus frutos. Mantené el enfoque.' },
+      { key: 'taurus', apiKey: 'Taurus', name: 'Tauro', dates: '20 ABR - 20 MAY', defaultText: 'Estabilidad y buenas oportunidades financieras. Tiempo ideal para afianzar proyectos personales.' },
+      { key: 'gemini', apiKey: 'Gemini', name: 'Géminis', dates: '21 MAY - 20 JUN', defaultText: 'La comunicación y las relaciones sociales están a tu favor. Buena jornada para entablar nuevos contactos.' },
+      { key: 'cancer', apiKey: 'Cancer', name: 'Cáncer', dates: '21 JUN - 22 JUL', defaultText: 'Escuchá tu intuición para tomar decisiones importantes en lo personal. Gran armonía familiar.' },
+      { key: 'leo', apiKey: 'leo', name: 'Leo', dates: '23 JUL - 22 AGO', defaultText: 'Tu liderazgo natural destaca hoy con fuerza. Momento de brillar y cosechar éxitos en el trabajo.' },
+      { key: 'virgo', apiKey: 'Virgo', name: 'Virgo', dates: '23 AGO - 22 SEP', defaultText: 'Organización y disciplina clave para resolver temas pendientes. La constancia dará excelentes resultados.' },
+      { key: 'libra', apiKey: 'Libra', name: 'Libra', dates: '23 SEP - 22 OCT', defaultText: 'Búsqueda de equilibrio e inspiración. La música y el arte renovarán tus energías plenamente.' },
+      { key: 'scorpio', apiKey: 'Scorpio', name: 'Escorpio', dates: '23 OCT - 21 NOV', defaultText: 'Determinación y pasión en todo lo que emprendas. Grandes cambios positivos en camino.' },
+      { key: 'sagittarius', apiKey: 'Sagittarius', name: 'Sagitario', dates: '22 NOV - 21 DIC', defaultText: 'Aventuras y nuevas experiencias en el horizonte. Mantené la mente abierta a nuevos conocimientos.' },
+      { key: 'capricorn', apiKey: 'Capricorn', name: 'Capricornio', dates: '22 DIC - 19 ENE', defaultText: 'Perseverancia y enfoque profesional garantizados. Paso a paso avanzás seguro hacia tus metas.' },
+      { key: 'aquarius', apiKey: 'Aquarius', name: 'Acuario', dates: '20 ENE - 18 FEB', defaultText: 'Ideas innovadoras y originales que marcan la diferencia. Confía en tu talento sin dudar.' },
+      { key: 'pisces', apiKey: 'Pisces', name: 'Piscis', dates: '19 FEB - 20 MAR', defaultText: 'Sensibilidad y empatía conectando positivamente con quienes te rodean. Etapa de renovación espiritual.' }
     ];
 
     let chatMessages = [];
@@ -497,7 +513,7 @@
     const upperCard = document.getElementById('upperCard');
     const cardDynamicContent = document.getElementById('cardDynamicContent');
 
-    // Cargar Sorteos desde tus Cloudflare Workers con fecha incluida
+    // Cargar Sorteos desde Cloudflare Workers con fecha
     async function loadLotteryData() {
       try {
         const [resQuini, resBrinco] = await Promise.all([
@@ -514,7 +530,6 @@
           { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior, info: `SORTEO N° ${resBrinco.sorteoNumero}`, fecha: resBrinco.fecha || "Domingo 18 de Octubre" }
         ];
       } catch (e) {
-        console.warn("Error cargando sorteos, usando respaldo local con fecha.");
         lotteryList = [
           { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: ["07", "09", "11", "17", "25", "31"], info: "SORTEO N° 3418", fecha: "Domingo 18 de Octubre" },
           { game: "BRINCO", name: "Extracciones", numbers: ["07", "22", "26", "33", "34", "39"], info: "SORTEO N° 1376", fecha: "Domingo 18 de Octubre" }
@@ -553,19 +568,26 @@
     async function loadHoroscopeAPIs() {
       const fetched = [];
       for (const sign of ZODIAC_CONFIG) {
+        let textLoaded = null;
         try {
           const url = `https://api.jotform.com/website-widgets/templates/019f365ed74870008e184f2271ab1b90f656/execute-action?action=getHoroscopeData&period=daily&sign=${sign.apiKey}&language=es&widgetID=01a120be41b070008003137f1833c7dc8d78`;
           const res = await fetch(url);
           if (res.ok) {
             const json = await res.json();
             if (json && json.content && json.content.horoscope) {
-              fetched.push({ ...sign, text: json.content.horoscope.trim() });
+              textLoaded = json.content.horoscope.trim();
             }
           }
         } catch (e) {
-          console.warn(`Horoscope API skip: ${sign.name}`);
+          // Fallo silencioso
         }
+
+        fetched.push({
+          ...sign,
+          text: textLoaded || sign.defaultText
+        });
       }
+      
       horoscopeList = fetched;
       if (!isMasterLoopRunning) {
         startMasterBroadcastLoop();
@@ -573,7 +595,7 @@
     }
 
     loadHoroscopeAPIs();
-    setInterval(loadHoroscopeAPIs, 2 * 60 * 60 * 1000);
+    setInterval(loadHoroscopeAPIs, 30 * 60 * 1000);
 
     function startMasterBroadcastLoop() {
       if (activeMarqueeFrame) cancelAnimationFrame(activeMarqueeFrame);
@@ -591,7 +613,7 @@
         } else {
           upperCard.classList.add('hidden-card');
           isMasterLoopRunning = false;
-          setTimeout(startMasterBroadcastLoop, 5000);
+          setTimeout(startMasterBroadcastLoop, 3000);
         }
       } else if (masterSection === 1) {
         if (horoscopeList.length > 0) {
@@ -762,7 +784,7 @@
           <!-- Bloque Izquierdo: Juego y Fecha -->
           <div class="lottery-info-box">
             <div class="lottery-badge">${lot.game} • ${lot.info}</div>
-            <div class="lottery-date">📅 ${lot.fecha}</div>
+            <div class="lottery-date">• ${lot.fecha}</div>
           </div>
 
           <!-- Bloque Centro: Nombre de la modalidad bien destacado -->
@@ -800,7 +822,7 @@
     }
   </script>
 
-  <!-- SCRIPT TICKER INFERIOR (PERMANENTE) -->
+  <!-- SCRIPT TICKER INFERIOR (PERMANENTE / SIN MENSAJES DE ERROR) -->
   <script>
     let rssAnimationId = null;
 
@@ -846,16 +868,16 @@
           });
         }
       } catch (e) {
-        console.warn("Fallo al conectar con la API de noticias, usando respaldo local.");
+        // En televisión no se muestran errores
       }
 
       if (newsList.length === 0) {
         newsList = [
-          { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas.", source: "DJ TV" },
+          { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas en calidad HD.", source: "DJ TV" },
           { text: "Seguinos en nuestras redes sociales oficiales y participá de la programación diaria.", source: "REDES" },
-          { text: "Disfrutá de la mejor selección de música retro, pop, reggaeton y rock nacional.", source: "MÚSICA" },
+          { text: "Disfrutá de la mejor selección de música retro, pop, reggaeton, electro y rock nacional.", source: "MÚSICA" },
           { text: "Envianos tus saludos y dedicatorias a través del chat interactivo en pantalla.", source: "CHAT" },
-          { text: "Transmitiendo en vivo desde Posadas, Misiones, con calidad de audio y video HD.", source: "ON AIR" }
+          { text: "Transmitiendo en vivo desde Posadas, Misiones, para todo el país y el mundo.", source: "ON AIR" }
         ];
       } else {
         newsList.sort(() => Math.random() - 0.5);
@@ -906,4 +928,5 @@
     setInterval(fetchJotformNews, 1800000);
   </script>
 </body>
+</html>
 </html>
