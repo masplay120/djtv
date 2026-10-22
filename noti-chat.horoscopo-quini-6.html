@@ -518,7 +518,7 @@
     const upperCard = document.getElementById('upperCard');
     const cardDynamicContent = document.getElementById('cardDynamicContent');
 
-    // Cargar Sorteos con TIMESTAMP ANTI-CACHÉ
+    // Cargar Sorteos sin guardar caché (Silencioso en segundo plano)
     async function loadLotteryData() {
       try {
         const cacheBuster = `?_t=${Date.now()}`;
@@ -536,15 +536,17 @@
           { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior, info: `SORTEO N° ${resBrinco.sorteoNumero}`, fecha: resBrinco.fecha || "Domingo 18 de Octubre" }
         ];
       } catch (e) {
-        lotteryList = [
-          { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: ["07", "09", "11", "17", "25", "31"], info: "SORTEO N° 3418", fecha: "Domingo 18 de Octubre" },
-          { game: "BRINCO", name: "Extracciones", numbers: ["07", "22", "26", "33", "34", "39"], info: "SORTEO N° 1376", fecha: "Domingo 18 de Octubre" }
-        ];
+        if (lotteryList.length === 0) {
+          lotteryList = [
+            { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: ["07", "09", "11", "17", "25", "31"], info: "SORTEO N° 3418", fecha: "Domingo 18 de Octubre" },
+            { game: "BRINCO", name: "Extracciones", numbers: ["07", "22", "26", "33", "34", "39"], info: "SORTEO N° 1376", fecha: "Domingo 18 de Octubre" }
+          ];
+        }
       }
     }
 
     loadLotteryData();
-    setInterval(loadLotteryData, 5 * 60 * 1000); // Consulta cada 5 minutos
+    setInterval(loadLotteryData, 3 * 60 * 1000); // Consulta cada 3 minutos
 
     const q = query(
       collection(db, "mensajes"),
@@ -602,7 +604,7 @@
     }
 
     loadHoroscopeAPIs();
-    setInterval(loadHoroscopeAPIs, 15 * 60 * 1000); // Consulta cada 15 minutos
+    setInterval(loadHoroscopeAPIs, 10 * 60 * 1000); // Consulta cada 10 minutos
 
     function startMasterBroadcastLoop() {
       if (activeMarqueeFrame) cancelAnimationFrame(activeMarqueeFrame);
@@ -829,7 +831,7 @@
     }
   </script>
 
-  <!-- SCRIPT TICKER INFERIOR (PERMANENTE / SIN MENSAJES DE ERROR) -->
+  <!-- SCRIPT TICKER INFERIOR (PERMANENTE EN SEGUNDO PLANO / SIN INTERRUPCIÓN) -->
   <script>
     let rssAnimationId = null;
 
@@ -876,7 +878,7 @@
           });
         }
       } catch (e) {
-        // En televisión no se muestran errores
+        // En transmisión no se muestran errores
       }
 
       if (newsList.length === 0) {
@@ -933,14 +935,7 @@
     }
 
     fetchJotformNews();
-    setInterval(fetchJotformNews, 600000); // Actualización de noticias cada 10 minutos
-  </script>
-
-  <!-- AUTO-REFRESCO SILENCIOSO DEL DOCUMENTO EN OBS CADA 1 HORA -->
-  <script>
-    setTimeout(() => {
-      window.location.reload(true);
-    }, 3600000);
+    setInterval(fetchJotformNews, 15 * 60 * 1000); // Refresca las noticias cada 15 min en silencio
   </script>
 </body>
 </html>
