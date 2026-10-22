@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- ENCABEZADOS ANTI-CACHÉ PARA NAVEGADOR DE OBS -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -29,7 +28,6 @@
       user-select: none;
     }
 
-    /* CONTENEDOR MAESTRO LIENZO 1920X1080 */
     .tv-master-lower-third {
       position: absolute;
       bottom: 0;
@@ -40,7 +38,6 @@
       pointer-events: none;
     }
 
-    /* WIDGET OCULTO PARA DESBLOQUEO DE API JOTFORM */
     .hidden-widget-trigger {
       display: none !important;
       visibility: hidden !important;
@@ -50,21 +47,21 @@
     }
 
     /* ---------------------------------------------------
-       1. PISO SUPERIOR: PLACA DINÁMICA (CHAT / HORÓSCOPO / SORTEOS)
+       1. PISO SUPERIOR: PLACA DINÁMICA (Mantiene altura exacta 140px)
     --------------------------------------------------- */
     .upper-card {
       position: absolute;
       bottom: 60px; 
       left: 0px;
       width: 1920px;
+      height: 140px; /* Altura estricta fijada para mantener uniformidad */
       background: rgba(12, 10, 24, 0.98);
       border-top: 3px solid #ec4899;
       border-bottom: 2px solid rgba(236, 72, 153, 0.4);
-      padding: 14px 24px;
+      padding: 10px 28px;
       backdrop-filter: blur(16px);
       box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.85);
       transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      min-height: 140px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -76,7 +73,7 @@
       pointer-events: none;
     }
 
-    /* ESTILOS DE CHAT / OYENTES AL AIRE */
+    /* ESTILOS CHAT */
     .chat-mode-border {
       border-top-color: #ec4899;
       border-left: 8px solid #ec4899;
@@ -86,7 +83,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       line-height: 1.2;
     }
 
@@ -136,21 +133,20 @@
 
     .chat-body {
       color: #ffffff;
-      font-size: 34px;
+      font-size: 32px;
       font-weight: 900;
-      line-height: 1.35;
+      line-height: 1.3;
       font-style: italic;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
       white-space: normal !important;
       word-wrap: break-word !important;
     }
 
-    /* ESTILOS DE HORÓSCOPO BROADCAST */
+    /* ESTILOS HORÓSCOPO */
     .horoscope-mode-border {
       border-top-color: #f59e0b;
       border-left: 8px solid #f59e0b;
       background: linear-gradient(180deg, rgba(8, 15, 30, 0.98) 0%, rgba(3, 7, 18, 0.99) 100%);
-      padding: 12px 24px;
     }
 
     .horoscope-layout {
@@ -236,25 +232,18 @@
       will-change: transform;
     }
 
-    .horoscope-counter-badge {
-      background: #090d16;
-      border: 0px solid #f59e0b;
-      color: #f59e0b;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0px;
-      font-weight: 0;
-      padding: 4px 12px;
-      border-radius: 0px;
-      margin-left: auto;
-      flex-shrink: 0;
-    }
-
-    /* ESTILOS DE SORTEOS (QUINI 6 Y BRINCO) */
+    /* ESTILOS MEJORADOS PARA QUINI 6 Y BRINCO */
     .lottery-mode-border {
       border-top-color: #f97316;
       border-left: 8px solid #f97316;
       background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(8, 12, 22, 0.99) 100%);
-      padding: 12px 30px;
+    }
+
+    /* ESTILOS PROFESIONALES PARA QUINIELA MISIONERA */
+    .quiniela-mode-border {
+      border-top-color: #10b981;
+      border-left: 8px solid #10b981;
+      background: linear-gradient(180deg, rgba(6, 30, 20, 0.98) 0%, rgba(4, 15, 10, 0.99) 100%);
     }
 
     .lottery-layout {
@@ -262,38 +251,50 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
+      height: 100%;
       gap: 20px;
     }
 
+    /* BLOQUE IZQUIERDO: NOMBRE Y FECHA AMPLIADA */
     .lottery-info-box {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      min-width: 320px;
+      justify-content: center;
+      gap: 2px;
+      min-width: 420px;
       flex-shrink: 0;
     }
 
     .lottery-badge {
       font-family: 'Orbitron', sans-serif;
-      font-size: 20px;
+      font-size: 24px;
       font-weight: 900;
       color: #f97316;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
+    .quiniela-badge {
+      color: #10b981 !important;
+    }
+
+    /* FECHA REFORZADA EN TAMAÑO Y LEGIBILIDAD EN PANTALLA */
     .lottery-date {
-      font-size: 15px;
-      font-weight: 700;
-      color: #94a3b8;
+      font-size: 22px !important;
+      font-weight: 800 !important;
+      color: #ffffff !important;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      margin-top: 2px;
     }
 
     .lottery-mod-center {
       flex: 1;
       text-align: center;
-      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .lottery-mod-name {
@@ -303,18 +304,17 @@
       text-transform: uppercase;
       letter-spacing: 1.5px;
       text-shadow: 0 0 14px rgba(56, 189, 248, 0.4), 0 2px 4px rgba(0,0,0,0.8);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 6px 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 28px;
       border-radius: 8px;
-      display: inline-block;
       white-space: nowrap;
     }
 
     .lottery-right-group {
       display: flex;
       align-items: center;
-      gap: 20px;
+      justify-content: flex-end;
       flex-shrink: 0;
     }
 
@@ -325,12 +325,12 @@
     }
 
     .lottery-ball {
-      width: 64px;
-      height: 64px;
+      width: 68px;
+      height: 68px;
       background: radial-gradient(circle at 30% 30%, #ffffff, #cbd5e1);
       color: #0f172a;
       font-weight: 900;
-      font-size: 24px;
+      font-size: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -338,20 +338,44 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset -2px -2px 6px rgba(0, 0, 0, 0.3);
     }
 
-    .lottery-counter-badge {
-      background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
-      color: #ffffff;
+    /* TARJETA PROFESIONAL DE CABEZA PARA QUINIELA MISIONERA */
+    .quiniela-head-card {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(4, 120, 87, 0.35) 100%);
+      border: 2px solid #10b981;
+      border-radius: 10px;
+      padding: 6px 16px;
+      gap: 16px;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);
+    }
+
+    .quiniela-head-label {
       font-family: 'Orbitron', sans-serif;
-      font-size: 0px;
+      font-size: 20px;
       font-weight: 900;
-      padding: 6px 14px;
-      border-radius: 0px;
-      white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+      color: #a7f3d0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.1;
+      text-align: right;
+    }
+
+    .quiniela-head-number {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 46px;
+      font-weight: 900;
+      color: #ffffff;
+      background: radial-gradient(circle at 30% 30%, #10b981, #047857);
+      padding: 4px 22px;
+      border-radius: 8px;
+      letter-spacing: 4px;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
     /* ---------------------------------------------------
-       2. PISO INFERIOR: TICKER DE NOTICIAS RSS (PERMANENTE)
+       2. PISO INFERIOR: TICKER DE NOTICIAS RSS (PERMANENTE 60PX)
     --------------------------------------------------- */
     .news-row {
       position: absolute;
@@ -441,12 +465,12 @@
 
   <div class="tv-master-lower-third">
     
-    <!-- TARJETA SUPERIOR DINÁMICA (CHAT / HORÓSCOPO / SORTEOS) -->
+    <!-- TARJETA SUPERIOR DINÁMICA -->
     <div id="upperCard" class="upper-card hidden-card chat-mode-border">
       <div id="cardDynamicContent"></div>
     </div>
 
-    <!-- BANNER DE NOTICIAS INFERIOR (PERMANENTE 60PX) -->
+    <!-- BANNER DE NOTICIAS INFERIOR -->
     <div class="news-row">
       <div class="news-badge">ÚLTIMO MOMENTO</div>
       <div class="ticker-wrapper">
@@ -504,13 +528,18 @@
     ];
 
     let chatMessages = [];
+    let quiniList = [];
+    let brincoList = [];
+    let quinielaList = [];
     let horoscopeList = [];
-    let lotteryList = [];
+
     let chatIndex = 0;
+    let quiniIndex = 0;
+    let brincoIndex = 0;
+    let quinielaIndex = 0;
     let horoscopeIndex = 0;
-    let lotteryIndex = 0;
     
-    // Ciclo máster de secciones: 0 = Chat, 1 = Horóscopo, 2 = Sorteos
+    // ORDEN: 0 = Chat, 1 = Quini 6, 2 = Brinco, 3 = Quiniela Misionera, 4 = Horóscopo
     let masterSection = 0; 
     let isMasterLoopRunning = false;
     let activeMarqueeFrame = null;
@@ -518,35 +547,48 @@
     const upperCard = document.getElementById('upperCard');
     const cardDynamicContent = document.getElementById('cardDynamicContent');
 
-    // Cargar Sorteos sin guardar caché (Silencioso en segundo plano)
     async function loadLotteryData() {
       try {
         const cacheBuster = `?_t=${Date.now()}`;
-        const [resQuini, resBrinco] = await Promise.all([
+        const [resQuini, resBrinco, resQuiniela] = await Promise.all([
           fetch(`https://quini-6.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()),
-          fetch(`https://brinco.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json())
+          fetch(`https://brinco.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()),
+          fetch(`https://quinielamisionera.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json())
         ]);
 
-        lotteryList = [
-          { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: resQuini.tradicionalPrimerSorteo, info: `SORTEO N° ${resQuini.sorteoNumero}`, fecha: resQuini.fecha || "Domingo 18 de Octubre" },
-          { game: "QUINI 6", name: "La Segunda del Quini", numbers: resQuini.laSegunda, info: `SORTEO N° ${resQuini.sorteoNumero}`, fecha: resQuini.fecha || "Domingo 18 de Octubre" },
-          { game: "QUINI 6", name: "Revancha", numbers: resQuini.revancha, info: `SORTEO N° ${resQuini.sorteoNumero}`, fecha: resQuini.fecha || "Domingo 18 de Octubre" },
-          { game: "QUINI 6", name: "Siempre Sale", numbers: resQuini.siempreSale, info: `SORTEO N° ${resQuini.sorteoNumero}`, fecha: resQuini.fecha || "Domingo 18 de Octubre" },
-          { game: "BRINCO", name: "Extracciones", numbers: resBrinco.extracciones, info: `SORTEO N° ${resBrinco.sorteoNumero}`, fecha: resBrinco.fecha || "Domingo 18 de Octubre" },
-          { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior, info: `SORTEO N° ${resBrinco.sorteoNumero}`, fecha: resBrinco.fecha || "Domingo 18 de Octubre" }
+        // 1. Quini 6
+        quiniList = [
+          { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: resQuini.tradicionalPrimerSorteo || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+          { game: "QUINI 6", name: "La Segunda del Quini", numbers: resQuini.laSegunda || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+          { game: "QUINI 6", name: "Revancha", numbers: resQuini.revancha || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+          { game: "QUINI 6", name: "Siempre Sale", numbers: resQuini.siempreSale || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" }
         ];
+
+        // 2. Brinco
+        brincoList = [
+          { game: "BRINCO", name: "Extracciones", numbers: resBrinco.extracciones || ["--","--","--","--","--","--"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" },
+          { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior || ["--","--","--","--","--","--"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" }
+        ];
+
+        // 3. Quiniela Misionera
+        const c = resQuiniela.cabezas || {};
+        quinielaList = [
+          { game: "QUINIELA MISIONERA", name: "Previa", head: c.previa || "----", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Primera", head: c.primera || "----", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Matutina", head: c.matutina || "----", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Matutina Plus", head: c.matPlus || "----", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Vespertina", head: c.vespertina || "----", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Nocturna", head: c.nocturna || "----", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Nocturna Plus", head: c.noctPlus || "----", fecha: resQuiniela.fecha || "" }
+        ];
+
       } catch (e) {
-        if (lotteryList.length === 0) {
-          lotteryList = [
-            { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: ["07", "09", "11", "17", "25", "31"], info: "SORTEO N° 3418", fecha: "Domingo 18 de Octubre" },
-            { game: "BRINCO", name: "Extracciones", numbers: ["07", "22", "26", "33", "34", "39"], info: "SORTEO N° 1376", fecha: "Domingo 18 de Octubre" }
-          ];
-        }
+        // Fallback silencioso
       }
     }
 
     loadLotteryData();
-    setInterval(loadLotteryData, 3 * 60 * 1000); // Consulta cada 3 minutos
+    setInterval(loadLotteryData, 3 * 60 * 1000);
 
     const q = query(
       collection(db, "mensajes"),
@@ -587,14 +629,9 @@
               textLoaded = json.content.horoscope.trim();
             }
           }
-        } catch (e) {
-          // Fallo silencioso
-        }
+        } catch (e) {}
 
-        fetched.push({
-          ...sign,
-          text: textLoaded || sign.defaultText
-        });
+        fetched.push({ ...sign, text: textLoaded || sign.defaultText });
       }
       
       horoscopeList = fetched;
@@ -604,7 +641,7 @@
     }
 
     loadHoroscopeAPIs();
-    setInterval(loadHoroscopeAPIs, 10 * 60 * 1000); // Consulta cada 10 minutos
+    setInterval(loadHoroscopeAPIs, 10 * 60 * 1000);
 
     function startMasterBroadcastLoop() {
       if (activeMarqueeFrame) cancelAnimationFrame(activeMarqueeFrame);
@@ -613,30 +650,34 @@
       if (masterSection === 0) {
         if (chatMessages.length > 0) {
           renderChatCard();
-        } else if (horoscopeList.length > 0) {
+        } else {
           masterSection = 1;
-          renderHoroscopeCard();
-        } else if (lotteryList.length > 0) {
-          masterSection = 2;
-          renderLotteryCard();
-        } else {
-          upperCard.classList.add('hidden-card');
-          isMasterLoopRunning = false;
-          setTimeout(startMasterBroadcastLoop, 3000);
-        }
-      } else if (masterSection === 1) {
-        if (horoscopeList.length > 0) {
-          renderHoroscopeCard();
-        } else if (lotteryList.length > 0) {
-          masterSection = 2;
-          renderLotteryCard();
-        } else {
-          masterSection = 0;
           startMasterBroadcastLoop();
         }
-      } else {
-        if (lotteryList.length > 0) {
-          renderLotteryCard();
+      } else if (masterSection === 1) {
+        if (quiniList.length > 0) {
+          renderQuiniCard();
+        } else {
+          masterSection = 2;
+          startMasterBroadcastLoop();
+        }
+      } else if (masterSection === 2) {
+        if (brincoList.length > 0) {
+          renderBrincoCard();
+        } else {
+          masterSection = 3;
+          startMasterBroadcastLoop();
+        }
+      } else if (masterSection === 3) {
+        if (quinielaList.length > 0) {
+          renderQuinielaCard();
+        } else {
+          masterSection = 4;
+          startMasterBroadcastLoop();
+        }
+      } else if (masterSection === 4) {
+        if (horoscopeList.length > 0) {
+          renderHoroscopeCard();
         } else {
           masterSection = 0;
           startMasterBroadcastLoop();
@@ -644,15 +685,13 @@
       }
     }
 
+    // 0. CHAT / SALUDOS
     function renderChatCard() {
       if (chatIndex >= chatMessages.length) chatIndex = 0;
       const msg = chatMessages[chatIndex];
 
       upperCard.className = 'upper-card hidden-card chat-mode-border';
-
-      const lugarHtml = (msg.lugar && msg.lugar.trim() !== '')
-        ? `<span class="chat-location">📍 ${msg.lugar.trim()}</span>`
-        : '';
+      const lugarHtml = (msg.lugar && msg.lugar.trim() !== '') ? `<span class="chat-location">📍 ${msg.lugar.trim()}</span>` : '';
 
       cardDynamicContent.innerHTML = `
         <div class="chat-header">
@@ -663,28 +702,145 @@
         <div class="chat-body">"${msg.msj || ''}"</div>
       `;
 
-      setTimeout(() => {
-        upperCard.classList.remove('hidden-card');
-      }, 100);
+      setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
 
       setTimeout(() => {
         upperCard.classList.add('hidden-card');
         setTimeout(() => {
-          chatIndex = (chatIndex + 1) % chatMessages.length;
-          masterSection = 1; 
+          chatIndex++;
+          if (chatIndex >= chatMessages.length) {
+            chatIndex = 0;
+            masterSection = 1;
+          }
           setTimeout(startMasterBroadcastLoop, 1200);
         }, 400);
-      }, 20000);
+      }, 18000);
     }
 
+    // 1. QUINI 6
+    function renderQuiniCard() {
+      if (quiniIndex >= quiniList.length) quiniIndex = 0;
+      const lot = quiniList[quiniIndex];
+
+      upperCard.className = 'upper-card hidden-card lottery-mode-border';
+      let ballsHtml = '';
+      lot.numbers.forEach(num => { ballsHtml += `<div class="lottery-ball">${num}</div>`; });
+
+      cardDynamicContent.innerHTML = `
+        <div class="lottery-layout">
+          <div class="lottery-info-box">
+            <div class="lottery-badge">${lot.game} • ${lot.info}</div>
+            <div class="lottery-date">• FECHA: ${lot.fecha}</div>
+          </div>
+          <div class="lottery-mod-center">
+            <div class="lottery-mod-name">${lot.name}</div>
+          </div>
+          <div class="lottery-right-group">
+            <div class="lottery-balls-wrapper">${ballsHtml}</div>
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
+
+      setTimeout(() => {
+        upperCard.classList.add('hidden-card');
+        setTimeout(() => {
+          quiniIndex++;
+          if (quiniIndex >= quiniList.length) {
+            quiniIndex = 0;
+            masterSection = 2;
+          }
+          setTimeout(startMasterBroadcastLoop, 1200);
+        }, 400);
+      }, 15000);
+    }
+
+    // 2. BRINCO
+    function renderBrincoCard() {
+      if (brincoIndex >= brincoList.length) brincoIndex = 0;
+      const lot = brincoList[brincoIndex];
+
+      upperCard.className = 'upper-card hidden-card lottery-mode-border';
+      let ballsHtml = '';
+      lot.numbers.forEach(num => { ballsHtml += `<div class="lottery-ball">${num}</div>`; });
+
+      cardDynamicContent.innerHTML = `
+        <div class="lottery-layout">
+          <div class="lottery-info-box">
+            <div class="lottery-badge">${lot.game} • ${lot.info}</div>
+            <div class="lottery-date">• FECHA: ${lot.fecha}</div>
+          </div>
+          <div class="lottery-mod-center">
+            <div class="lottery-mod-name">${lot.name}</div>
+          </div>
+          <div class="lottery-right-group">
+            <div class="lottery-balls-wrapper">${ballsHtml}</div>
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
+
+      setTimeout(() => {
+        upperCard.classList.add('hidden-card');
+        setTimeout(() => {
+          brincoIndex++;
+          if (brincoIndex >= brincoList.length) {
+            brincoIndex = 0;
+            masterSection = 3;
+          }
+          setTimeout(startMasterBroadcastLoop, 1200);
+        }, 400);
+      }, 15000);
+    }
+
+    // 3. QUINIELA MISIONERA (DISEÑO PROFESIONAL TV)
+    function renderQuinielaCard() {
+      if (quinielaIndex >= quinielaList.length) quinielaIndex = 0;
+      const qm = quinielaList[quinielaIndex];
+
+      upperCard.className = 'upper-card hidden-card quiniela-mode-border';
+
+      cardDynamicContent.innerHTML = `
+        <div class="lottery-layout">
+          <div class="lottery-info-box">
+            <div class="lottery-badge quiniela-badge">${qm.game}</div>
+            <div class="lottery-date">• FECHA: ${qm.fecha}</div>
+          </div>
+          <div class="lottery-mod-center">
+            <div class="lottery-mod-name" style="color: #10b981;">TURNO ${qm.name}</div>
+          </div>
+          <div class="lottery-right-group">
+            <div class="quiniela-head-card">
+              <div class="quiniela-head-label">1° A LA<br>CABEZA</div>
+              <div class="quiniela-head-number">${qm.head}</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
+
+      setTimeout(() => {
+        upperCard.classList.add('hidden-card');
+        setTimeout(() => {
+          quinielaIndex++;
+          if (quinielaIndex >= quinielaList.length) {
+            quinielaIndex = 0;
+            masterSection = 4;
+          }
+          setTimeout(startMasterBroadcastLoop, 1200);
+        }, 400);
+      }, 12000);
+    }
+
+    // 4. HORÓSCOPO
     function renderHoroscopeCard() {
       if (horoscopeIndex >= horoscopeList.length) horoscopeIndex = 0;
       const item = horoscopeList[horoscopeIndex];
 
       upperCard.className = 'upper-card hidden-card horoscope-mode-border';
-
-      const signNum = String(horoscopeIndex + 1).padStart(2, '0');
-      const totalNum = String(horoscopeList.length).padStart(2, '0');
 
       cardDynamicContent.innerHTML = `
         <div class="horoscope-layout">
@@ -698,7 +854,6 @@
           <div class="horoscope-text-wrapper" id="horoscopeWrapper">
             <div class="horoscope-prediction-text" id="horoscopeText">${item.text}</div>
           </div>
-          <div class="horoscope-counter-badge">HORÓSCOPO ${signNum}/${totalNum}</div>
         </div>
       `;
 
@@ -743,9 +898,7 @@
                   horoscopeIndex++;
                   if (horoscopeIndex >= horoscopeList.length) {
                     horoscopeIndex = 0;
-                    masterSection = 2; // Pasa a Sorteos
-                  } else {
-                    masterSection = 1; // Siguiente signo
+                    masterSection = 0;
                   }
                   setTimeout(startMasterBroadcastLoop, 1200);
                 }, 400);
@@ -762,76 +915,18 @@
                 horoscopeIndex++;
                 if (horoscopeIndex >= horoscopeList.length) {
                   horoscopeIndex = 0;
-                  masterSection = 2;
-                } else {
-                  masterSection = 1;
+                  masterSection = 0;
                 }
                 setTimeout(startMasterBroadcastLoop, 1200);
               }, 400);
-            }, 12000);
+            }, 10000);
           }
         }
       }, 100);
     }
-
-    function renderLotteryCard() {
-      if (lotteryIndex >= lotteryList.length) lotteryIndex = 0;
-      const lot = lotteryList[lotteryIndex];
-
-      upperCard.className = 'upper-card hidden-card lottery-mode-border';
-
-      let ballsHtml = '';
-      lot.numbers.forEach(num => {
-        ballsHtml += `<div class="lottery-ball">${num}</div>`;
-      });
-
-      const lotNum = String(lotteryIndex + 1).padStart(2, '0');
-      const totalLot = String(lotteryList.length).padStart(2, '0');
-
-      cardDynamicContent.innerHTML = `
-        <div class="lottery-layout">
-          <!-- Bloque Izquierdo: Juego y Fecha -->
-          <div class="lottery-info-box">
-            <div class="lottery-badge">${lot.game} • ${lot.info}</div>
-            <div class="lottery-date">• ${lot.fecha}</div>
-          </div>
-
-          <!-- Bloque Centro: Nombre de la modalidad bien destacado -->
-          <div class="lottery-mod-center">
-            <div class="lottery-mod-name">${lot.name}</div>
-          </div>
-
-          <!-- Bloque Derecho: Bolillas y Contador -->
-          <div class="lottery-right-group">
-            <div class="lottery-balls-wrapper">
-              ${ballsHtml}
-            </div>
-            <div class="lottery-counter-badge">SORTEO ${lotNum}/${totalLot}</div>
-          </div>
-        </div>
-      `;
-
-      setTimeout(() => {
-        upperCard.classList.remove('hidden-card');
-      }, 100);
-
-      setTimeout(() => {
-        upperCard.classList.add('hidden-card');
-        setTimeout(() => {
-          lotteryIndex++;
-          if (lotteryIndex >= lotteryList.length) {
-            lotteryIndex = 0;
-            masterSection = 0; // Regresa al ciclo del chat
-          } else {
-            masterSection = 2; // Siguiente modalidad
-          }
-          setTimeout(startMasterBroadcastLoop, 1200);
-        }, 400);
-      }, 25000);
-    }
   </script>
 
-  <!-- SCRIPT TICKER INFERIOR (PERMANENTE EN SEGUNDO PLANO / SIN INTERRUPCIÓN) -->
+  <!-- TICKER INFERIOR DE NOTICIAS RSS -->
   <script>
     let rssAnimationId = null;
 
@@ -847,7 +942,6 @@
         if (data && data.content && data.content.feedData && data.content.feedData.sources) {
           data.content.feedData.sources.forEach(sourceObj => {
             if (sourceObj.success && sourceObj.posts && sourceObj.posts.length > 0) {
-              
               let sourceTag = "NOTICIAS";
               const rawSource = (sourceObj.source || "").toLowerCase();
               const rawLabel = (sourceObj.sourceLabel || "").toLowerCase();
@@ -877,9 +971,7 @@
             }
           });
         }
-      } catch (e) {
-        // En transmisión no se muestran errores
-      }
+      } catch (e) {}
 
       if (newsList.length === 0) {
         newsList = [
@@ -935,7 +1027,7 @@
     }
 
     fetchJotformNews();
-    setInterval(fetchJotformNews, 15 * 60 * 1000); // Refresca las noticias cada 15 min en silencio
+    setInterval(fetchJotformNews, 15 * 60 * 1000);
   </script>
 </body>
 </html>
