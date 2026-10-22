@@ -494,11 +494,20 @@
       { key: 'pisces', apiKey: 'Pisces', name: 'Piscis', dates: '19 FEB - 20 MAR', defaultText: 'Sensibilidad y empatía conectando positivamente con quienes te rodean. Etapa de renovación espiritual.' }
     ];
 
-    let chatMessages = [];
-    let quiniList = [];
-    let brincoList = [];
-    let quinielaList = [];
-    let horoscopeList = [];
+    // Listas por defecto seguras (para que nunca fallen ni se detengan)
+    let chatMessages = [
+      { nombre: "DJ TV", lugar: "Posadas", msj: "Bienvenidos a la transmisión oficial de DJ TV Estación Mix." }
+    ];
+    let quiniList = [
+      { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: ["04","05","32","39","40","44"], info: "SORTEO EN VIVO", fecha: "HOY" }
+    ];
+    let brincoList = [
+      { game: "BRINCO", name: "Extracciones", numbers: ["07","22","26","33","34","39"], info: "SORTEO EN VIVO", fecha: "HOY" }
+    ];
+    let quinielaList = [
+      { game: "QUINIELA MISIONERA", name: "Matutina Plus", head: "2994", fecha: "HOY" }
+    ];
+    let horoscopeList = ZODIAC_CONFIG;
 
     let chatIndex = 0;
     let quiniIndex = 0;
@@ -506,7 +515,6 @@
     let quinielaIndex = 0;
     let horoscopeIndex = 0;
     
-    // ORDEN: 0 = Chat, 1 = Quini 6, 2 = Brinco, 3 = Quiniela Misionera, 4 = Horóscopo
     let masterSection = 0; 
     let isMasterLoopRunning = false;
     let activeMarqueeFrame = null;
@@ -514,49 +522,51 @@
     const upperCard = document.getElementById('upperCard');
     const cardDynamicContent = document.getElementById('cardDynamicContent');
 
+    // Carga robusta de Workers con fallbacks automáticos
     async function loadLotteryData() {
       try {
         const cacheBuster = `?_t=${Date.now()}`;
         const [resQuini, resBrinco, resQuiniela] = await Promise.all([
-          fetch(`https://quini-6.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()),
-          fetch(`https://brinco.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()),
-          fetch(`https://quinielamisionera.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json())
+          fetch(`https://quini-6.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()).catch(() => ({})),
+          fetch(`https://brinco.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()).catch(() => ({})),
+          fetch(`https://quinielamisionera.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()).catch(() => ({}))
         ]);
 
-        // 1. Quini 6
-        quiniList = [
-          { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: resQuini.tradicionalPrimerSorteo || ["04","05","32","39","40","44"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
-          { game: "QUINI 6", name: "La Segunda del Quini", numbers: resQuini.laSegunda || ["04","20","21","24","42","45"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
-          { game: "QUINI 6", name: "Revancha", numbers: resQuini.revancha || ["01","02","11","14","28","33"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
-          { game: "QUINI 6", name: "Siempre Sale", numbers: resQuini.siempreSale || ["13","21","39","42","43","45"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" }
-        ];
+        if (resQuini && resQuini.tradicionalPrimerSorteo) {
+          quiniList = [
+            { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: resQuini.tradicionalPrimerSorteo, info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+            { game: "QUINI 6", name: "La Segunda del Quini", numbers: resQuini.laSegunda || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+            { game: "QUINI 6", name: "Revancha", numbers: resQuini.revancha || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+            { game: "QUINI 6", name: "Siempre Sale", numbers: resQuini.siempreSale || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" }
+          ];
+        }
 
-        // 2. Brinco
-        brincoList = [
-          { game: "BRINCO", name: "Extracciones", numbers: resBrinco.extracciones || ["07","22","26","33","34","39"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" },
-          { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior || ["05","12","20","23","30","38"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" }
-        ];
+        if (resBrinco && resBrinco.extracciones) {
+          brincoList = [
+            { game: "BRINCO", name: "Extracciones", numbers: resBrinco.extracciones, info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" },
+            { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior || ["--","--","--","--","--","--"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" }
+          ];
+        }
 
-        // 3. Quiniela Misionera
-        const c = resQuiniela.cabezas || {};
-        quinielaList = [
-          { game: "QUINIELA MISIONERA", name: "Previa", head: c.previa || "3261", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Primera", head: c.primera || "4266", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Matutina", head: c.matutina || "3586", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Matutina Plus", head: c.matPlus || "2994", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Vespertina", head: c.vespertina || "0812", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Nocturna", head: c.nocturna || "7419", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Nocturna Plus", head: c.noctPlus || "9537", fecha: resQuiniela.fecha || "" }
-        ];
-
-      } catch (e) {
-        // Fallback silencioso
-      }
+        if (resQuiniela && resQuiniela.cabezas) {
+          const c = resQuiniela.cabezas;
+          quinielaList = [
+            { game: "QUINIELA MISIONERA", name: "Previa", head: c.previa || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "Primera", head: c.primera || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "Matutina", head: c.matutina || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "Matutina Plus", head: c.matPlus || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "Vespertina", head: c.vespertina || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "Nocturna", head: c.nocturna || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "Nocturna Plus", head: c.noctPlus || "----", fecha: resQuiniela.fecha || "" }
+          ];
+        }
+      } catch (e) {}
     }
 
     loadLotteryData();
     setInterval(loadLotteryData, 3 * 60 * 1000);
 
+    // Conexión segura a Firebase (Chat)
     const q = query(
       collection(db, "mensajes"),
       where("estado", "==", "aprobado"),
@@ -571,12 +581,19 @@
         rawList.push(data);
       });
 
-      chatMessages = rawList.filter(msg => {
-        if (!msg.timestamp) return true;
-        const msgTime = msg.timestamp.toDate ? msg.timestamp.toDate().getTime() : Date.now();
-        return (Date.now() - msgTime) <= 24 * 60 * 60 * 1000;
-      });
+      if (rawList.length > 0) {
+        chatMessages = rawList.filter(msg => {
+          if (!msg.timestamp) return true;
+          const msgTime = msg.timestamp.toDate ? msg.timestamp.toDate().getTime() : Date.now();
+          return (Date.now() - msgTime) <= 24 * 60 * 60 * 1000;
+        });
+      }
 
+      if (!isMasterLoopRunning) {
+        startMasterBroadcastLoop();
+      }
+    }, (error) => {
+      // Si falla Firebase, arranca igual con el loop para no congelar
       if (!isMasterLoopRunning) {
         startMasterBroadcastLoop();
       }
@@ -610,68 +627,48 @@
     loadHoroscopeAPIs();
     setInterval(loadHoroscopeAPIs, 10 * 60 * 1000);
 
+    // Bucle Maestro Infinito y Seguro (Nunca se traba)
     function startMasterBroadcastLoop() {
       if (activeMarqueeFrame) cancelAnimationFrame(activeMarqueeFrame);
       isMasterLoopRunning = true;
 
+      // Secuencia garantizada: 0 (Chat) -> 1 (Quini 6) -> 2 (Brinco) -> 3 (Quiniela) -> 4 (Horóscopo) -> Vuelve a 0
       if (masterSection === 0) {
-        if (chatMessages.length > 0) {
-          renderChatCard();
-        } else {
-          masterSection = 1;
-          startMasterBroadcastLoop();
-        }
+        masterSection = 1;
+        renderChatCard();
       } else if (masterSection === 1) {
-        if (quiniList.length > 0) {
-          renderQuiniCard();
-        } else {
-          masterSection = 2;
-          startMasterBroadcastLoop();
-        }
+        masterSection = 2;
+        renderQuiniCard();
       } else if (masterSection === 2) {
-        if (brincoList.length > 0) {
-          renderBrincoCard();
-        } else {
-          masterSection = 3;
-          startMasterBroadcastLoop();
-        }
+        masterSection = 3;
+        renderBrincoCard();
       } else if (masterSection === 3) {
-        if (quinielaList.length > 0) {
-          renderQuinielaCard();
-        } else {
-          masterSection = 4;
-          startMasterBroadcastLoop();
-        }
+        masterSection = 4;
+        renderQuinielaCard();
       } else if (masterSection === 4) {
-        if (horoscopeList.length > 0) {
-          renderHoroscopeCard();
-        } else {
-          masterSection = 0;
-          startMasterBroadcastLoop();
-        }
+        masterSection = 0;
+        renderHoroscopeCard();
       }
     }
 
-    // 0. CHAT / SALUDOS ESTILO BROADCAST CON DURACIÓN AMPLIADA (25 SEGUNDOS)
+    // 0. CHAT / SALUDOS (25 Segundos)
     function renderChatCard() {
+      if (chatMessages.length === 0) {
+        startMasterBroadcastLoop();
+        return;
+      }
       if (chatIndex >= chatMessages.length) chatIndex = 0;
-      const msg = chatMessages[chatIndex];
+      const msg = chatMessages[chatIndex++];
 
       const lugarHtml = (msg.lugar && msg.lugar.trim() !== '') 
         ? `<div class="chat-location-tag">📍 ${msg.lugar.trim()}</div>` 
         : '';
 
       const textLength = (msg.msj || '').length;
-      
-      // Ajuste automático de fuente según la cantidad de caracteres
       let dynamicFontSize = '32px';
-      if (textLength > 120) {
-        dynamicFontSize = '22px';
-      } else if (textLength > 90) {
-        dynamicFontSize = '25px';
-      } else if (textLength > 65) {
-        dynamicFontSize = '28px';
-      }
+      if (textLength > 120) dynamicFontSize = '22px';
+      else if (textLength > 90) dynamicFontSize = '25px';
+      else if (textLength > 65) dynamicFontSize = '28px';
 
       cardDynamicContent.innerHTML = `
         <div class="chat-card-wrapper">
@@ -688,76 +685,54 @@
 
       setTimeout(() => {
         upperCard.classList.remove('hidden-card');
-
         const container = document.getElementById('chatBodyContainer');
         const textSpan = document.getElementById('chatTextSpan');
 
         if (container && textSpan) {
           const overflowDistance = textSpan.offsetWidth - container.offsetWidth + 60;
-
           if (overflowDistance > 0) {
             const speedPxPerSec = 75;
             const scrollDurationMs = (overflowDistance / speedPxPerSec) * 1000;
-            const initialPauseMs = 4000;
-            const finalPauseMs = 3000;
-
             let startTime = null;
 
             function animateStep(timestamp) {
               if (!startTime) startTime = timestamp;
               const elapsed = timestamp - startTime;
-
-              if (elapsed < initialPauseMs) {
+              if (elapsed < 3000) {
                 textSpan.style.transform = 'translateX(0px)';
-              } else if (elapsed < (initialPauseMs + scrollDurationMs)) {
-                const progress = (elapsed - initialPauseMs) / scrollDurationMs;
-                const currentX = progress * overflowDistance;
-                textSpan.style.transform = `translateX(-${currentX}px)`;
+              } else if (elapsed < (3000 + scrollDurationMs)) {
+                const progress = (elapsed - 3000) / scrollDurationMs;
+                textSpan.style.transform = `translateX(-${progress * overflowDistance}px)`;
               } else {
                 textSpan.style.transform = `translateX(-${overflowDistance}px)`;
               }
 
-              if (elapsed < (initialPauseMs + scrollDurationMs + finalPauseMs)) {
+              if (elapsed < (3000 + scrollDurationMs + 2000)) {
                 activeMarqueeFrame = requestAnimationFrame(animateStep);
               } else {
                 upperCard.classList.add('hidden-card');
-                setTimeout(() => {
-                  chatIndex++;
-                  if (chatIndex >= chatMessages.length) {
-                    chatIndex = 0;
-                    masterSection = 1;
-                  }
-                  setTimeout(startMasterBroadcastLoop, 1200);
-                }, 400);
+                setTimeout(startMasterBroadcastLoop, 1000);
               }
             }
-
             activeMarqueeFrame = requestAnimationFrame(animateStep);
           } else {
-            // PERMANENCIA AMPLIADA A 25 SEGUNDOS PARA EL SALUDO
             setTimeout(() => {
               upperCard.classList.add('hidden-card');
-              setTimeout(() => {
-                chatIndex++;
-                if (chatIndex >= chatMessages.length) {
-                  chatIndex = 0;
-                  masterSection = 1;
-                }
-                setTimeout(startMasterBroadcastLoop, 1200);
-              }, 400);
-            }, 25000); 
+              setTimeout(startMasterBroadcastLoop, 1000);
+            }, 25000); // 25 Segundos exactos
           }
         }
       }, 100);
     }
 
-    // 1. QUINI 6 ESTILO BROADCAST
+    // 1. QUINI 6 (15 Segundos)
     function renderQuiniCard() {
+      if (quiniList.length === 0) { startMasterBroadcastLoop(); return; }
       if (quiniIndex >= quiniList.length) quiniIndex = 0;
-      const lot = quiniList[quiniIndex];
+      const lot = quiniList[quiniIndex++];
 
       let ballsHtml = '';
-      lot.numbers.forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
+      (lot.numbers || ["04","05","32","39","40","44"]).forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
 
       cardDynamicContent.innerHTML = `
         <div class="broadcast-tv-card">
@@ -773,27 +748,20 @@
       `;
 
       setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
-
       setTimeout(() => {
         upperCard.classList.add('hidden-card');
-        setTimeout(() => {
-          quiniIndex++;
-          if (quiniIndex >= quiniList.length) {
-            quiniIndex = 0;
-            masterSection = 2;
-          }
-          setTimeout(startMasterBroadcastLoop, 1200);
-        }, 400);
+        setTimeout(startMasterBroadcastLoop, 1000);
       }, 15000);
     }
 
-    // 2. BRINCO ESTILO BROADCAST
+    // 2. BRINCO (15 Segundos)
     function renderBrincoCard() {
+      if (brincoList.length === 0) { startMasterBroadcastLoop(); return; }
       if (brincoIndex >= brincoList.length) brincoIndex = 0;
-      const lot = brincoList[brincoIndex];
+      const lot = brincoList[brincoIndex++];
 
       let ballsHtml = '';
-      lot.numbers.forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
+      (lot.numbers || ["07","22","26","33","34","39"]).forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
 
       cardDynamicContent.innerHTML = `
         <div class="broadcast-tv-card">
@@ -809,24 +777,17 @@
       `;
 
       setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
-
       setTimeout(() => {
         upperCard.classList.add('hidden-card');
-        setTimeout(() => {
-          brincoIndex++;
-          if (brincoIndex >= brincoList.length) {
-            brincoIndex = 0;
-            masterSection = 3;
-          }
-          setTimeout(startMasterBroadcastLoop, 1200);
-        }, 400);
+        setTimeout(startMasterBroadcastLoop, 1000);
       }, 15000);
     }
 
-    // 3. QUINIELA MISIONERA ESTILO BROADCAST
+    // 3. QUINIELA MISIONERA (12 Segundos)
     function renderQuinielaCard() {
+      if (quinielaList.length === 0) { startMasterBroadcastLoop(); return; }
       if (quinielaIndex >= quinielaList.length) quinielaIndex = 0;
-      const qm = quinielaList[quinielaIndex];
+      const qm = quinielaList[quinielaIndex++];
 
       cardDynamicContent.innerHTML = `
         <div class="broadcast-tv-card">
@@ -845,43 +806,35 @@
       `;
 
       setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
-
       setTimeout(() => {
         upperCard.classList.add('hidden-card');
-        setTimeout(() => {
-          quinielaIndex++;
-          if (quinielaIndex >= quinielaList.length) {
-            quinielaIndex = 0;
-            masterSection = 4;
-          }
-          setTimeout(startMasterBroadcastLoop, 1200);
-        }, 400);
+        setTimeout(startMasterBroadcastLoop, 1000);
       }, 12000);
     }
 
-    // 4. HORÓSCOPO ESTILO BROADCAST
+    // 4. HORÓSCOPO
     function renderHoroscopeCard() {
+      if (horoscopeList.length === 0) { startMasterBroadcastLoop(); return; }
       if (horoscopeIndex >= horoscopeList.length) horoscopeIndex = 0;
-      const item = horoscopeList[horoscopeIndex];
+      const item = horoscopeList[horoscopeIndex++];
 
       cardDynamicContent.innerHTML = `
         <div class="horoscope-tv-card">
           <div class="horoscope-left-badge">
-            <div class="horoscope-icon-box">${ZODIAC_SVGS[item.key] || ''}</div>
+            <div class="horoscope-icon-box">${ZODIAC_SVGS[item.key] || ZODIAC_SVGS['aries']}</div>
             <div class="horoscope-meta">
               <div class="sign-title">${item.name}</div>
               <div class="sign-dates">${item.dates}</div>
             </div>
           </div>
           <div class="horoscope-prediction-body" id="horoscopeWrapper">
-            <div class="horoscope-scroll-text" id="horoscopeText">${item.text}</div>
+            <div class="horoscope-scroll-text" id="horoscopeText">${item.text || item.defaultText}</div>
           </div>
         </div>
       `;
 
       setTimeout(() => {
         upperCard.classList.remove('hidden-card');
-
         const wrapper = document.getElementById('horoscopeWrapper');
         const textElem = document.getElementById('horoscopeText');
 
@@ -893,54 +846,33 @@
           if (overflowDistance > 0) {
             const speedPxPerSec = 85; 
             const scrollDurationMs = (overflowDistance / speedPxPerSec) * 1000;
-            const initialPauseMs = 3500; 
-            const finalPauseMs = 2500;    
-
             let startTime = null;
 
             function animateStep(timestamp) {
               if (!startTime) startTime = timestamp;
               const elapsed = timestamp - startTime;
-
-              if (elapsed < initialPauseMs) {
+              if (elapsed < 3000) {
                 textElem.style.transform = 'translateX(0px)';
-              } else if (elapsed < (initialPauseMs + scrollDurationMs)) {
-                const progress = (elapsed - initialPauseMs) / scrollDurationMs;
-                const currentX = progress * overflowDistance;
-                textElem.style.transform = `translateX(-${currentX}px)`;
+              } else if (elapsed < (3000 + scrollDurationMs)) {
+                const progress = (elapsed - 3000) / scrollDurationMs;
+                textElem.style.transform = `translateX(-${progress * overflowDistance}px)`;
               } else {
                 textElem.style.transform = `translateX(-${overflowDistance}px)`;
               }
 
-              if (elapsed < (initialPauseMs + scrollDurationMs + finalPauseMs)) {
+              if (elapsed < (3000 + scrollDurationMs + 2500)) {
                 activeMarqueeFrame = requestAnimationFrame(animateStep);
               } else {
                 upperCard.classList.add('hidden-card');
-                setTimeout(() => {
-                  horoscopeIndex++;
-                  if (horoscopeIndex >= horoscopeList.length) {
-                    horoscopeIndex = 0;
-                    masterSection = 0;
-                  }
-                  setTimeout(startMasterBroadcastLoop, 1200);
-                }, 400);
+                setTimeout(startMasterBroadcastLoop, 1000);
               }
             }
-
             activeMarqueeFrame = requestAnimationFrame(animateStep);
-
           } else {
             textElem.style.transform = 'translateX(0px)';
             setTimeout(() => {
               upperCard.classList.add('hidden-card');
-              setTimeout(() => {
-                horoscopeIndex++;
-                if (horoscopeIndex >= horoscopeList.length) {
-                  horoscopeIndex = 0;
-                  masterSection = 0;
-                }
-                setTimeout(startMasterBroadcastLoop, 1200);
-              }, 400);
+              setTimeout(startMasterBroadcastLoop, 1000);
             }, 10000);
           }
         }
@@ -948,7 +880,7 @@
     }
   </script>
 
-  <!-- SCRIPT TICKER INFERIOR (PERMANENTE EN SEGUNDO PLANO / SIN INTERRUPCIÓN) -->
+  <!-- SCRIPT TICKER INFERIOR (PERMANENTE EN SEGUNDO PLANO) -->
   <script>
     let rssAnimationId = null;
 
@@ -968,27 +900,15 @@
               const rawSource = (sourceObj.source || "").toLowerCase();
               const rawLabel = (sourceObj.sourceLabel || "").toLowerCase();
 
-              if (rawSource.includes("clarin") || rawLabel.includes("clarin")) {
-                sourceTag = "CLARÍN";
-              } else if (rawSource.includes("lanoticia") || rawLabel.includes("noticia")) {
-                sourceTag = "LA NOTICIA";
-              } else if (rawSource.includes("infobae") || rawLabel.includes("infobae")) {
-                sourceTag = "INFOBAE";
-              } else if (rawSource.includes("perfil") || rawLabel.includes("perfil")) {
-                sourceTag = "PERFIL";
-              } else if (rawSource.includes("ole") || rawLabel.includes("ole")) {
-                sourceTag = "OLÉ";
-              } else {
-                sourceTag = sourceObj.sourceLabel ? sourceObj.sourceLabel.toUpperCase() : "ARGENTINA";
-              }
+              if (rawSource.includes("clarin") || rawLabel.includes("clarin")) sourceTag = "CLARÍN";
+              else if (rawSource.includes("lanoticia") || rawLabel.includes("noticia")) sourceTag = "LA NOTICIA";
+              else if (rawSource.includes("infobae") || rawLabel.includes("infobae")) sourceTag = "INFOBAE";
+              else if (rawSource.includes("perfil") || rawLabel.includes("perfil")) sourceTag = "PERFIL";
+              else if (rawSource.includes("ole") || rawLabel.includes("ole")) sourceTag = "OLÉ";
+              else sourceTag = sourceObj.sourceLabel ? sourceObj.sourceLabel.toUpperCase() : "ARGENTINA";
 
               sourceObj.posts.slice(0, 5).forEach(post => {
-                if (post.title) {
-                  newsList.push({
-                    text: post.title.trim(),
-                    source: sourceTag
-                  });
-                }
+                if (post.title) newsList.push({ text: post.title.trim(), source: sourceTag });
               });
             }
           });
@@ -1036,11 +956,7 @@
       function step() {
         posX -= speed;
         const contentWidth = container.scrollWidth / 2;
-
-        if (contentWidth > 0 && Math.abs(posX) >= contentWidth) {
-          posX = 0;
-        }
-
+        if (contentWidth > 0 && Math.abs(posX) >= contentWidth) posX = 0;
         container.style.transform = `translateX(${posX}px)`;
         rssAnimationId = requestAnimationFrame(step);
       }
