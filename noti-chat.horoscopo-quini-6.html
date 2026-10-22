@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ENCABEZADOS ANTI-CACHÉ PARA NAVEGADOR DE OBS -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
   <title>DJ TV Estación Mix - Master Broadcast Zócalo</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Orbitron:wght@700;900&family=Oswald:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -244,7 +249,7 @@
       flex-shrink: 0;
     }
 
-    /* ESTILOS DE SORTEOS (QUINI 6 Y BRINCO) - MEJORADOS */
+    /* ESTILOS DE SORTEOS (QUINI 6 Y BRINCO) */
     .lottery-mode-border {
       border-top-color: #f97316;
       border-left: 8px solid #f97316;
@@ -513,12 +518,13 @@
     const upperCard = document.getElementById('upperCard');
     const cardDynamicContent = document.getElementById('cardDynamicContent');
 
-    // Cargar Sorteos desde Cloudflare Workers con fecha
+    // Cargar Sorteos con TIMESTAMP ANTI-CACHÉ
     async function loadLotteryData() {
       try {
+        const cacheBuster = `?_t=${Date.now()}`;
         const [resQuini, resBrinco] = await Promise.all([
-          fetch('https://quini-6.fachacarlos1.workers.dev/').then(r => r.json()),
-          fetch('https://brinco.fachacarlos1.workers.dev/').then(r => r.json())
+          fetch(`https://quini-6.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()),
+          fetch(`https://brinco.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json())
         ]);
 
         lotteryList = [
@@ -538,7 +544,7 @@
     }
 
     loadLotteryData();
-    setInterval(loadLotteryData, 15 * 60 * 1000);
+    setInterval(loadLotteryData, 5 * 60 * 1000); // Consulta cada 5 minutos
 
     const q = query(
       collection(db, "mensajes"),
@@ -567,11 +573,12 @@
 
     async function loadHoroscopeAPIs() {
       const fetched = [];
+      const cacheBuster = `&_t=${Date.now()}`;
       for (const sign of ZODIAC_CONFIG) {
         let textLoaded = null;
         try {
-          const url = `https://api.jotform.com/website-widgets/templates/019f365ed74870008e184f2271ab1b90f656/execute-action?action=getHoroscopeData&period=daily&sign=${sign.apiKey}&language=es&widgetID=01a120be41b070008003137f1833c7dc8d78`;
-          const res = await fetch(url);
+          const url = `https://api.jotform.com/website-widgets/templates/019f365ed74870008e184f2271ab1b90f656/execute-action?action=getHoroscopeData&period=daily&sign=${sign.apiKey}&language=es&widgetID=01a120be41b070008003137f1833c7dc8d78${cacheBuster}`;
+          const res = await fetch(url, { cache: "no-store" });
           if (res.ok) {
             const json = await res.json();
             if (json && json.content && json.content.horoscope) {
@@ -595,7 +602,7 @@
     }
 
     loadHoroscopeAPIs();
-    setInterval(loadHoroscopeAPIs, 30 * 60 * 1000);
+    setInterval(loadHoroscopeAPIs, 15 * 60 * 1000); // Consulta cada 15 minutos
 
     function startMasterBroadcastLoop() {
       if (activeMarqueeFrame) cancelAnimationFrame(activeMarqueeFrame);
@@ -830,8 +837,9 @@
       let newsList = [];
 
       try {
-        const apiUrl = "https://api.jotform.com/website-widgets/templates/019f3bae37487000889dd04d159b98b17f3a/execute-action?action=refreshSocialFeed&widgetID=01a13e9789a87000805d60e413b14e37d5b0";
-        const res = await fetch(apiUrl);
+        const cacheBuster = `&_t=${Date.now()}`;
+        const apiUrl = `https://api.jotform.com/website-widgets/templates/019f3bae37487000889dd04d159b98b17f3a/execute-action?action=refreshSocialFeed&widgetID=01a13e9789a87000805d60e413b14e37d5b0${cacheBuster}`;
+        const res = await fetch(apiUrl, { cache: "no-store" });
         const data = await res.json();
 
         if (data && data.content && data.content.feedData && data.content.feedData.sources) {
@@ -925,8 +933,14 @@
     }
 
     fetchJotformNews();
-    setInterval(fetchJotformNews, 1800000);
+    setInterval(fetchJotformNews, 600000); // Actualización de noticias cada 10 minutos
+  </script>
+
+  <!-- AUTO-REFRESCO SILENCIOSO DEL DOCUMENTO EN OBS CADA 1 HORA -->
+  <script>
+    setTimeout(() => {
+      window.location.reload(true);
+    }, 3600000);
   </script>
 </body>
-</html>
 </html>
