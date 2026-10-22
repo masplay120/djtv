@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   
   <title>DJ TV Estación Mix - Master Broadcast Zócalo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Orbitron:wght@700;900&family=Oswald:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Orbitron:wght@700;900&family=Oswald:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -47,331 +47,298 @@
     }
 
     /* ---------------------------------------------------
-       1. PISO SUPERIOR: PLACA DINÁMICA (Mantiene altura exacta 140px)
+       1. PISO SUPERIOR: PLACA ESTILO BROADCAST LOWER THIRD
     --------------------------------------------------- */
     .upper-card {
       position: absolute;
-      bottom: 60px; 
-      left: 0px;
-      width: 1920px;
-      height: 140px; /* Altura estricta fijada para mantener uniformidad */
-      background: rgba(12, 10, 24, 0.98);
-      border-top: 3px solid #ec4899;
-      border-bottom: 2px solid rgba(236, 72, 153, 0.4);
-      padding: 10px 28px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.85);
+      bottom: 75px; 
+      left: 60px;
+      width: 1800px;
+      height: 135px;
       transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      align-items: center;
+      filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.85));
     }
 
     .upper-card.hidden-card {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(30px);
       pointer-events: none;
     }
 
-    /* ESTILOS CHAT */
-    .chat-mode-border {
-      border-top-color: #ec4899;
-      border-left: 8px solid #ec4899;
-    }
-
-    .chat-header {
+    /* ESTILOS DEL CHAT (SALUDOS AL AIRE CON AUTOAJUSTE DE TEXTO) */
+    .chat-card-wrapper {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 6px;
-      line-height: 1.2;
-    }
-
-    .chat-badge {
-      background: linear-gradient(90deg, #ec4899 0%, #8b5cf6 100%);
-      padding: 4px 12px;
-      border-radius: 4px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: #ffffff;
-      font-weight: 900;
-      font-size: 22px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-family: 'Orbitron', sans-serif;
-    }
-
-    .chat-badge-dot {
-      width: 8px;
-      height: 8px;
-      background-color: #00ff66;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #00ff66;
-    }
-
-    .chat-author {
-      color: #f472b6;
-      font-weight: 900;
-      font-size: 24px;
-      text-transform: uppercase;
-      background: rgba(0, 242, 254, 0.12);
-      border: 1px solid rgba(0, 242, 254, 0.35);
-      padding: 2px 10px;
-      border-radius: 4px;
-    }
-
-    .chat-location {
-      color: #00f2fe;
-      font-size: 24px;
-      font-weight: 700;
-      background: rgba(0, 242, 254, 0.12);
-      border: 1px solid rgba(0, 242, 254, 0.35);
-      padding: 2px 10px;
-      border-radius: 4px;
-    }
-
-    .chat-body {
-      color: #ffffff;
-      font-size: 32px;
-      font-weight: 900;
-      line-height: 1.3;
-      font-style: italic;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-      white-space: normal !important;
-      word-wrap: break-word !important;
-    }
-
-    /* ESTILOS HORÓSCOPO */
-    .horoscope-mode-border {
-      border-top-color: #f59e0b;
-      border-left: 8px solid #f59e0b;
-      background: linear-gradient(180deg, rgba(8, 15, 30, 0.98) 0%, rgba(3, 7, 18, 0.99) 100%);
-    }
-
-    .horoscope-layout {
-      display: flex;
-      align-items: center;
+      flex-direction: column;
       width: 100%;
-      gap: 25px;
     }
 
-    .horoscope-sign-badge {
+    .chat-top-bar {
       display: flex;
       align-items: center;
-      gap: 16px;
-      background: linear-gradient(135deg, #1e293b 0%, #0b1329 100%);
-      padding: 8px 18px;
-      border-radius: 8px;
-      border: 2px solid #f59e0b;
-      min-width: 380px;
-      flex-shrink: 0;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-    }
-
-    .sign-icon-box {
-      width: 68px;
-      height: 68px;
-      background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.9) 100%);
-      border: 2px solid #f59e0b;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #f59e0b;
-      flex-shrink: 0;
-      filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
-    }
-
-    .sign-icon-box svg {
-      width: 48px;
+      gap: 0px;
       height: 48px;
     }
 
-    .sign-meta-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .sign-name-title {
-      font-family: 'Oswald', sans-serif;
-      font-size: 42px;
-      font-weight: 800;
+    .chat-badge-pill {
+      background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
       color: #ffffff;
-      text-transform: uppercase;
-      line-height: 1;
-      letter-spacing: 1px;
-    }
-
-    .sign-date-range {
-      font-size: 15px;
-      font-weight: 800;
-      color: #f59e0b;
-      text-transform: uppercase;
-      margin-top: 4px;
-      letter-spacing: 1px;
-    }
-
-    .horoscope-text-wrapper {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      align-items: center;
-      height: 60px;
-    }
-
-    .horoscope-prediction-text {
-      font-size: 34px;
-      font-weight: 800;
-      color: #ffffff;
-      white-space: nowrap;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-      position: absolute;
-      left: 0;
-      will-change: transform;
-    }
-
-    /* ESTILOS MEJORADOS PARA QUINI 6 Y BRINCO */
-    .lottery-mode-border {
-      border-top-color: #f97316;
-      border-left: 8px solid #f97316;
-      background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(8, 12, 22, 0.99) 100%);
-    }
-
-    /* ESTILOS PROFESIONALES PARA QUINIELA MISIONERA */
-    .quiniela-mode-border {
-      border-top-color: #10b981;
-      border-left: 8px solid #10b981;
-      background: linear-gradient(180deg, rgba(6, 30, 20, 0.98) 0%, rgba(4, 15, 10, 0.99) 100%);
-    }
-
-    .lottery-layout {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      height: 100%;
-      gap: 20px;
-    }
-
-    /* BLOQUE IZQUIERDO: NOMBRE Y FECHA AMPLIADA */
-    .lottery-info-box {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 2px;
-      min-width: 420px;
-      flex-shrink: 0;
-    }
-
-    .lottery-badge {
       font-family: 'Orbitron', sans-serif;
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 900;
-      color: #f97316;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .quiniela-badge {
-      color: #10b981 !important;
-    }
-
-    /* FECHA REFORZADA EN TAMAÑO Y LEGIBILIDAD EN PANTALLA */
-    .lottery-date {
-      font-size: 25px !important;
-      font-weight: 900 !important;
-      color: #ffffff !important;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-      margin-top: 2px;
-    }
-
-    .lottery-mod-center {
-      flex: 1;
-      text-align: center;
+      padding: 8px 24px;
+      border-radius: 14px 14px 0 0;
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 -4px 10px rgba(236, 72, 153, 0.4);
     }
 
-    .lottery-mod-name {
-      font-size: 24px;
+    .chat-badge-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #00ff66;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #00ff66;
+    }
+
+    .chat-author-tag {
+      background: #0f172a;
+      color: #f472b6;
       font-weight: 900;
+      font-size: 22px;
+      padding: 6px 20px;
+      border-radius: 0 12px 0 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-top: 2px solid #ec4899;
+      border-right: 2px solid #ec4899;
+    }
+
+    .chat-location-tag {
+      background: #1e293b;
       color: #38bdf8;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      text-shadow: 0 0 14px rgba(56, 189, 248, 0.4), 0 2px 4px rgba(0,0,0,0.8);
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 8px 28px;
-      border-radius: 8px;
-      white-space: nowrap;
+      font-weight: 800;
+      font-size: 20px;
+      padding: 6px 18px;
+      border-radius: 0 12px 0 0;
+      margin-left: 2px;
+      border-top: 2px solid #38bdf8;
+      border-right: 2px solid #38bdf8;
     }
 
-    .lottery-right-group {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      flex-shrink: 0;
-    }
-
-    .lottery-balls-wrapper {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .lottery-ball {
-      width: 68px;
-      height: 68px;
-      background: radial-gradient(circle at 30% 30%, #ffffff, #cbd5e1);
+    .chat-main-body {
+      background: #ffffff;
       color: #0f172a;
       font-weight: 900;
-      font-size: 30px;
+      font-style: italic;
+      padding: 10px 28px;
+      border-radius: 0 16px 16px 16px;
+      border-left: 10px solid #ec4899;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      white-space: nowrap;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    /* ESTILOS DE SORTEOS Y LOTERÍAS (QUINI 6, BRINCO, QUINIELA) */
+    .broadcast-tv-card {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 110px;
+      background: #ffffff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      border: 3px solid #1e293b;
+    }
+
+    .card-left-badge {
+      height: 100%;
+      padding: 0 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #ffffff;
+      min-width: 380px;
+      position: relative;
+    }
+
+    .badge-quini {
+      background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+    }
+
+    .badge-quiniela {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    .card-left-badge .game-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .card-left-badge .game-date {
+      font-size: 18px;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    .card-center-title {
+      flex: 1;
+      padding: 0 25px;
+      font-size: 36px;
+      font-weight: 900;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-style: italic;
+    }
+
+    .card-right-content {
+      padding-right: 30px;
+      display: flex;
+      align-items: center;
+    }
+
+    .tv-balls-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .tv-ball-item {
+      width: 68px;
+      height: 68px;
+      background: radial-gradient(circle at 35% 35%, #ffffff, #cbd5e1);
+      color: #0f172a;
+      font-weight: 900;
+      font-size: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset -2px -2px 6px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4), inset -3px -3px 6px rgba(0, 0, 0, 0.2);
+      border: 2px solid #94a3b8;
     }
 
-    /* TARJETA PROFESIONAL DE CABEZA PARA QUINIELA MISIONERA */
-    .quiniela-head-card {
+    .quiniela-head-tv-box {
+      background: linear-gradient(135deg, #047857 0%, #064e3b 100%);
+      color: #ffffff;
+      padding: 10px 28px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(4, 120, 87, 0.35) 100%);
-      border: 2px solid #10b981;
-      border-radius: 10px;
-      padding: 6px 16px;
-      gap: 16px;
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);
+      gap: 20px;
+      box-shadow: 0 4px 15px rgba(4, 120, 87, 0.4);
     }
 
-    .quiniela-head-label {
+    .quiniela-head-tv-box .lbl {
       font-family: 'Orbitron', sans-serif;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 900;
       color: #a7f3d0;
-      text-transform: uppercase;
-      letter-spacing: 1px;
       line-height: 1.1;
       text-align: right;
     }
 
-    .quiniela-head-number {
+    .quiniela-head-tv-box .num {
       font-family: 'Orbitron', sans-serif;
-      font-size: 46px;
+      font-size: 48px;
       font-weight: 900;
       color: #ffffff;
-      background: radial-gradient(circle at 30% 30%, #10b981, #047857);
-      padding: 4px 22px;
-      border-radius: 8px;
-      letter-spacing: 4px;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+      letter-spacing: 3px;
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    /* ESTILOS DE HORÓSCOPO TV */
+    .horoscope-tv-card {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 110px;
+      background: #ffffff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      border: 3px solid #f59e0b;
+    }
+
+    .horoscope-left-badge {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      height: 100%;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #ffffff;
+      min-width: 380px;
+    }
+
+    .horoscope-icon-box {
+      width: 58px;
+      height: 58px;
+      background: #ffffff;
+      color: #d97706;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .horoscope-icon-box svg {
+      width: 38px;
+      height: 38px;
+    }
+
+    .horoscope-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .horoscope-meta .sign-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .horoscope-meta .sign-dates {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fef3c7;
+      margin-top: 2px;
+    }
+
+    .horoscope-prediction-body {
+      flex: 1;
+      padding: 0 30px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .horoscope-scroll-text {
+      font-size: 30px;
+      font-weight: 800;
+      color: #0f172a;
+      white-space: nowrap;
+      position: absolute;
+      left: 30px;
+      will-change: transform;
     }
 
     /* ---------------------------------------------------
@@ -384,7 +351,7 @@
       width: 1920px;
       height: 60px;
       background: rgba(8, 8, 14, 0.98);
-      border-top: 2px solid #3b82f6;
+      border-top: 2px solid #2563eb;
       display: flex;
       align-items: center;
     }
@@ -393,7 +360,7 @@
       flex-shrink: 0;
       background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       height: 100%;
-      padding: 0 22px;
+      padding: 0 24px;
       display: flex;
       align-items: center;
       color: #ffffff;
@@ -436,8 +403,8 @@
     }
 
     .news-source {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       color: #38bdf8;
       font-weight: 900;
       font-size: 14px;
@@ -465,9 +432,9 @@
 
   <div class="tv-master-lower-third">
     
-    <!-- TARJETA SUPERIOR DINÁMICA -->
-    <div id="upperCard" class="upper-card hidden-card chat-mode-border">
-      <div id="cardDynamicContent"></div>
+    <!-- TARJETA SUPERIOR DINÁMICA DE DOS PISOS -->
+    <div id="upperCard" class="upper-card hidden-card">
+      <div id="cardDynamicContent" style="width: 100%;"></div>
     </div>
 
     <!-- BANNER DE NOTICIAS INFERIOR -->
@@ -558,28 +525,28 @@
 
         // 1. Quini 6
         quiniList = [
-          { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: resQuini.tradicionalPrimerSorteo || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
-          { game: "QUINI 6", name: "La Segunda del Quini", numbers: resQuini.laSegunda || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
-          { game: "QUINI 6", name: "Revancha", numbers: resQuini.revancha || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
-          { game: "QUINI 6", name: "Siempre Sale", numbers: resQuini.siempreSale || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" }
+          { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: resQuini.tradicionalPrimerSorteo || ["04","05","32","39","40","44"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+          { game: "QUINI 6", name: "La Segunda del Quini", numbers: resQuini.laSegunda || ["04","20","21","24","42","45"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+          { game: "QUINI 6", name: "Revancha", numbers: resQuini.revancha || ["01","02","11","14","28","33"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+          { game: "QUINI 6", name: "Siempre Sale", numbers: resQuini.siempreSale || ["13","21","39","42","43","45"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" }
         ];
 
         // 2. Brinco
         brincoList = [
-          { game: "BRINCO", name: "Extracciones", numbers: resBrinco.extracciones || ["--","--","--","--","--","--"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" },
-          { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior || ["--","--","--","--","--","--"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" }
+          { game: "BRINCO", name: "Extracciones", numbers: resBrinco.extracciones || ["07","22","26","33","34","39"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" },
+          { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior || ["05","12","20","23","30","38"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" }
         ];
 
         // 3. Quiniela Misionera
         const c = resQuiniela.cabezas || {};
         quinielaList = [
-          { game: "QUINIELA MISIONERA", name: "Previa", head: c.previa || "----", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Primera", head: c.primera || "----", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Matutina", head: c.matutina || "----", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Matutina Plus", head: c.matPlus || "----", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Vespertina", head: c.vespertina || "----", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Nocturna", head: c.nocturna || "----", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Nocturna Plus", head: c.noctPlus || "----", fecha: resQuiniela.fecha || "" }
+          { game: "QUINIELA MISIONERA", name: "Previa", head: c.previa || "3261", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Primera", head: c.primera || "4266", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Matutina", head: c.matutina || "3586", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Matutina Plus", head: c.matPlus || "2994", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Vespertina", head: c.vespertina || "0812", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Nocturna", head: c.nocturna || "7419", fecha: resQuiniela.fecha || "" },
+          { game: "QUINIELA MISIONERA", name: "Nocturna Plus", head: c.noctPlus || "9537", fecha: resQuiniela.fecha || "" }
         ];
 
       } catch (e) {
@@ -685,58 +652,122 @@
       }
     }
 
-    // 0. CHAT / SALUDOS
+    // 0. CHAT / SALUDOS ESTILO BROADCAST CON DURACIÓN AMPLIADA (25 SEGUNDOS)
     function renderChatCard() {
       if (chatIndex >= chatMessages.length) chatIndex = 0;
       const msg = chatMessages[chatIndex];
 
-      upperCard.className = 'upper-card hidden-card chat-mode-border';
-      const lugarHtml = (msg.lugar && msg.lugar.trim() !== '') ? `<span class="chat-location">📍 ${msg.lugar.trim()}</span>` : '';
+      const lugarHtml = (msg.lugar && msg.lugar.trim() !== '') 
+        ? `<div class="chat-location-tag">📍 ${msg.lugar.trim()}</div>` 
+        : '';
+
+      const textLength = (msg.msj || '').length;
+      
+      // Ajuste automático de fuente según la cantidad de caracteres
+      let dynamicFontSize = '32px';
+      if (textLength > 120) {
+        dynamicFontSize = '22px';
+      } else if (textLength > 90) {
+        dynamicFontSize = '25px';
+      } else if (textLength > 65) {
+        dynamicFontSize = '28px';
+      }
 
       cardDynamicContent.innerHTML = `
-        <div class="chat-header">
-          <span class="chat-badge"><span class="chat-badge-dot"></span> OYENTE AL AIRE</span>
-          <span class="chat-author">${msg.nombre || 'ANÓNIMO'}</span>
-          ${lugarHtml}
+        <div class="chat-card-wrapper">
+          <div class="chat-top-bar">
+            <div class="chat-badge-pill"><span class="chat-badge-dot"></span> OYENTE AL AIRE</div>
+            <div class="chat-author-tag">${msg.nombre || 'ANÓNIMO'}</div>
+            ${lugarHtml}
+          </div>
+          <div class="chat-main-body" style="font-size: ${dynamicFontSize};" id="chatBodyContainer">
+            <span id="chatTextSpan" style="display: inline-block;">"${msg.msj || ''}"</span>
+          </div>
         </div>
-        <div class="chat-body">"${msg.msj || ''}"</div>
       `;
 
-      setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
-
       setTimeout(() => {
-        upperCard.classList.add('hidden-card');
-        setTimeout(() => {
-          chatIndex++;
-          if (chatIndex >= chatMessages.length) {
-            chatIndex = 0;
-            masterSection = 1;
+        upperCard.classList.remove('hidden-card');
+
+        const container = document.getElementById('chatBodyContainer');
+        const textSpan = document.getElementById('chatTextSpan');
+
+        if (container && textSpan) {
+          const overflowDistance = textSpan.offsetWidth - container.offsetWidth + 60;
+
+          if (overflowDistance > 0) {
+            const speedPxPerSec = 75;
+            const scrollDurationMs = (overflowDistance / speedPxPerSec) * 1000;
+            const initialPauseMs = 4000;
+            const finalPauseMs = 3000;
+
+            let startTime = null;
+
+            function animateStep(timestamp) {
+              if (!startTime) startTime = timestamp;
+              const elapsed = timestamp - startTime;
+
+              if (elapsed < initialPauseMs) {
+                textSpan.style.transform = 'translateX(0px)';
+              } else if (elapsed < (initialPauseMs + scrollDurationMs)) {
+                const progress = (elapsed - initialPauseMs) / scrollDurationMs;
+                const currentX = progress * overflowDistance;
+                textSpan.style.transform = `translateX(-${currentX}px)`;
+              } else {
+                textSpan.style.transform = `translateX(-${overflowDistance}px)`;
+              }
+
+              if (elapsed < (initialPauseMs + scrollDurationMs + finalPauseMs)) {
+                activeMarqueeFrame = requestAnimationFrame(animateStep);
+              } else {
+                upperCard.classList.add('hidden-card');
+                setTimeout(() => {
+                  chatIndex++;
+                  if (chatIndex >= chatMessages.length) {
+                    chatIndex = 0;
+                    masterSection = 1;
+                  }
+                  setTimeout(startMasterBroadcastLoop, 1200);
+                }, 400);
+              }
+            }
+
+            activeMarqueeFrame = requestAnimationFrame(animateStep);
+          } else {
+            // PERMANENCIA AMPLIADA A 25 SEGUNDOS PARA EL SALUDO
+            setTimeout(() => {
+              upperCard.classList.add('hidden-card');
+              setTimeout(() => {
+                chatIndex++;
+                if (chatIndex >= chatMessages.length) {
+                  chatIndex = 0;
+                  masterSection = 1;
+                }
+                setTimeout(startMasterBroadcastLoop, 1200);
+              }, 400);
+            }, 25000); 
           }
-          setTimeout(startMasterBroadcastLoop, 1200);
-        }, 400);
-      }, 18000);
+        }
+      }, 100);
     }
 
-    // 1. QUINI 6
+    // 1. QUINI 6 ESTILO BROADCAST
     function renderQuiniCard() {
       if (quiniIndex >= quiniList.length) quiniIndex = 0;
       const lot = quiniList[quiniIndex];
 
-      upperCard.className = 'upper-card hidden-card lottery-mode-border';
       let ballsHtml = '';
-      lot.numbers.forEach(num => { ballsHtml += `<div class="lottery-ball">${num}</div>`; });
+      lot.numbers.forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
 
       cardDynamicContent.innerHTML = `
-        <div class="lottery-layout">
-          <div class="lottery-info-box">
-            <div class="lottery-badge">${lot.game} • ${lot.info}</div>
-            <div class="lottery-date">• FECHA: ${lot.fecha}</div>
+        <div class="broadcast-tv-card">
+          <div class="card-left-badge badge-quini">
+            <div class="game-title">${lot.game}</div>
+            <div class="game-date">${lot.info} • ${lot.fecha}</div>
           </div>
-          <div class="lottery-mod-center">
-            <div class="lottery-mod-name">${lot.name}</div>
-          </div>
-          <div class="lottery-right-group">
-            <div class="lottery-balls-wrapper">${ballsHtml}</div>
+          <div class="card-center-title">${lot.name}</div>
+          <div class="card-right-content">
+            <div class="tv-balls-group">${ballsHtml}</div>
           </div>
         </div>
       `;
@@ -756,26 +787,23 @@
       }, 15000);
     }
 
-    // 2. BRINCO
+    // 2. BRINCO ESTILO BROADCAST
     function renderBrincoCard() {
       if (brincoIndex >= brincoList.length) brincoIndex = 0;
       const lot = brincoList[brincoIndex];
 
-      upperCard.className = 'upper-card hidden-card lottery-mode-border';
       let ballsHtml = '';
-      lot.numbers.forEach(num => { ballsHtml += `<div class="lottery-ball">${num}</div>`; });
+      lot.numbers.forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
 
       cardDynamicContent.innerHTML = `
-        <div class="lottery-layout">
-          <div class="lottery-info-box">
-            <div class="lottery-badge">${lot.game} • ${lot.info}</div>
-            <div class="lottery-date">• FECHA: ${lot.fecha}</div>
+        <div class="broadcast-tv-card">
+          <div class="card-left-badge badge-quini">
+            <div class="game-title">${lot.game}</div>
+            <div class="game-date">${lot.info} • ${lot.fecha}</div>
           </div>
-          <div class="lottery-mod-center">
-            <div class="lottery-mod-name">${lot.name}</div>
-          </div>
-          <div class="lottery-right-group">
-            <div class="lottery-balls-wrapper">${ballsHtml}</div>
+          <div class="card-center-title">${lot.name}</div>
+          <div class="card-right-content">
+            <div class="tv-balls-group">${ballsHtml}</div>
           </div>
         </div>
       `;
@@ -795,26 +823,22 @@
       }, 15000);
     }
 
-    // 3. QUINIELA MISIONERA (DISEÑO PROFESIONAL TV)
+    // 3. QUINIELA MISIONERA ESTILO BROADCAST
     function renderQuinielaCard() {
       if (quinielaIndex >= quinielaList.length) quinielaIndex = 0;
       const qm = quinielaList[quinielaIndex];
 
-      upperCard.className = 'upper-card hidden-card quiniela-mode-border';
-
       cardDynamicContent.innerHTML = `
-        <div class="lottery-layout">
-          <div class="lottery-info-box">
-            <div class="lottery-badge quiniela-badge">${qm.game}</div>
-            <div class="lottery-date">• FECHA: ${qm.fecha}</div>
+        <div class="broadcast-tv-card">
+          <div class="card-left-badge badge-quiniela">
+            <div class="game-title">${qm.game}</div>
+            <div class="game-date">FECHA: ${qm.fecha}</div>
           </div>
-          <div class="lottery-mod-center">
-            <div class="lottery-mod-name" style="color: #10b981;">TURNO ${qm.name}</div>
-          </div>
-          <div class="lottery-right-group">
-            <div class="quiniela-head-card">
-              <div class="quiniela-head-label">1° A LA<br>CABEZA</div>
-              <div class="quiniela-head-number">${qm.head}</div>
+          <div class="card-center-title" style="color: #047857;">TURNO ${qm.name}</div>
+          <div class="card-right-content">
+            <div class="quiniela-head-tv-box">
+              <div class="lbl">1° A LA<br>CABEZA</div>
+              <div class="num">${qm.head}</div>
             </div>
           </div>
         </div>
@@ -835,24 +859,22 @@
       }, 12000);
     }
 
-    // 4. HORÓSCOPO
+    // 4. HORÓSCOPO ESTILO BROADCAST
     function renderHoroscopeCard() {
       if (horoscopeIndex >= horoscopeList.length) horoscopeIndex = 0;
       const item = horoscopeList[horoscopeIndex];
 
-      upperCard.className = 'upper-card hidden-card horoscope-mode-border';
-
       cardDynamicContent.innerHTML = `
-        <div class="horoscope-layout">
-          <div class="horoscope-sign-badge">
-            <div class="sign-icon-box">${ZODIAC_SVGS[item.key] || ''}</div>
-            <div class="sign-meta-text">
-              <div class="sign-name-title">${item.name}</div>
-              <div class="sign-date-range">${item.dates}</div>
+        <div class="horoscope-tv-card">
+          <div class="horoscope-left-badge">
+            <div class="horoscope-icon-box">${ZODIAC_SVGS[item.key] || ''}</div>
+            <div class="horoscope-meta">
+              <div class="sign-title">${item.name}</div>
+              <div class="sign-dates">${item.dates}</div>
             </div>
           </div>
-          <div class="horoscope-text-wrapper" id="horoscopeWrapper">
-            <div class="horoscope-prediction-text" id="horoscopeText">${item.text}</div>
+          <div class="horoscope-prediction-body" id="horoscopeWrapper">
+            <div class="horoscope-scroll-text" id="horoscopeText">${item.text}</div>
           </div>
         </div>
       `;
@@ -926,7 +948,7 @@
     }
   </script>
 
-  <!-- TICKER INFERIOR DE NOTICIAS RSS -->
+  <!-- SCRIPT TICKER INFERIOR (PERMANENTE EN SEGUNDO PLANO / SIN INTERRUPCIÓN) -->
   <script>
     let rssAnimationId = null;
 
