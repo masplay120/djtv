@@ -67,7 +67,7 @@
       pointer-events: none;
     }
 
-    /* ESTILOS DEL CHAT (SALUDOS AL AIRE CON AUTOAJUSTE DE TEXTO) */
+    /* ESTILOS DEL CHAT (SALUDOS AL AIRE) */
     .chat-card-wrapper {
       display: flex;
       flex-direction: column;
@@ -148,6 +148,7 @@
     .broadcast-tv-card {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       width: 100%;
       height: 110px;
       background: #ffffff;
@@ -164,7 +165,7 @@
       flex-direction: column;
       justify-content: center;
       color: #ffffff;
-      min-width: 380px;
+      min-width: 400px;
       position: relative;
     }
 
@@ -174,6 +175,10 @@
 
     .badge-quiniela {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    .badge-promo {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     }
 
     .card-left-badge .game-title {
@@ -195,8 +200,8 @@
 
     .card-center-title {
       flex: 1;
-      padding: 0 25px;
-      font-size: 36px;
+      padding: 0 35px;
+      font-size: 32px;
       font-weight: 900;
       color: #0f172a;
       text-transform: uppercase;
@@ -205,23 +210,24 @@
     }
 
     .card-right-content {
-      padding-right: 30px;
+      padding-right: 35px;
       display: flex;
       align-items: center;
     }
 
+    /* ESPACIADO MEJORADO PARA QUINI 6 Y BRINCO */
     .tv-balls-group {
       display: flex;
-      gap: 12px;
+      gap: 22px; 
     }
 
     .tv-ball-item {
-      width: 68px;
-      height: 68px;
+      width: 70px;
+      height: 70px;
       background: radial-gradient(circle at 35% 35%, #ffffff, #cbd5e1);
       color: #0f172a;
       font-weight: 900;
-      font-size: 28px;
+      font-size: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -230,33 +236,70 @@
       border: 2px solid #94a3b8;
     }
 
+    /* QUINIELA MISIONERA: NÚMERO SOLO GIGANTE */
     .quiniela-head-tv-box {
       background: linear-gradient(135deg, #047857 0%, #064e3b 100%);
       color: #ffffff;
-      padding: 10px 28px;
-      border-radius: 14px;
+      padding: 10px 35px;
+      border-radius: 16px;
       display: flex;
       align-items: center;
-      gap: 20px;
+      justify-content: center;
       box-shadow: 0 4px 15px rgba(4, 120, 87, 0.4);
-    }
-
-    .quiniela-head-tv-box .lbl {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 18px;
-      font-weight: 900;
-      color: #a7f3d0;
-      line-height: 1.1;
-      text-align: right;
     }
 
     .quiniela-head-tv-box .num {
       font-family: 'Orbitron', sans-serif;
-      font-size: 48px;
+      font-size: 52px;
       font-weight: 900;
       color: #ffffff;
-      letter-spacing: 3px;
+      letter-spacing: 4px;
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    /* DISEÑO EXCLUSIVO CÓDIGO QR TELEVISIVO DE ALTA VISIBILIDAD */
+    .qr-tv-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      background: #0f172a;
+      padding: 4px 8px 6px 8px;
+      border-radius: 14px;
+      border: 2px solid #38bdf8;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    }
+
+    .qr-tv-header-tag {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      color: #ffffff;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      padding: 2px 14px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 4px;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+    }
+
+    .qr-tv-box {
+      background: #ffffff;
+      padding: 4px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 76px;
+      height: 76px;
+    }
+
+    .qr-tv-box img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
     }
 
     /* ESTILOS DE HORÓSCOPO TV */
@@ -280,7 +323,7 @@
       align-items: center;
       gap: 16px;
       color: #ffffff;
-      min-width: 380px;
+      min-width: 400px;
     }
 
     .horoscope-icon-box {
@@ -308,17 +351,26 @@
 
     .horoscope-meta .sign-title {
       font-family: 'Oswald', sans-serif;
-      font-size: 38px;
+      font-size: 34px;
       font-weight: 800;
       line-height: 1;
       text-transform: uppercase;
     }
 
-    .horoscope-meta .sign-dates {
-      font-size: 14px;
-      font-weight: 800;
+    .horoscope-meta .sign-sub {
+      font-size: 13px;
+      font-weight: 900;
       color: #fef3c7;
+      letter-spacing: 1.5px;
       margin-top: 2px;
+      text-transform: uppercase;
+    }
+
+    .horoscope-meta .sign-dates {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fde68a;
+      margin-top: 1px;
     }
 
     .horoscope-prediction-body {
@@ -339,6 +391,7 @@
       position: absolute;
       left: 30px;
       will-change: transform;
+      padding-right: 80px;
     }
 
     /* ---------------------------------------------------
@@ -469,7 +522,7 @@
       taurus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="6"/><path d="M6 4a6 6 0 0 0 12 0"/></svg>`,
       gemini: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4a16 16 0 0 0 16 0"/><path d="M4 20a16 16 0 0 1 16 0"/><path d="M8 4v16"/><path d="M16 4v16"/></svg>`,
       cancer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="10" r="3"/><circle cx="18" cy="14" r="3"/><path d="M9 10a7 7 0 0 0 11-4"/><path d="M15 14a7 7 0 0 0-11 4"/></svg>`,
-      leo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><path d="M10 17c0-4 3-7 7-7a4 4 0 0 0 0-8c-2.5 0-4.5 2-4.5 4.5 0 3.5 2 5.5 2 8.5 0 2.5-2 4-4.5 4"/></svg>`,
+      leo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><path d="M10 17c0-4 3-7 7-7a4 4 0 0 0 0-8c-2.5 0-4.5 2-4.5 4.5 0 3.5 2 5.5 2 8.5 0 2.5-2 4.5-4.5 4"/></svg>`,
       virgo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v10a3 3 0 0 0 6 0V4"/><path d="M10 4v10a3 3 0 0 0 6 0V4"/><path d="M16 4v10a3 3 0 0 0 3 3h1"/><path d="M18 13a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>`,
       libra: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M4 16h16"/><path d="M8 16a4 4 0 0 1 8 0"/><path d="M12 5v7"/><path d="M9 8h6"/></svg>`,
       scorpio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v10a3 3 0 0 0 6 0V4"/><path d="M10 4v10a3 3 0 0 0 6 0V4"/><path d="M16 4v11a2 2 0 0 0 2 2h3"/><path d="m19 15 3 2-3 2"/></svg>`,
@@ -494,19 +547,45 @@
       { key: 'pisces', apiKey: 'Pisces', name: 'Piscis', dates: '19 FEB - 20 MAR', defaultText: 'Sensibilidad y empatía conectando positivamente con quienes te rodean. Etapa de renovación espiritual.' }
     ];
 
-    let chatMessages = [];
+    // BANNER TV PROMO CON CÓDIGO QR GENERADO
+    const PROMO_CONFIG = [
+      {
+        badgeTitle: "SUMATE AL CHAT",
+        badgeSub: "COMUNIDAD TV",
+        mainText: "Escanear el QR para enviarnos tus mensajes y saludos al aire",
+        destinationUrl: "https://masplay120.github.io/djtv"
+      },
+
+      {
+        badgeTitle: "COLABORÁ CON EL CANAL",
+        badgeSub: "DONACIONES MP",
+        mainText: "Apoyá al canal con tu colaboración voluntaria por Mercado Pago",
+        destinationUrl: "https://link.mercadopago.com.ar/masplay" 
+      }
+    ];
+
+    // Cargar en memoria anticipada las imágenes de los QR
+    const preloadedQrImages = {};
+    PROMO_CONFIG.forEach(p => {
+      const img = new Image();
+      img.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(p.destinationUrl)}`;
+      preloadedQrImages[p.destinationUrl] = img;
+    });
+
+    let chatMessages = []; 
     let quiniList = [];
     let brincoList = [];
     let quinielaList = [];
-    let horoscopeList = [];
+    let horoscopeList = ZODIAC_CONFIG;
 
     let chatIndex = 0;
     let quiniIndex = 0;
     let brincoIndex = 0;
     let quinielaIndex = 0;
     let horoscopeIndex = 0;
+    let promoIndex = 0;
     
-    // ORDEN: 0 = Chat, 1 = Quini 6, 2 = Brinco, 3 = Quiniela Misionera, 4 = Horóscopo
+    // ORDEN DE ROTACIÓN: 0 = Chat (si hay), 1 = Quini 6, 2 = Brinco, 3 = Quiniela, 4 = Horóscopo, 5 = Promo QR
     let masterSection = 0; 
     let isMasterLoopRunning = false;
     let activeMarqueeFrame = null;
@@ -514,49 +593,51 @@
     const upperCard = document.getElementById('upperCard');
     const cardDynamicContent = document.getElementById('cardDynamicContent');
 
+    // Carga de Loterías
     async function loadLotteryData() {
       try {
         const cacheBuster = `?_t=${Date.now()}`;
         const [resQuini, resBrinco, resQuiniela] = await Promise.all([
-          fetch(`https://quini-6.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()),
-          fetch(`https://brinco.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()),
-          fetch(`https://quinielamisionera.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json())
+          fetch(`https://quini-6.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()).catch(() => ({})),
+          fetch(`https://brinco.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()).catch(() => ({})),
+          fetch(`https://quinielamisionera.fachacarlos1.workers.dev/${cacheBuster}`, { cache: "no-store" }).then(r => r.json()).catch(() => ({}))
         ]);
 
-        // 1. Quini 6
-        quiniList = [
-          { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: resQuini.tradicionalPrimerSorteo || ["04","05","32","39","40","44"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
-          { game: "QUINI 6", name: "La Segunda del Quini", numbers: resQuini.laSegunda || ["04","20","21","24","42","45"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
-          { game: "QUINI 6", name: "Revancha", numbers: resQuini.revancha || ["01","02","11","14","28","33"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
-          { game: "QUINI 6", name: "Siempre Sale", numbers: resQuini.siempreSale || ["13","21","39","42","43","45"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" }
-        ];
+        if (resQuini && resQuini.tradicionalPrimerSorteo) {
+          quiniList = [
+            { game: "QUINI 6", name: "Tradicional Primer Sorteo", numbers: resQuini.tradicionalPrimerSorteo, info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+            { game: "QUINI 6", name: "La Segunda del Quini", numbers: resQuini.laSegunda || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+            { game: "QUINI 6", name: "Revancha", numbers: resQuini.revancha || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" },
+            { game: "QUINI 6", name: "Siempre Sale", numbers: resQuini.siempreSale || ["--","--","--","--","--","--"], info: `SORTEO N° ${resQuini.sorteoNumero || '----'}`, fecha: resQuini.fecha || "" }
+          ];
+        }
 
-        // 2. Brinco
-        brincoList = [
-          { game: "BRINCO", name: "Extracciones", numbers: resBrinco.extracciones || ["07","22","26","33","34","39"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" },
-          { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior || ["05","12","20","23","30","38"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" }
-        ];
+        if (resBrinco && resBrinco.extracciones) {
+          brincoList = [
+            { game: "BRINCO", name: "Extracciones", numbers: resBrinco.extracciones, info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" },
+            { game: "BRINCO", name: "Brinco Junior", numbers: resBrinco.brincoJunior || ["--","--","--","--","--","--"], info: `SORTEO N° ${resBrinco.sorteoNumero || '----'}`, fecha: resBrinco.fecha || "" }
+          ];
+        }
 
-        // 3. Quiniela Misionera
-        const c = resQuiniela.cabezas || {};
-        quinielaList = [
-          { game: "QUINIELA MISIONERA", name: "Previa", head: c.previa || "3261", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Primera", head: c.primera || "4266", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Matutina", head: c.matutina || "3586", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Matutina Plus", head: c.matPlus || "2994", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Vespertina", head: c.vespertina || "0812", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Nocturna", head: c.nocturna || "7419", fecha: resQuiniela.fecha || "" },
-          { game: "QUINIELA MISIONERA", name: "Nocturna Plus", head: c.noctPlus || "9537", fecha: resQuiniela.fecha || "" }
-        ];
-
-      } catch (e) {
-        // Fallback silencioso
-      }
+        if (resQuiniela && resQuiniela.cabezas) {
+          const c = resQuiniela.cabezas;
+          quinielaList = [
+            { game: "QUINIELA MISIONERA", name: "PREVIA", head: c.previa || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "PRIMERA", head: c.primera || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "MATUTINA", head: c.matutina || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "MATUTINA PLUS", head: c.matPlus || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "VESPERTINA", head: c.vespertina || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "NOCTURNA", head: c.nocturna || "----", fecha: resQuiniela.fecha || "" },
+            { game: "QUINIELA MISIONERA", name: "NOCTURNA PLUS", head: c.noctPlus || "----", fecha: resQuiniela.fecha || "" }
+          ];
+        }
+      } catch (e) {}
     }
 
     loadLotteryData();
     setInterval(loadLotteryData, 3 * 60 * 1000);
 
+    // Escuchar mensajes de oyentes en Firebase
     const q = query(
       collection(db, "mensajes"),
       where("estado", "==", "aprobado"),
@@ -582,6 +663,7 @@
       }
     });
 
+    // Cargar Horóscopo
     async function loadHoroscopeAPIs() {
       const fetched = [];
       const cacheBuster = `&_t=${Date.now()}`;
@@ -600,78 +682,66 @@
 
         fetched.push({ ...sign, text: textLoaded || sign.defaultText });
       }
-      
       horoscopeList = fetched;
-      if (!isMasterLoopRunning) {
-        startMasterBroadcastLoop();
-      }
     }
 
     loadHoroscopeAPIs();
     setInterval(loadHoroscopeAPIs, 10 * 60 * 1000);
 
+    // MOTOR MAESTRO DE ROTACIÓN
     function startMasterBroadcastLoop() {
-      if (activeMarqueeFrame) cancelAnimationFrame(activeMarqueeFrame);
+      if (isMasterLoopRunning) return;
       isMasterLoopRunning = true;
+      runNextCard();
+    }
+
+    function runNextCard() {
+      if (activeMarqueeFrame) cancelAnimationFrame(activeMarqueeFrame);
 
       if (masterSection === 0) {
         if (chatMessages.length > 0) {
+          masterSection = 1;
           renderChatCard();
         } else {
           masterSection = 1;
-          startMasterBroadcastLoop();
+          runNextCard();
         }
       } else if (masterSection === 1) {
-        if (quiniList.length > 0) {
-          renderQuiniCard();
-        } else {
-          masterSection = 2;
-          startMasterBroadcastLoop();
-        }
+        masterSection = 2;
+        if (quiniList.length > 0) renderQuiniCard(); else runNextCard();
       } else if (masterSection === 2) {
-        if (brincoList.length > 0) {
-          renderBrincoCard();
-        } else {
-          masterSection = 3;
-          startMasterBroadcastLoop();
-        }
+        masterSection = 3;
+        if (brincoList.length > 0) renderBrincoCard(); else runNextCard();
       } else if (masterSection === 3) {
-        if (quinielaList.length > 0) {
-          renderQuinielaCard();
-        } else {
-          masterSection = 4;
-          startMasterBroadcastLoop();
-        }
+        masterSection = 4;
+        if (quinielaList.length > 0) renderQuinielaCard(); else runNextCard();
       } else if (masterSection === 4) {
-        if (horoscopeList.length > 0) {
-          renderHoroscopeCard();
-        } else {
-          masterSection = 0;
-          startMasterBroadcastLoop();
-        }
+        masterSection = 5;
+        if (horoscopeList.length > 0) renderHoroscopeCard(); else runNextCard();
+      } else if (masterSection === 5) {
+        masterSection = 0;
+        renderPromoQRCard(); 
       }
     }
 
-    // 0. CHAT / SALUDOS ESTILO BROADCAST CON DURACIÓN AMPLIADA (25 SEGUNDOS)
+    // 0. CHAT / SALUDOS (35 SEGUNDOS DE PERMANENCIA)
     function renderChatCard() {
+      if (chatMessages.length === 0) {
+        runNextCard();
+        return;
+      }
       if (chatIndex >= chatMessages.length) chatIndex = 0;
-      const msg = chatMessages[chatIndex];
+      const msg = chatMessages[chatIndex++];
 
       const lugarHtml = (msg.lugar && msg.lugar.trim() !== '') 
         ? `<div class="chat-location-tag">📍 ${msg.lugar.trim()}</div>` 
         : '';
 
       const textLength = (msg.msj || '').length;
-      
-      // Ajuste automático de fuente según la cantidad de caracteres
       let dynamicFontSize = '32px';
-      if (textLength > 120) {
-        dynamicFontSize = '22px';
-      } else if (textLength > 90) {
-        dynamicFontSize = '25px';
-      } else if (textLength > 65) {
-        dynamicFontSize = '28px';
-      }
+      if (textLength > 120) dynamicFontSize = '22px';
+      else if (textLength > 90) dynamicFontSize = '25px';
+      else if (textLength > 65) dynamicFontSize = '28px';
 
       cardDynamicContent.innerHTML = `
         <div class="chat-card-wrapper">
@@ -688,76 +758,53 @@
 
       setTimeout(() => {
         upperCard.classList.remove('hidden-card');
-
         const container = document.getElementById('chatBodyContainer');
         const textSpan = document.getElementById('chatTextSpan');
 
         if (container && textSpan) {
           const overflowDistance = textSpan.offsetWidth - container.offsetWidth + 60;
-
           if (overflowDistance > 0) {
-            const speedPxPerSec = 75;
+            const speedPxPerSec = 70;
             const scrollDurationMs = (overflowDistance / speedPxPerSec) * 1000;
-            const initialPauseMs = 4000;
-            const finalPauseMs = 3000;
-
             let startTime = null;
 
             function animateStep(timestamp) {
               if (!startTime) startTime = timestamp;
               const elapsed = timestamp - startTime;
-
-              if (elapsed < initialPauseMs) {
+              if (elapsed < 3500) {
                 textSpan.style.transform = 'translateX(0px)';
-              } else if (elapsed < (initialPauseMs + scrollDurationMs)) {
-                const progress = (elapsed - initialPauseMs) / scrollDurationMs;
-                const currentX = progress * overflowDistance;
-                textSpan.style.transform = `translateX(-${currentX}px)`;
+              } else if (elapsed < (3500 + scrollDurationMs)) {
+                const progress = (elapsed - 3500) / scrollDurationMs;
+                textSpan.style.transform = `translateX(-${progress * overflowDistance}px)`;
               } else {
                 textSpan.style.transform = `translateX(-${overflowDistance}px)`;
               }
 
-              if (elapsed < (initialPauseMs + scrollDurationMs + finalPauseMs)) {
+              if (elapsed < (3500 + scrollDurationMs + 3000)) {
                 activeMarqueeFrame = requestAnimationFrame(animateStep);
               } else {
                 upperCard.classList.add('hidden-card');
-                setTimeout(() => {
-                  chatIndex++;
-                  if (chatIndex >= chatMessages.length) {
-                    chatIndex = 0;
-                    masterSection = 1;
-                  }
-                  setTimeout(startMasterBroadcastLoop, 1200);
-                }, 400);
+                setTimeout(runNextCard, 1000);
               }
             }
-
             activeMarqueeFrame = requestAnimationFrame(animateStep);
           } else {
-            // PERMANENCIA AMPLIADA A 25 SEGUNDOS PARA EL SALUDO
             setTimeout(() => {
               upperCard.classList.add('hidden-card');
-              setTimeout(() => {
-                chatIndex++;
-                if (chatIndex >= chatMessages.length) {
-                  chatIndex = 0;
-                  masterSection = 1;
-                }
-                setTimeout(startMasterBroadcastLoop, 1200);
-              }, 400);
-            }, 25000); 
+              setTimeout(runNextCard, 1000);
+            }, 35000); // 35 Segundos exactos
           }
         }
       }, 100);
     }
 
-    // 1. QUINI 6 ESTILO BROADCAST
+    // 1. QUINI 6 (25 SEGUNDOS)
     function renderQuiniCard() {
       if (quiniIndex >= quiniList.length) quiniIndex = 0;
-      const lot = quiniList[quiniIndex];
+      const lot = quiniList[quiniIndex++];
 
       let ballsHtml = '';
-      lot.numbers.forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
+      (lot.numbers || ["04","05","32","39","40","44"]).forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
 
       cardDynamicContent.innerHTML = `
         <div class="broadcast-tv-card">
@@ -773,27 +820,19 @@
       `;
 
       setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
-
       setTimeout(() => {
         upperCard.classList.add('hidden-card');
-        setTimeout(() => {
-          quiniIndex++;
-          if (quiniIndex >= quiniList.length) {
-            quiniIndex = 0;
-            masterSection = 2;
-          }
-          setTimeout(startMasterBroadcastLoop, 1200);
-        }, 400);
-      }, 15000);
+        setTimeout(runNextCard, 1000);
+      }, 25000);
     }
 
-    // 2. BRINCO ESTILO BROADCAST
+    // 2. BRINCO (25 SEGUNDOS)
     function renderBrincoCard() {
       if (brincoIndex >= brincoList.length) brincoIndex = 0;
-      const lot = brincoList[brincoIndex];
+      const lot = brincoList[brincoIndex++];
 
       let ballsHtml = '';
-      lot.numbers.forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
+      (lot.numbers || ["07","22","26","33","34","39"]).forEach(num => { ballsHtml += `<div class="tv-ball-item">${num}</div>`; });
 
       cardDynamicContent.innerHTML = `
         <div class="broadcast-tv-card">
@@ -809,24 +848,16 @@
       `;
 
       setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
-
       setTimeout(() => {
         upperCard.classList.add('hidden-card');
-        setTimeout(() => {
-          brincoIndex++;
-          if (brincoIndex >= brincoList.length) {
-            brincoIndex = 0;
-            masterSection = 3;
-          }
-          setTimeout(startMasterBroadcastLoop, 1200);
-        }, 400);
-      }, 15000);
+        setTimeout(runNextCard, 1000);
+      }, 25000);
     }
 
-    // 3. QUINIELA MISIONERA ESTILO BROADCAST
+    // 3. QUINIELA MISIONERA (25 SEGUNDOS)
     function renderQuinielaCard() {
       if (quinielaIndex >= quinielaList.length) quinielaIndex = 0;
-      const qm = quinielaList[quinielaIndex];
+      const qm = quinielaList[quinielaIndex++];
 
       cardDynamicContent.innerHTML = `
         <div class="broadcast-tv-card">
@@ -834,10 +865,9 @@
             <div class="game-title">${qm.game}</div>
             <div class="game-date">FECHA: ${qm.fecha}</div>
           </div>
-          <div class="card-center-title" style="color: #047857;">TURNO ${qm.name}</div>
+          <div class="card-center-title" style="color: #047857;">1° A LA CABEZA DE LA ${qm.name}</div>
           <div class="card-right-content">
             <div class="quiniela-head-tv-box">
-              <div class="lbl">1° A LA<br>CABEZA</div>
               <div class="num">${qm.head}</div>
             </div>
           </div>
@@ -845,110 +875,118 @@
       `;
 
       setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
-
       setTimeout(() => {
         upperCard.classList.add('hidden-card');
-        setTimeout(() => {
-          quinielaIndex++;
-          if (quinielaIndex >= quinielaList.length) {
-            quinielaIndex = 0;
-            masterSection = 4;
-          }
-          setTimeout(startMasterBroadcastLoop, 1200);
-        }, 400);
-      }, 12000);
+        setTimeout(runNextCard, 1000);
+      }, 25000);
     }
 
-    // 4. HORÓSCOPO ESTILO BROADCAST
+    // 4. HORÓSCOPO
     function renderHoroscopeCard() {
       if (horoscopeIndex >= horoscopeList.length) horoscopeIndex = 0;
-      const item = horoscopeList[horoscopeIndex];
+      const item = horoscopeList[horoscopeIndex++];
 
       cardDynamicContent.innerHTML = `
         <div class="horoscope-tv-card">
           <div class="horoscope-left-badge">
-            <div class="horoscope-icon-box">${ZODIAC_SVGS[item.key] || ''}</div>
+            <div class="horoscope-icon-box">${ZODIAC_SVGS[item.key] || ZODIAC_SVGS['aries']}</div>
             <div class="horoscope-meta">
               <div class="sign-title">${item.name}</div>
+              <div class="sign-sub">HORÓSCOPO DEL DÍA</div>
               <div class="sign-dates">${item.dates}</div>
             </div>
           </div>
           <div class="horoscope-prediction-body" id="horoscopeWrapper">
-            <div class="horoscope-scroll-text" id="horoscopeText">${item.text}</div>
+            <div class="horoscope-scroll-text" id="horoscopeText">${item.text || item.defaultText}</div>
           </div>
         </div>
       `;
 
       setTimeout(() => {
         upperCard.classList.remove('hidden-card');
-
         const wrapper = document.getElementById('horoscopeWrapper');
         const textElem = document.getElementById('horoscopeText');
 
         if (wrapper && textElem) {
           const wrapperWidth = wrapper.offsetWidth;
           const textWidth = textElem.offsetWidth;
-          const overflowDistance = textWidth - wrapperWidth;
+          
+          const overflowDistance = textWidth - wrapperWidth + 90;
 
           if (overflowDistance > 0) {
-            const speedPxPerSec = 85; 
+            const speedPxPerSec = 75; 
             const scrollDurationMs = (overflowDistance / speedPxPerSec) * 1000;
-            const initialPauseMs = 3500; 
-            const finalPauseMs = 2500;    
-
             let startTime = null;
 
             function animateStep(timestamp) {
               if (!startTime) startTime = timestamp;
               const elapsed = timestamp - startTime;
-
-              if (elapsed < initialPauseMs) {
+              if (elapsed < 3500) {
                 textElem.style.transform = 'translateX(0px)';
-              } else if (elapsed < (initialPauseMs + scrollDurationMs)) {
-                const progress = (elapsed - initialPauseMs) / scrollDurationMs;
-                const currentX = progress * overflowDistance;
-                textElem.style.transform = `translateX(-${currentX}px)`;
+              } else if (elapsed < (3500 + scrollDurationMs)) {
+                const progress = (elapsed - 3500) / scrollDurationMs;
+                textElem.style.transform = `translateX(-${progress * overflowDistance}px)`;
               } else {
                 textElem.style.transform = `translateX(-${overflowDistance}px)`;
               }
 
-              if (elapsed < (initialPauseMs + scrollDurationMs + finalPauseMs)) {
+              if (elapsed < (3500 + scrollDurationMs + 3000)) {
                 activeMarqueeFrame = requestAnimationFrame(animateStep);
               } else {
                 upperCard.classList.add('hidden-card');
-                setTimeout(() => {
-                  horoscopeIndex++;
-                  if (horoscopeIndex >= horoscopeList.length) {
-                    horoscopeIndex = 0;
-                    masterSection = 0;
-                  }
-                  setTimeout(startMasterBroadcastLoop, 1200);
-                }, 400);
+                setTimeout(runNextCard, 1000);
               }
             }
-
             activeMarqueeFrame = requestAnimationFrame(animateStep);
-
           } else {
             textElem.style.transform = 'translateX(0px)';
             setTimeout(() => {
               upperCard.classList.add('hidden-card');
-              setTimeout(() => {
-                horoscopeIndex++;
-                if (horoscopeIndex >= horoscopeList.length) {
-                  horoscopeIndex = 0;
-                  masterSection = 0;
-                }
-                setTimeout(startMasterBroadcastLoop, 1200);
-              }, 400);
-            }, 10000);
+              setTimeout(runNextCard, 1000);
+            }, 12000);
           }
         }
       }, 100);
     }
+
+    // 5. BANNER TV CON CÓDIGO QR PRECARGADO (CARGA INSTANTÁNEA + INSIGNIA ESCANEAR QR)
+    function renderPromoQRCard() {
+      if (promoIndex >= PROMO_CONFIG.length) promoIndex = 0;
+      const promo = PROMO_CONFIG[promoIndex++];
+
+      const qrSrc = preloadedQrImages[promo.destinationUrl] 
+        ? preloadedQrImages[promo.destinationUrl].src 
+        : `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(promo.destinationUrl)}`;
+
+      cardDynamicContent.innerHTML = `
+        <div class="broadcast-tv-card">
+          <div class="card-left-badge badge-promo">
+            <div class="game-title">${promo.badgeTitle}</div>
+            <div class="game-date">${promo.badgeSub}</div>
+          </div>
+          <div class="card-center-title">${promo.mainText}</div>
+          <div class="card-right-content">
+            <div class="qr-tv-container">
+              <span class="qr-tv-header-tag">ESCANEAR QR</span>
+              <div class="qr-tv-box">
+                <img src="${qrSrc}" alt="QR Code" />
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => upperCard.classList.remove('hidden-card'), 100);
+      setTimeout(() => {
+        upperCard.classList.add('hidden-card');
+        setTimeout(runNextCard, 1000);
+      }, 60000); // 60 SEGUNDOS EXACTOS
+    }
+
+    startMasterBroadcastLoop();
   </script>
 
-  <!-- SCRIPT TICKER INFERIOR (PERMANENTE EN SEGUNDO PLANO / SIN INTERRUPCIÓN) -->
+  <!-- SCRIPT TICKER INFERIOR (PERMANENTE EN SEGUNDO PLANO) -->
   <script>
     let rssAnimationId = null;
 
@@ -968,27 +1006,15 @@
               const rawSource = (sourceObj.source || "").toLowerCase();
               const rawLabel = (sourceObj.sourceLabel || "").toLowerCase();
 
-              if (rawSource.includes("clarin") || rawLabel.includes("clarin")) {
-                sourceTag = "CLARÍN";
-              } else if (rawSource.includes("lanoticia") || rawLabel.includes("noticia")) {
-                sourceTag = "LA NOTICIA";
-              } else if (rawSource.includes("infobae") || rawLabel.includes("infobae")) {
-                sourceTag = "INFOBAE";
-              } else if (rawSource.includes("perfil") || rawLabel.includes("perfil")) {
-                sourceTag = "PERFIL";
-              } else if (rawSource.includes("ole") || rawLabel.includes("ole")) {
-                sourceTag = "OLÉ";
-              } else {
-                sourceTag = sourceObj.sourceLabel ? sourceObj.sourceLabel.toUpperCase() : "ARGENTINA";
-              }
+              if (rawSource.includes("clarin") || rawLabel.includes("clarin")) sourceTag = "CLARÍN";
+              else if (rawSource.includes("lanoticia") || rawLabel.includes("noticia")) sourceTag = "LA NOTICIA";
+              else if (rawSource.includes("infobae") || rawLabel.includes("infobae")) sourceTag = "INFOBAE";
+              else if (rawSource.includes("perfil") || rawLabel.includes("perfil")) sourceTag = "PERFIL";
+              else if (rawSource.includes("ole") || rawLabel.includes("ole")) sourceTag = "OLÉ";
+              else sourceTag = sourceObj.sourceLabel ? sourceObj.sourceLabel.toUpperCase() : "ARGENTINA";
 
               sourceObj.posts.slice(0, 5).forEach(post => {
-                if (post.title) {
-                  newsList.push({
-                    text: post.title.trim(),
-                    source: sourceTag
-                  });
-                }
+                if (post.title) newsList.push({ text: post.title.trim(), source: sourceTag });
               });
             }
           });
@@ -1036,11 +1062,7 @@
       function step() {
         posX -= speed;
         const contentWidth = container.scrollWidth / 2;
-
-        if (contentWidth > 0 && Math.abs(posX) >= contentWidth) {
-          posX = 0;
-        }
-
+        if (contentWidth > 0 && Math.abs(posX) >= contentWidth) posX = 0;
         container.style.transform = `translateX(${posX}px)`;
         rssAnimationId = requestAnimationFrame(step);
       }
