@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Cabeceras anti-caché para el HTML -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -24,6 +25,16 @@
     .hidden-widget-trigger {
       display: none !important; visibility: hidden !important;
       width: 0 !important; height: 0 !important; overflow: hidden !important;
+    }
+
+    /* PANEL DE DIAGNÓSTICO (Visible para que verifiques en OBS que funciona) */
+    #debug-panel {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(0, 0, 0, 0.85); color: #00ff66;
+      padding: 8px 12px; font-family: 'Orbitron', monospace;
+      font-size: 11px; z-index: 10000; border-radius: 6px;
+      border: 1px solid #333; pointer-events: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
 
     /* ---------------------------------------------------
@@ -198,6 +209,9 @@
 </head>
 <body>
 
+  <!-- Panel de diagnóstico para verificar en OBS -->
+  <div id="debug-panel">🟢 Sistema: Iniciando...</div>
+
   <div class="hidden-widget-trigger">
     <div id="JFWebsiteWidget-01a120be41b070008003137f1833c7dc8d78"></div>
     <script src="https://www.jotform.com/website-widgets/embed/01a120be41b070008003137f1833c7dc8d78" defer></script>
@@ -219,6 +233,14 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const debugPanel = document.getElementById('debug-panel');
+    function setDebug(msg, isError = false) {
+      if (debugPanel) {
+        debugPanel.innerHTML = isError ? `🔴 ${msg}` : `🟢 ${msg}`;
+        debugPanel.style.color = isError ? '#ff4444' : '#00ff66';
+      }
+    }
 
     const firebaseConfig = {
       apiKey: "AIzaSyARhC07Q4CvEqB1JytYK_AkY2_HQw4ToSY",
@@ -285,12 +307,11 @@
     let isMasterLoopRunning = false;
     let activeMarqueeFrame = null;
 
-    // PERRO GUARDIÁN (WATCHDOG): Reinicia si el bucle se congela por más de 4 minutos
     let lastLoopUpdate = Date.now();
     function resetWatchdog() { lastLoopUpdate = Date.now(); }
     setInterval(() => {
       if (Date.now() - lastLoopUpdate > 240000) {
-        console.warn("⚠️ WATCHDOG: Bucle congelado. Recargando página para recuperar estabilidad...");
+        setDebug("WATCHDOG: Recargando por congelamiento", true);
         window.location.reload();
       }
     }, 60000);
@@ -335,8 +356,10 @@
             { game: "QUINIELA MISIONERA", name: "NOCTURNA PLUS", head: c.noctPlus || "----", fecha: resQuiniela.fecha || "" }
           ];
         }
+        setDebug("Loterías: Sincronizadas");
       } catch (e) {
-        console.warn("Error cargando loterías, se mantienen datos anteriores o vacíos.", e);
+        console.warn("Error cargando loterías", e);
+        setDebug("Loterías: Error de red", true);
       }
     }
 
@@ -359,6 +382,7 @@
       });
 
       if (!isMasterLoopRunning) {
+        setDebug("Chat: Conectado a Firebase");
         startMasterBroadcastLoop();
       }
     });
@@ -396,36 +420,23 @@
       runNextCard();
     }
 
-    // LÓGICA DE ROTACIÓN MEJORADA Y A PRUEBA DE FALLOS
     function runNextCard() {
-      resetWatchdog(); // Reinicia el temporizador de seguridad
-      
+      resetWatchdog();
       if (activeMarqueeFrame) {
         cancelAnimationFrame(activeMarqueeFrame);
         activeMarqueeFrame = null;
       }
 
-      // Avanzar a la siguiente sección (0 a 5)
       masterSection = (masterSection + 1) % 6;
 
       switch(masterSection) {
-        case 0: // Chat
-          if (chatMessages.length > 0) { renderChatCard(); return; }
-          // Si no hay chat, cae al siguiente caso automáticamente (fallthrough)
-        case 1: // Quini 6
-          if (quiniList.length > 0) { renderQuiniCard(); return; }
-        case 2: // Brinco
-          if (brincoList.length > 0) { renderBrincoCard(); return; }
-        case 3: // Quiniela
-          if (quinielaList.length > 0) { renderQuinielaCard(); return; }
-        case 4: // Horóscopo
-          if (horoscopeList.length > 0) { renderHoroscopeCard(); return; }
-        case 5: // Promo QR (Siempre se muestra si todo lo demás falla)
-          renderPromoQRCard(); 
-          return;
+        case 0: if (chatMessages.length > 0) { renderChatCard(); return; }
+        case 1: if (quiniList.length > 0) { renderQuiniCard(); return; }
+        case 2: if (brincoList.length > 0) { renderBrincoCard(); return; }
+        case 3: if (quinielaList.length > 0) { renderQuinielaCard(); return; }
+        case 4: if (horoscopeList.length > 0) { renderHoroscopeCard(); return; }
+        case 5: renderPromoQRCard(); return;
       }
-      
-      // Fallback extremo: si todo está vacío, mostrar Promo
       renderPromoQRCard();
     }
 
@@ -646,40 +657,40 @@
   <script>
     let rssAnimationId = null;
 
-    async function fetchJotformNews() {
+    // FUNCIÓN MEJORADA: OBTIENE NOTICIAS REALES VÍA RSS SIN PROBLEMAS DE CORS
+    async function fetchRealNews() {
       let newsList = [];
       try {
-        const cacheBuster = `&_t=${Date.now()}`;
-        const apiUrl = `https://api.jotform.com/website-widgets/templates/019f3bae37487000889dd04d159b98b17f3a/execute-action?action=refreshSocialFeed&widgetID=01a13e9789a87000805d60e413b14e37d5b0${cacheBuster}`;
-        const res = await fetch(apiUrl, { cache: "no-store" });
+        setDebug("Sincronizando noticias RSS...");
+        
+        // Usamos allorigins.win como proxy CORS gratuito y confiable para obtener RSS reales
+        const rssUrl = 'https://www.clarin.com/rss/lo-ultimo/'; // Puedes cambiar esto por el RSS que prefieras
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}&_t=${Date.now()}`;
+        
+        const res = await fetch(proxyUrl, { cache: "no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
+        
         const data = await res.json();
-
-        if (data && data.content && data.content.feedData && data.content.feedData.sources) {
-          data.content.feedData.sources.forEach(sourceObj => {
-            if (sourceObj.success && sourceObj.posts && sourceObj.posts.length > 0) {
-              let sourceTag = "NOTICIAS";
-              const rawSource = (sourceObj.source || "").toLowerCase();
-              const rawLabel = (sourceObj.sourceLabel || "").toLowerCase();
-
-              if (rawSource.includes("clarin") || rawLabel.includes("clarin")) sourceTag = "CLARÍN";
-              else if (rawSource.includes("lanoticia") || rawLabel.includes("noticia")) sourceTag = "LA NOTICIA";
-              else if (rawSource.includes("infobae") || rawLabel.includes("infobae")) sourceTag = "INFOBAE";
-              else if (rawSource.includes("perfil") || rawLabel.includes("perfil")) sourceTag = "PERFIL";
-              else if (rawSource.includes("ole") || rawLabel.includes("ole")) sourceTag = "OLÉ";
-              else sourceTag = sourceObj.sourceLabel ? sourceObj.sourceLabel.toUpperCase() : "ARGENTINA";
-
-              sourceObj.posts.slice(0, 5).forEach(post => {
-                if (post.title) newsList.push({ text: post.title.trim(), source: sourceTag });
-              });
+        
+        // allorigins devuelve el contenido del RSS en data.contents como string XML
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+        const items = xmlDoc.querySelectorAll("item");
+        
+        if (items.length > 0) {
+          items.forEach((item, index) => {
+            if (index < 15) { // Tomamos las 15 noticias más recientes
+              const title = item.querySelector("title")?.textContent || "Sin título";
+              newsList.push({ text: title.trim(), source: "CLARÍN" });
             }
           });
+          setDebug(`Noticias: ${newsList.length} artículos cargados`);
+        } else {
+          throw new Error("No se encontraron items en el RSS");
         }
       } catch (e) {
-        console.warn("Fallo en API de Noticias, usando fallback local.", e);
-      }
-
-      if (newsList.length === 0) {
+        console.warn("Fallo en RSS, usando fallback local.", e);
+        setDebug("RSS: Falló. Usando fallback local.", true);
         newsList = [
           { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas en calidad HD.", source: "DJ TV" },
           { text: "Seguinos en nuestras redes sociales oficiales y participá de la programación diaria.", source: "REDES" },
@@ -687,7 +698,12 @@
           { text: "Envianos tus saludos y dedicatorias a través del chat interactivo en pantalla.", source: "CHAT" },
           { text: "Transmitiendo en vivo desde Posadas, Misiones, para todo el país y el mundo.", source: "ON AIR" }
         ];
+      }
+
+      if (newsList.length === 0) {
+         newsList = [{ text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas.", source: "DJ TV" }];
       } else {
+        // Mezclamos un poco para que el ticker no sea siempre el mismo orden si se recarga
         newsList.sort(() => Math.random() - 0.5);
       }
       startTickerAnimation(newsList);
@@ -702,7 +718,7 @@
       }
 
       let htmlContent = '';
-      const newsToRender = [...newsList, ...newsList]; 
+      const newsToRender = [...newsList, ...newsList]; // Duplicamos para loop infinito suave
       newsToRender.forEach(item => {
         htmlContent += `<div class="news-item"><span class="news-source">${item.source}</span> ${item.text}<span class="news-separator">•</span></div>`;
       });
@@ -723,8 +739,9 @@
       setTimeout(step, 100);
     }
 
-    fetchJotformNews();
-    setInterval(fetchJotformNews, 15 * 60 * 1000);
+    // Cargar noticias al inicio y cada 10 minutos
+    fetchRealNews();
+    setInterval(fetchRealNews, 10 * 60 * 1000);
   </script>
 </body>
 </html>
