@@ -4,69 +4,224 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
   <title>DJ TV Estación Mix - Master Broadcast Zócalo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Orbitron:wght@700;900&family=Oswald:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&family=Orbitron:wght@700;900&family=Oswald:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       margin: 0 !important; padding: 0 !important;
-      background: transparent !important; overflow: hidden; font-family: 'Montserrat', sans-serif;
+      background: transparent !important; background-color: rgba(0, 0, 0, 0) !important;
+      overflow: hidden; font-family: 'Montserrat', sans-serif;
       width: 1920px; height: 1080px; user-select: none;
     }
-    .tv-master-lower-third { position: absolute; bottom: 0; left: 0; width: 1920px; height: 1080px; z-index: 9999; pointer-events: none; }
-    #debug-panel { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.85); color: #00ff66; padding: 8px 12px; font-family: 'Orbitron', monospace; font-size: 11px; z-index: 10000; border-radius: 6px; border: 1px solid #333; pointer-events: none; }
-    .upper-card { position: absolute; bottom: 75px; left: 60px; width: 1800px; height: 135px; transition: opacity 0.4s, transform 0.4s; display: flex; align-items: center; filter: drop-shadow(0 12px 25px rgba(0,0,0,0.85)); }
-    .upper-card.hidden-card { opacity: 0; transform: translateY(30px); pointer-events: none; }
+    .tv-master-lower-third {
+      position: absolute; bottom: 0; left: 0; width: 1920px; height: 1080px;
+      z-index: 9999; pointer-events: none;
+    }
+    .hidden-widget-trigger {
+      display: none !important; visibility: hidden !important;
+      width: 0 !important; height: 0 !important; overflow: hidden !important;
+    }
+
+    /* PANEL DE DIAGNÓSTICO (Solo visible para depuración, puedes ocultarlo cambiando opacity a 0) */
+    #debug-panel {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(0, 0, 0, 0.85); color: #00ff66;
+      padding: 8px 12px; font-family: 'Orbitron', monospace;
+      font-size: 11px; z-index: 10000; border-radius: 6px;
+      border: 1px solid #333; pointer-events: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      transition: opacity 0.3s;
+    }
+
+    /* ---------------------------------------------------
+       1. PISO SUPERIOR: PLACA ESTILO BROADCAST LOWER THIRD
+    --------------------------------------------------- */
+    .upper-card {
+      position: absolute; bottom: 75px; left: 60px; width: 1800px; height: 135px;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex; align-items: center;
+      filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.85));
+    }
+    .upper-card.hidden-card {
+      opacity: 0; transform: translateY(30px); pointer-events: none;
+    }
+
     .chat-card-wrapper { display: flex; flex-direction: column; width: 100%; }
-    .chat-top-bar { display: flex; align-items: center; height: 48px; }
-    .chat-badge-pill { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); color: #fff; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; padding: 8px 24px; border-radius: 14px 14px 0 0; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
-    .chat-badge-dot { width: 10px; height: 10px; background-color: #00ff66; border-radius: 50%; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .chat-author-tag { background: #0f172a; color: #f472b6; font-weight: 900; font-size: 22px; padding: 6px 20px; border-radius: 0 12px 0 0; text-transform: uppercase; border-top: 2px solid #ec4899; border-right: 2px solid #ec4899; }
-    .chat-location-tag { background: #1e293b; color: #38bdf8; font-weight: 800; font-size: 20px; padding: 6px 18px; border-radius: 0 12px 0 0; margin-left: 2px; border-top: 2px solid #38bdf8; border-right: 2px solid #38bdf8; }
-    .chat-main-body { background: #fff; color: #0f172a; font-weight: 900; font-style: italic; padding: 10px 28px; border-radius: 0 16px 16px 16px; border-left: 10px solid #ec4899; white-space: nowrap; overflow: hidden; width: 100%; }
-    .broadcast-tv-card { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 110px; background: #fff; border-radius: 20px; overflow: hidden; border: 3px solid #1e293b; }
-    .card-left-badge { height: 100%; padding: 0 32px; display: flex; flex-direction: column; justify-content: center; color: #fff; min-width: 400px; }
+    .chat-top-bar { display: flex; align-items: center; gap: 0px; height: 48px; }
+    .chat-badge-pill {
+      background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+      color: #ffffff; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900;
+      padding: 8px 24px; border-radius: 14px 14px 0 0; display: flex; align-items: center; gap: 10px;
+      text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 -4px 10px rgba(236, 72, 153, 0.4);
+    }
+    .chat-badge-dot {
+      width: 10px; height: 10px; background-color: #00ff66; border-radius: 50%;
+      box-shadow: 0 0 10px #00ff66; animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    .chat-author-tag {
+      background: #0f172a; color: #f472b6; font-weight: 900; font-size: 22px;
+      padding: 6px 20px; border-radius: 0 12px 0 0; text-transform: uppercase;
+      letter-spacing: 1px; border-top: 2px solid #ec4899; border-right: 2px solid #ec4899;
+    }
+    .chat-location-tag {
+      background: #1e293b; color: #38bdf8; font-weight: 800; font-size: 20px;
+      padding: 6px 18px; border-radius: 0 12px 0 0; margin-left: 2px;
+      border-top: 2px solid #38bdf8; border-right: 2px solid #38bdf8;
+    }
+    .chat-main-body {
+      background: #ffffff; color: #0f172a; font-weight: 900; font-style: italic;
+      padding: 10px 28px; border-radius: 0 16px 16px 16px; border-left: 10px solid #ec4899;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4); white-space: nowrap; overflow: hidden; width: 100%;
+    }
+
+    .broadcast-tv-card {
+      display: flex; align-items: center; justify-content: space-between; width: 100%; height: 110px;
+      background: #ffffff; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 3px solid #1e293b;
+    }
+    .card-left-badge {
+      height: 100%; padding: 0 32px; display: flex; flex-direction: column;
+      justify-content: center; color: #ffffff; min-width: 400px; position: relative;
+    }
     .badge-quini { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); }
     .badge-quiniela { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
     .badge-promo { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
-    .card-left-badge .game-title { font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; text-transform: uppercase; }
-    .card-left-badge .game-date { font-size: 18px; font-weight: 800; color: #f8fafc; margin-top: 4px; text-transform: uppercase; }
-    .card-center-title { flex: 1; padding: 0 35px; font-size: 32px; font-weight: 900; color: #0f172a; text-transform: uppercase; font-style: italic; }
+    .card-left-badge .game-title {
+      font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900;
+      letter-spacing: 1.5px; text-transform: uppercase; line-height: 1.1;
+    }
+    .card-left-badge .game-date {
+      font-size: 18px; font-weight: 800; color: #f8fafc; margin-top: 4px; text-transform: uppercase;
+    }
+    .card-center-title {
+      flex: 1; padding: 0 35px; font-size: 32px; font-weight: 900; color: #0f172a;
+      text-transform: uppercase; letter-spacing: 1px; font-style: italic;
+    }
     .card-right-content { padding-right: 35px; display: flex; align-items: center; }
     .tv-balls-group { display: flex; gap: 22px; }
-    .tv-ball-item { width: 70px; height: 70px; background: radial-gradient(circle at 35% 35%, #fff, #cbd5e1); color: #0f172a; font-weight: 900; font-size: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #94a3b8; }
-    .quiniela-head-tv-box { background: linear-gradient(135deg, #047857 0%, #064e3b 100%); color: #fff; padding: 10px 35px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
-    .quiniela-head-tv-box .num { font-family: 'Orbitron', sans-serif; font-size: 52px; font-weight: 900; letter-spacing: 4px; }
-    .qr-tv-container { display: flex; flex-direction: column; align-items: center; background: #0f172a; padding: 4px 8px 6px; border-radius: 14px; border: 2px solid #38bdf8; }
-    .qr-tv-header-tag { font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 900; color: #fff; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 2px 14px; border-radius: 6px; text-transform: uppercase; margin-bottom: 4px; }
-    .qr-tv-box { background: #fff; padding: 4px; border-radius: 10px; width: 76px; height: 76px; display: flex; align-items: center; justify-content: center; }
-    .qr-tv-box img { width: 100%; height: 100%; object-fit: contain; }
-    .horoscope-tv-card { display: flex; align-items: center; width: 100%; height: 110px; background: #fff; border-radius: 20px; overflow: hidden; border: 3px solid #f59e0b; }
-    .horoscope-left-badge { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); height: 100%; padding: 0 28px; display: flex; align-items: center; gap: 16px; color: #fff; min-width: 400px; }
-    .horoscope-icon-box { width: 58px; height: 58px; background: #fff; color: #d97706; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .tv-ball-item {
+      width: 70px; height: 70px; background: radial-gradient(circle at 35% 35%, #ffffff, #cbd5e1);
+      color: #0f172a; font-weight: 900; font-size: 30px; display: flex; align-items: center;
+      justify-content: center; border-radius: 50%;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4), inset -3px -3px 6px rgba(0, 0, 0, 0.2);
+      border: 2px solid #94a3b8;
+    }
+    .quiniela-head-tv-box {
+      background: linear-gradient(135deg, #047857 0%, #064e3b 100%); color: #ffffff;
+      padding: 10px 35px; border-radius: 16px; display: flex; align-items: center;
+      justify-content: center; box-shadow: 0 4px 15px rgba(4, 120, 87, 0.4);
+    }
+    .quiniela-head-tv-box .num {
+      font-family: 'Orbitron', sans-serif; font-size: 52px; font-weight: 900;
+      color: #ffffff; letter-spacing: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+    .qr-tv-container {
+      display: flex; flex-direction: column; align-items: center; position: relative;
+      background: #0f172a; padding: 4px 8px 6px 8px; border-radius: 14px;
+      border: 2px solid #38bdf8; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    }
+    .qr-tv-header-tag {
+      font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 900; color: #ffffff;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 2px 14px;
+      border-radius: 6px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+    }
+    .qr-tv-box {
+      background: #ffffff; padding: 4px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; width: 76px; height: 76px;
+    }
+    .qr-tv-box img { width: 100%; height: 100%; display: block; object-fit: contain; }
+
+    .horoscope-tv-card {
+      display: flex; align-items: center; width: 100%; height: 110px;
+      background: #ffffff; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 3px solid #f59e0b;
+    }
+    .horoscope-left-badge {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%); height: 100%;
+      padding: 0 28px; display: flex; align-items: center; gap: 16px;
+      color: #ffffff; min-width: 400px;
+    }
+    .horoscope-icon-box {
+      width: 58px; height: 58px; background: #ffffff; color: #d97706;
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
     .horoscope-icon-box svg { width: 38px; height: 38px; }
     .horoscope-meta { display: flex; flex-direction: column; }
-    .horoscope-meta .sign-title { font-family: 'Oswald', sans-serif; font-size: 34px; font-weight: 800; line-height: 1; text-transform: uppercase; }
-    .horoscope-meta .sign-sub { font-size: 13px; font-weight: 900; color: #fef3c7; letter-spacing: 1.5px; margin-top: 2px; text-transform: uppercase; }
+    .horoscope-meta .sign-title {
+      font-family: 'Oswald', sans-serif; font-size: 34px; font-weight: 800;
+      line-height: 1; text-transform: uppercase;
+    }
+    .horoscope-meta .sign-sub {
+      font-size: 13px; font-weight: 900; color: #fef3c7; letter-spacing: 1.5px;
+      margin-top: 2px; text-transform: uppercase;
+    }
     .horoscope-meta .sign-dates { font-size: 13px; font-weight: 800; color: #fde68a; margin-top: 1px; }
-    .horoscope-prediction-body { flex: 1; padding: 0 30px; overflow: hidden; position: relative; display: flex; align-items: center; height: 100%; }
-    .horoscope-scroll-text { font-size: 30px; font-weight: 800; color: #0f172a; white-space: nowrap; position: absolute; left: 30px; will-change: transform; padding-right: 80px; }
-    .news-row { position: absolute; bottom: 0; left: 0; width: 1920px; height: 60px; background: rgba(8,8,14,0.98); border-top: 2px solid #2563eb; display: flex; align-items: center; }
-    .news-badge { flex-shrink: 0; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); height: 100%; padding: 0 24px; display: flex; align-items: center; color: #fff; font-weight: 900; font-size: 24px; letter-spacing: 2px; white-space: nowrap; text-transform: uppercase; font-family: 'Orbitron', sans-serif; z-index: 30; }
-    .ticker-wrapper { flex: 1 1 0%; min-width: 0; height: 100%; overflow: hidden; position: relative; display: flex; align-items: center; }
-    .ticker-content { display: flex; align-items: center; white-space: nowrap; position: absolute; will-change: transform; left: 0; }
-    .news-item { display: inline-flex; align-items: center; font-size: 22px; font-weight: 700; color: #fff; padding-right: 40px; }
-    .news-source { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #38bdf8; font-weight: 900; font-size: 14px; padding: 3px 8px; border-radius: 4px; margin-right: 12px; text-transform: uppercase; }
+    .horoscope-prediction-body {
+      flex: 1; padding: 0 30px; overflow: hidden; position: relative;
+      display: flex; align-items: center; height: 100%;
+    }
+    .horoscope-scroll-text {
+      font-size: 30px; font-weight: 800; color: #0f172a; white-space: nowrap;
+      position: absolute; left: 30px; will-change: transform; padding-right: 80px;
+    }
+
+    /* ---------------------------------------------------
+       2. PISO INFERIOR: TICKER DE NOTICIAS RSS
+    --------------------------------------------------- */
+    .news-row {
+      position: absolute; bottom: 0; left: 0; width: 1920px; height: 60px;
+      background: rgba(8, 8, 14, 0.98); border-top: 2px solid #2563eb;
+      display: flex; align-items: center;
+    }
+    .news-badge {
+      flex-shrink: 0; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      height: 100%; padding: 0 24px; display: flex; align-items: center;
+      color: #ffffff; font-weight: 900; font-size: 24px; letter-spacing: 2px;
+      white-space: nowrap; text-transform: uppercase; font-family: 'Orbitron', sans-serif;
+      z-index: 30; box-shadow: 4px 0 12px rgba(0,0,0,0.5);
+    }
+    .ticker-wrapper {
+      flex: 1 1 0%; min-width: 0; height: 100%; overflow: hidden;
+      position: relative; display: flex; align-items: center;
+    }
+    .ticker-content {
+      display: flex; align-items: center; white-space: nowrap;
+      position: absolute; will-change: transform; left: 0;
+    }
+    .news-item {
+      display: inline-flex; align-items: center; font-size: 22px; font-weight: 700;
+      color: #ffffff; padding-right: 40px;
+    }
+    .news-source {
+      background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #38bdf8; font-weight: 900; font-size: 14px; padding: 3px 8px;
+      border-radius: 4px; margin-right: 12px; text-transform: uppercase; letter-spacing: 1px;
+    }
     .news-separator { color: #2563eb; margin-left: 25px; font-size: 18px; }
   </style>
 </head>
 <body>
+
+  <!-- Panel de diagnóstico para identificar fallos de red/CORS en OBS -->
   <div id="debug-panel">🟢 Sistema: Iniciando...</div>
+
+  <div class="hidden-widget-trigger">
+    <div id="JFWebsiteWidget-01a120be41b070008003137f1833c7dc8d78"></div>
+    <script src="https://www.jotform.com/website-widgets/embed/01a120be41b070008003137f1833c7dc8d78" defer></script>
+  </div>
+
   <div class="tv-master-lower-third">
     <div id="upperCard" class="upper-card hidden-card">
       <div id="cardDynamicContent" style="width: 100%;"></div>
     </div>
+
     <div class="news-row">
       <div class="news-badge">ÚLTIMO MOMENTO</div>
       <div class="ticker-wrapper">
@@ -95,42 +250,43 @@
       messagingSenderId: "955348774578",
       appId: "1:955348774578:web:221c8f8edac25a53e023ab"
     };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     const ZODIAC_SVGS = {
-      aries: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21V9"/><path d="M12 9a5 5 0 0 0-5-5c-2.8 0-5 2.2-5 5 0 2.5 2 4.5 4.5 4.5"/><path d="M12 9a5 5 0 0 1 5-5c2.8 0 5 2.2 5 5 0 2.5-2 4.5-4.5 4.5"/></svg>`,
-      taurus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="14" r="6"/><path d="M6 4a6 6 0 0 0 12 0"/></svg>`,
-      gemini: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4a16 16 0 0 0 16 0"/><path d="M4 20a16 16 0 0 1 16 0"/><path d="M8 4v16"/><path d="M16 4v16"/></svg>`,
-      cancer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="6" cy="10" r="3"/><circle cx="18" cy="14" r="3"/><path d="M9 10a7 7 0 0 0 11-4"/><path d="M15 14a7 7 0 0 0-11 4"/></svg>`,
-      leo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="7" cy="17" r="3"/><path d="M10 17c0-4 3-7 7-7a4 4 0 0 0 0-8c-2.5 0-4.5 2-4.5 4.5 0 3.5 2 5.5 2 8.5 0 2.5-2 4.5-4.5 4"/></svg>`,
-      virgo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4v10a3 3 0 0 0 6 0V4"/><path d="M10 4v10a3 3 0 0 0 6 0V4"/><path d="M16 4v10a3 3 0 0 0 3 3h1"/><path d="M18 13a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>`,
-      libra: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 20h16"/><path d="M4 16h16"/><path d="M8 16a4 4 0 0 1 8 0"/><path d="M12 5v7"/><path d="M9 8h6"/></svg>`,
-      scorpio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4v10a3 3 0 0 0 6 0V4"/><path d="M10 4v10a3 3 0 0 0 6 0V4"/><path d="M16 4v11a2 2 0 0 0 2 2h3"/><path d="m19 15 3 2-3 2"/></svg>`,
-      sagittarius: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 5 5 19"/><path d="M14 5h5v5"/><path d="M9 9 5 5"/><path d="M19 19l-4-4"/></svg>`,
-      capricorn: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4l5 13a2 2 0 0 0 4 0l3-8"/><circle cx="18" cy="15" r="3"/><path d="M18 18c0 2-1.5 3.5-3.5 3.5S11 20 11 18"/></svg>`,
-      aquarius: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 8 3-3 4 4 4-4 4 4 3-3"/><path d="m3 16 3-3 4 4 4-4 4 4 3-3"/></svg>`,
-      pisces: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12h16"/><path d="M6 4a16 16 0 0 1 0 16"/><path d="M18 4a16 16 0 0 0 0 16"/></svg>`
+      aries: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9"/><path d="M12 9a5 5 0 0 0-5-5c-2.8 0-5 2.2-5 5 0 2.5 2 4.5 4.5 4.5"/><path d="M12 9a5 5 0 0 1 5-5c2.8 0 5 2.2 5 5 0 2.5-2 4.5-4.5 4.5"/></svg>`,
+      taurus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="6"/><path d="M6 4a6 6 0 0 0 12 0"/></svg>`,
+      gemini: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4a16 16 0 0 0 16 0"/><path d="M4 20a16 16 0 0 1 16 0"/><path d="M8 4v16"/><path d="M16 4v16"/></svg>`,
+      cancer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="10" r="3"/><circle cx="18" cy="14" r="3"/><path d="M9 10a7 7 0 0 0 11-4"/><path d="M15 14a7 7 0 0 0-11 4"/></svg>`,
+      leo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><path d="M10 17c0-4 3-7 7-7a4 4 0 0 0 0-8c-2.5 0-4.5 2-4.5 4.5 0 3.5 2 5.5 2 8.5 0 2.5-2 4.5-4.5 4"/></svg>`,
+      virgo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v10a3 3 0 0 0 6 0V4"/><path d="M10 4v10a3 3 0 0 0 6 0V4"/><path d="M16 4v10a3 3 0 0 0 3 3h1"/><path d="M18 13a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>`,
+      libra: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M4 16h16"/><path d="M8 16a4 4 0 0 1 8 0"/><path d="M12 5v7"/><path d="M9 8h6"/></svg>`,
+      scorpio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v10a3 3 0 0 0 6 0V4"/><path d="M10 4v10a3 3 0 0 0 6 0V4"/><path d="M16 4v11a2 2 0 0 0 2 2h3"/><path d="m19 15 3 2-3 2"/></svg>`,
+      sagittarius: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 5 19"/><path d="M14 5h5v5"/><path d="M9 9 5 5"/><path d="M19 19l-4-4"/></svg>`,
+      capricorn: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l5 13a2 2 0 0 0 4 0l3-8"/><circle cx="18" cy="15" r="3"/><path d="M18 18c0 2-1.5 3.5-3.5 3.5S11 20 11 18"/></svg>`,
+      aquarius: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3-3 4 4 4-4 4 4 3-3"/><path d="m3 16 3-3 4 4 4-4 4 4 3-3"/></svg>`,
+      pisces: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M6 4a16 16 0 0 1 0 16"/><path d="M18 4a16 16 0 0 0 0 16"/></svg>`
     };
 
     const ZODIAC_CONFIG = [
-      { key: 'aries', apiKey: 'aries', name: 'Aries', dates: '21 MAR - 19 ABR', defaultText: 'Momentos de gran energía creativa y proyectos que comienzan a dar sus frutos.' },
-      { key: 'taurus', apiKey: 'Taurus', name: 'Tauro', dates: '20 ABR - 20 MAY', defaultText: 'Estabilidad y buenas oportunidades financieras.' },
-      { key: 'gemini', apiKey: 'Gemini', name: 'Géminis', dates: '21 MAY - 20 JUN', defaultText: 'La comunicación y las relaciones sociales están a tu favor.' },
-      { key: 'cancer', apiKey: 'Cancer', name: 'Cáncer', dates: '21 JUN - 22 JUL', defaultText: 'Escuchá tu intuición para tomar decisiones importantes.' },
-      { key: 'leo', apiKey: 'leo', name: 'Leo', dates: '23 JUL - 22 AGO', defaultText: 'Tu liderazgo natural destaca hoy con fuerza.' },
-      { key: 'virgo', apiKey: 'Virgo', name: 'Virgo', dates: '23 AGO - 22 SEP', defaultText: 'Organización y disciplina clave para resolver temas pendientes.' },
-      { key: 'libra', apiKey: 'Libra', name: 'Libra', dates: '23 SEP - 22 OCT', defaultText: 'Búsqueda de equilibrio e inspiración.' },
-      { key: 'scorpio', apiKey: 'Scorpio', name: 'Escorpio', dates: '23 OCT - 21 NOV', defaultText: 'Determinación y pasión en todo lo que emprendas.' },
-      { key: 'sagittarius', apiKey: 'Sagittarius', name: 'Sagitario', dates: '22 NOV - 21 DIC', defaultText: 'Aventuras y nuevas experiencias en el horizonte.' },
-      { key: 'capricorn', apiKey: 'Capricorn', name: 'Capricornio', dates: '22 DIC - 19 ENE', defaultText: 'Perseverancia y enfoque profesional garantizados.' },
-      { key: 'aquarius', apiKey: 'Aquarius', name: 'Acuario', dates: '20 ENE - 18 FEB', defaultText: 'Ideas innovadoras y originales que marcan la diferencia.' },
-      { key: 'pisces', apiKey: 'Pisces', name: 'Piscis', dates: '19 FEB - 20 MAR', defaultText: 'Sensibilidad y empatía conectando positivamente.' }
+      { key: 'aries', apiKey: 'aries', name: 'Aries', dates: '21 MAR - 19 ABR', defaultText: 'Momentos de gran energía creativa y proyectos que comienzan a dar sus frutos. Mantené el enfoque.' },
+      { key: 'taurus', apiKey: 'Taurus', name: 'Tauro', dates: '20 ABR - 20 MAY', defaultText: 'Estabilidad y buenas oportunidades financieras. Tiempo ideal para afianzar proyectos personales.' },
+      { key: 'gemini', apiKey: 'Gemini', name: 'Géminis', dates: '21 MAY - 20 JUN', defaultText: 'La comunicación y las relaciones sociales están a tu favor. Buena jornada para entablar nuevos contactos.' },
+      { key: 'cancer', apiKey: 'Cancer', name: 'Cáncer', dates: '21 JUN - 22 JUL', defaultText: 'Escuchá tu intuición para tomar decisiones importantes en lo personal. Gran armonía familiar.' },
+      { key: 'leo', apiKey: 'leo', name: 'Leo', dates: '23 JUL - 22 AGO', defaultText: 'Tu liderazgo natural destaca hoy con fuerza. Momento de brillar y cosechar éxitos en el trabajo.' },
+      { key: 'virgo', apiKey: 'Virgo', name: 'Virgo', dates: '23 AGO - 22 SEP', defaultText: 'Organización y disciplina clave para resolver temas pendientes. La constancia dará excelentes resultados.' },
+      { key: 'libra', apiKey: 'Libra', name: 'Libra', dates: '23 SEP - 22 OCT', defaultText: 'Búsqueda de equilibrio e inspiración. La música y el arte renovarán tus energías plenamente.' },
+      { key: 'scorpio', apiKey: 'Scorpio', name: 'Escorpio', dates: '23 OCT - 21 NOV', defaultText: 'Determinación y pasión en todo lo que emprendas. Grandes cambios positivos en camino.' },
+      { key: 'sagittarius', apiKey: 'Sagittarius', name: 'Sagitario', dates: '22 NOV - 21 DIC', defaultText: 'Aventuras y nuevas experiencias en el horizonte. Mantené la mente abierta a nuevos conocimientos.' },
+      { key: 'capricorn', apiKey: 'Capricorn', name: 'Capricornio', dates: '22 DIC - 19 ENE', defaultText: 'Perseverancia y enfoque profesional garantizados. Paso a paso avanzás seguro hacia tus metas.' },
+      { key: 'aquarius', apiKey: 'Aquarius', name: 'Acuario', dates: '20 ENE - 18 FEB', defaultText: 'Ideas innovadoras y originales que marcan la diferencia. Confía en tu talento sin dudar.' },
+      { key: 'pisces', apiKey: 'Pisces', name: 'Piscis', dates: '19 FEB - 20 MAR', defaultText: 'Sensibilidad y empatía conectando positivamente con quienes te rodean. Etapa de renovación espiritual.' }
     ];
 
     const PROMO_CONFIG = [
-      { badgeTitle: "SUMATE AL CHAT", badgeSub: "COMUNIDAD TV", mainText: "Escanear el QR para enviarnos tus mensajes", destinationUrl: "https://masplay120.github.io/djtv" },
-      { badgeTitle: "COLABORÁ CON EL CANAL", badgeSub: "DONACIONES MP", mainText: "Apoyá al canal con tu colaboración voluntaria", destinationUrl: "https://link.mercadopago.com.ar/masplay" }
+      { badgeTitle: "SUMATE AL CHAT", badgeSub: "COMUNIDAD TV", mainText: "Escanear el QR para enviarnos tus mensajes y saludos al aire", destinationUrl: "https://masplay120.github.io/djtv" },
+      { badgeTitle: "COLABORÁ CON EL CANAL", badgeSub: "DONACIONES MP", mainText: "Apoyá al canal con tu colaboración voluntaria por Mercado Pago", destinationUrl: "https://link.mercadopago.com.ar/masplay" }
     ];
 
     const preloadedQrImages = {};
@@ -140,9 +296,25 @@
       preloadedQrImages[p.destinationUrl] = img;
     });
 
-    let chatMessages = [], quiniList = [], brincoList = [], quinielaList = [], horoscopeList = [...ZODIAC_CONFIG];
+    let chatMessages = []; 
+    let quiniList = [];
+    let brincoList = [];
+    let quinielaList = [];
+    let horoscopeList = [...ZODIAC_CONFIG];
+
     let chatIndex = 0, quiniIndex = 0, brincoIndex = 0, quinielaIndex = 0, horoscopeIndex = 0, promoIndex = 0;
-    let masterSection = 0, isMasterLoopRunning = false, activeMarqueeFrame = null;
+    let masterSection = 0; 
+    let isMasterLoopRunning = false;
+    let activeMarqueeFrame = null;
+
+    let lastLoopUpdate = Date.now();
+    function resetWatchdog() { lastLoopUpdate = Date.now(); }
+    setInterval(() => {
+      if (Date.now() - lastLoopUpdate > 240000) {
+        setDebug("WATCHDOG: Recargando por congelamiento", true);
+        window.location.reload();
+      }
+    }, 60000);
 
     const upperCard = document.getElementById('upperCard');
     const cardDynamicContent = document.getElementById('cardDynamicContent');
@@ -186,13 +358,13 @@
         }
         setDebug("Loterías: Sincronizadas");
       } catch (e) {
-        console.warn("Error cargando loterías", e);
+        console.warn("Error cargando loterías, se mantienen datos anteriores o vacíos.", e);
         setDebug("Loterías: Error de red", true);
       }
     }
 
     loadLotteryData();
-    setInterval(loadLotteryData, 5 * 60 * 1000);
+    setInterval(loadLotteryData, 3 * 60 * 1000);
 
     const q = query(collection(db, "mensajes"), where("estado", "==", "aprobado"), orderBy("timestamp", "desc"));
     onSnapshot(q, (snapshot) => {
@@ -216,50 +388,31 @@
     });
 
     async function loadHoroscopeAPIs() {
-      const now = Date.now();
-      const lastUpdate = parseInt(localStorage.getItem('horoscope_last_update') || '0');
-      const hoursSinceUpdate = (now - lastUpdate) / (1000 * 60 * 60);
-
-      if (hoursSinceUpdate < 6) {
-        const cached = localStorage.getItem('horoscope_data');
-        if (cached) {
-          horoscopeList = JSON.parse(cached);
-          setDebug("Horóscopo: Usando caché (menos de 6h)");
-          return;
-        }
-      }
-
       try {
         const fetched = [];
+        const cacheBuster = `&_t=${Date.now()}`;
         for (const sign of ZODIAC_CONFIG) {
-          let textLoaded = sign.defaultText;
+          let textLoaded = null;
           try {
-            const url = `https://api.jotform.com/website-widgets/templates/019f365ed74870008e184f2271ab1b90f656/execute-action?action=getHoroscopeData&period=daily&sign=${sign.apiKey}&language=es&widgetID=01a120be41b070008003137f1833c7dc8d78&_t=${now}`;
+            const url = `https://api.jotform.com/website-widgets/templates/019f365ed74870008e184f2271ab1b90f656/execute-action?action=getHoroscopeData&period=daily&sign=${sign.apiKey}&language=es&widgetID=01a120be41b070008003137f1833c7dc8d78${cacheBuster}`;
             const res = await fetch(url, { cache: "no-store" });
             if (res.ok) {
               const json = await res.json();
-              if (json?.content?.horoscope) {
+              if (json && json.content && json.content.horoscope) {
                 textLoaded = json.content.horoscope.trim();
               }
             }
-          } catch (e) {}
-          fetched.push({ ...sign, text: textLoaded });
+          } catch (e) { /* Silencioso, usa default */ }
+          fetched.push({ ...sign, text: textLoaded || sign.defaultText });
         }
         horoscopeList = fetched;
-        localStorage.setItem('horoscope_data', JSON.stringify(fetched));
-        localStorage.setItem('horoscope_last_update', now.toString());
-        setDebug("Horóscopo: Actualizado desde API");
       } catch (e) {
-        const cached = localStorage.getItem('horoscope_data');
-        if (cached) {
-          horoscopeList = JSON.parse(cached);
-          setDebug("Horóscopo: Usando caché (API falló)", true);
-        }
+        console.warn("Error cargando horóscopo, se usan valores por defecto.", e);
       }
     }
 
     loadHoroscopeAPIs();
-    setInterval(loadHoroscopeAPIs, 6 * 60 * 60 * 1000);
+    setInterval(loadHoroscopeAPIs, 10 * 60 * 1000);
 
     function startMasterBroadcastLoop() {
       if (isMasterLoopRunning) return;
@@ -268,6 +421,7 @@
     }
 
     function runNextCard() {
+      resetWatchdog();
       if (activeMarqueeFrame) {
         cancelAnimationFrame(activeMarqueeFrame);
         activeMarqueeFrame = null;
@@ -441,7 +595,7 @@
         if (wrapper && textElem) {
           const overflowDistance = textElem.offsetWidth - wrapper.offsetWidth + 90;
           if (overflowDistance > 0) {
-            const speedPxPerSec = 75;
+            const speedPxPerSec = 75; 
             const scrollDurationMs = (overflowDistance / speedPxPerSec) * 1000;
             let startTime = null;
 
@@ -504,30 +658,18 @@
     let rssAnimationId = null;
 
     async function fetchJotformNews() {
-      const now = Date.now();
-      const lastUpdate = parseInt(localStorage.getItem('news_last_update') || '0');
-      const hoursSinceUpdate = (now - lastUpdate) / (1000 * 60 * 60);
-
-      if (hoursSinceUpdate < 6) {
-        const cached = localStorage.getItem('news_data');
-        if (cached) {
-          startTickerAnimation(JSON.parse(cached));
-          setDebug("Noticias: Usando caché (menos de 6h)");
-          return;
-        }
-      }
-
       let newsList = [];
       try {
         setDebug("Sincronizando noticias...");
-        const apiUrl = `https://api.jotform.com/website-widgets/templates/019f3bae37487000889dd04d159b98b17f3a/execute-action?action=refreshSocialFeed&widgetID=01a13e9789a87000805d60e413b14e37d5b0&_t=${now}`;
+        const cacheBuster = `&_t=${Date.now()}`;
+        const apiUrl = `https://api.jotform.com/website-widgets/templates/019f3bae37487000889dd04d159b98b17f3a/execute-action?action=refreshSocialFeed&widgetID=01a13e9789a87000805d60e413b14e37d5b0${cacheBuster}`;
         const res = await fetch(apiUrl, { cache: "no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
 
-        if (data?.content?.feedData?.sources) {
+        if (data && data.content && data.content.feedData && data.content.feedData.sources) {
           data.content.feedData.sources.forEach(sourceObj => {
-            if (sourceObj.success && sourceObj.posts?.length > 0) {
+            if (sourceObj.success && sourceObj.posts && sourceObj.posts.length > 0) {
               let sourceTag = "NOTICIAS";
               const rawSource = (sourceObj.source || "").toLowerCase();
               const rawLabel = (sourceObj.sourceLabel || "").toLowerCase();
@@ -544,31 +686,26 @@
               });
             }
           });
-
-          if (newsList.length > 0) {
-            localStorage.setItem('news_data', JSON.stringify(newsList));
-            localStorage.setItem('news_last_update', now.toString());
-            setDebug(`Noticias: ${newsList.length} artículos cargados`);
-          }
+          setDebug(`Noticias: ${newsList.length} artículos cargados`);
+        } else {
+          throw new Error("Formato de datos inesperado");
         }
       } catch (e) {
-        console.warn("Fallo en API de Noticias", e);
-        const cached = localStorage.getItem('news_data');
-        if (cached) {
-          newsList = JSON.parse(cached);
-          setDebug("Noticias: Usando caché (API falló)", true);
-        } else {
-          setDebug("Noticias: Usando fallback local", true);
-          newsList = [
-            { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas.", source: "DJ TV" },
-            { text: "Seguinos en nuestras redes sociales oficiales.", source: "REDES" },
-            { text: "Disfrutá de la mejor selección de música retro, pop, reggaeton, electro y rock nacional.", source: "MÚSICA" }
-          ];
-        }
+        console.warn("Fallo en API de Noticias, usando fallback local.", e);
+        setDebug("API Noticias: Bloqueada (CORS/Red). Usando fallback.", true);
+        newsList = [
+          { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas en calidad HD.", source: "DJ TV" },
+          { text: "Seguinos en nuestras redes sociales oficiales y participá de la programación diaria.", source: "REDES" },
+          { text: "Disfrutá de la mejor selección de música retro, pop, reggaeton, electro y rock nacional.", source: "MÚSICA" },
+          { text: "Envianos tus saludos y dedicatorias a través del chat interactivo en pantalla.", source: "CHAT" },
+          { text: "Transmitiendo en vivo desde Posadas, Misiones, para todo el país y el mundo.", source: "ON AIR" }
+        ];
       }
 
       if (newsList.length === 0) {
-        newsList = [{ text: "Bienvenidos a DJ TV Estación Mix.", source: "DJ TV" }];
+         newsList = [
+          { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas en calidad HD.", source: "DJ TV" }
+        ];
       } else {
         newsList.sort(() => Math.random() - 0.5);
       }
@@ -584,16 +721,17 @@
       }
 
       let htmlContent = '';
-      [...newsList, ...newsList].forEach(item => {
+      const newsToRender = [...newsList, ...newsList]; 
+      newsToRender.forEach(item => {
         htmlContent += `<div class="news-item"><span class="news-source">${item.source}</span> ${item.text}<span class="news-separator">•</span></div>`;
       });
 
       container.innerHTML = htmlContent;
       container.style.transform = 'translateX(0px)';
-
+      
       let posX = 0;
-      const speed = 1.2;
-
+      const speed = 1.2; 
+      
       function step() {
         posX -= speed;
         const contentWidth = container.scrollWidth / 2;
@@ -605,7 +743,7 @@
     }
 
     fetchJotformNews();
-    setInterval(fetchJotformNews, 6 * 60 * 60 * 1000);
+    setInterval(fetchJotformNews, 15 * 60 * 1000);
   </script>
 </body>
 </html>
