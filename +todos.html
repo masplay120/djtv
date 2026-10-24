@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Cabeceras anti-caché para el HTML -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -27,7 +26,7 @@
       width: 0 !important; height: 0 !important; overflow: hidden !important;
     }
 
-    /* PANEL DE DIAGNÓSTICO (Visible para que verifiques en OBS que funciona) */
+    /* PANEL DE DIAGNÓSTICO: Te dirá si está usando datos en vivo o caché */
     #debug-panel {
       position: absolute; top: 10px; right: 10px;
       background: rgba(0, 0, 0, 0.85); color: #00ff66;
@@ -209,7 +208,6 @@
 </head>
 <body>
 
-  <!-- Panel de diagnóstico para verificar en OBS -->
   <div id="debug-panel">🟢 Sistema: Iniciando...</div>
 
   <div class="hidden-widget-trigger">
@@ -364,7 +362,7 @@
     }
 
     loadLotteryData();
-    setInterval(loadLotteryData, 3 * 60 * 1000);
+    setInterval(loadLotteryData, 5 * 60 * 1000); // Reducido a 5 min para no saturar
 
     const q = query(collection(db, "mensajes"), where("estado", "==", "aprobado"), orderBy("timestamp", "desc"));
     onSnapshot(q, (snapshot) => {
@@ -387,10 +385,15 @@
       }
     });
 
+    // ---------------------------------------------------------
+    // HORÓSCOPO CON CACHÉ LOCAL (Inmune a bloqueos de API)
+    // ---------------------------------------------------------
     async function loadHoroscopeAPIs() {
       try {
         const fetched = [];
         const cacheBuster = `&_t=${Date.now()}`;
+        let allSuccess = true;
+
         for (const sign of ZODIAC_CONFIG) {
           let textLoaded = null;
           try {
@@ -400,19 +403,45 @@
               const json = await res.json();
               if (json && json.content && json.content.horoscope) {
                 textLoaded = json.content.horoscope.trim();
+              } else {
+                allSuccess = false;
               }
+            } else {
+              allSuccess = false;
             }
-          } catch (e) { /* Silencioso, usa default */ }
-          fetched.push({ ...sign, text: textLoaded || sign.defaultText });
+          } catch (e) {
+            allSuccess = false;
+          }
+          
+          // Si falló la API, recuperar de caché local
+          if (!textLoaded) {
+            const cached = localStorage.getItem(`horoscope_${sign.key}`);
+            textLoaded = cached ? JSON.parse(cached).text : sign.defaultText;
+          } else {
+            // Si tuvo éxito, guardar en caché local para el futuro
+            localStorage.setItem(`horoscope_${sign.key}`, JSON.stringify({
+              text: textLoaded,
+              timestamp: Date.now()
+            }));
+          }
+          fetched.push({ ...sign, text: textLoaded });
         }
+        
         horoscopeList = fetched;
+        if (allSuccess) {
+          setDebug("Horóscopo: Actualizado desde API");
+        } else {
+          setDebug("Horóscopo: Usando datos en caché (API limitada)", true);
+        }
       } catch (e) {
-        console.warn("Error cargando horóscopo, se usan valores por defecto.", e);
+        console.warn("Error cargando horóscopo", e);
       }
     }
 
     loadHoroscopeAPIs();
-    setInterval(loadHoroscopeAPIs, 10 * 60 * 1000);
+    // CAMBIO CLAVE: Los horóscopos solo cambian 1 vez al día. Pedirlos cada 10 min causa bloqueos.
+    // Lo cambiamos a cada 6 horas (21600000 ms).
+    setInterval(loadHoroscopeAPIs, 6 * 60 * 60 * 1000);
 
     function startMasterBroadcastLoop() {
       if (isMasterLoopRunning) return;
@@ -657,53 +686,82 @@
   <script>
     let rssAnimationId = null;
 
-    // FUNCIÓN MEJORADA: OBTIENE NOTICIAS REALES VÍA RSS SIN PROBLEMAS DE CORS
-    async function fetchRealNews() {
+    // ---------------------------------------------------------
+    // NOTICIAS CON CACHÉ LOCAL (Inmune a bloqueos de API)
+    // ---------------------------------------------------------
+    async function fetchJotformNews() {
       let newsList = [];
+      let useCache = false;
+
       try {
-        setDebug("Sincronizando noticias RSS...");
+        setDebug("Sincronizando noticias...");
+        const cacheBuster = `&_t=${Date.now()}`;
+        const apiUrl = `https://api.jotform.com/website-widgets/templates/019f3bae37487000889dd04d159b98b17f3a/execute-action?action=refreshSocialFeed&widgetID=01a13e9789a87000805d60e413b14e37d5b0${cacheBuster}`;
+        const res = await fetch(apiUrl, { cache: "no-store" });
         
-        // Usamos allorigins.win como proxy CORS gratuito y confiable para obtener RSS reales
-        const rssUrl = 'https://www.clarin.com/rss/lo-ultimo/'; // Puedes cambiar esto por el RSS que prefieras
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}&_t=${Date.now()}`;
-        
-        const res = await fetch(proxyUrl, { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
+        if (!res.ok) {
+          if (res.status === 429) {
+            setDebug("Noticias: API bloqueada por exceso de solicitudes. Usando caché.", true);
+          }
+          throw new Error("HTTP " + res.status);
+        }
         
         const data = await res.json();
-        
-        // allorigins devuelve el contenido del RSS en data.contents como string XML
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-        const items = xmlDoc.querySelectorAll("item");
-        
-        if (items.length > 0) {
-          items.forEach((item, index) => {
-            if (index < 15) { // Tomamos las 15 noticias más recientes
-              const title = item.querySelector("title")?.textContent || "Sin título";
-              newsList.push({ text: title.trim(), source: "CLARÍN" });
+
+        if (data && data.content && data.content.feedData && data.content.feedData.sources) {
+          data.content.feedData.sources.forEach(sourceObj => {
+            if (sourceObj.success && sourceObj.posts && sourceObj.posts.length > 0) {
+              let sourceTag = "NOTICIAS";
+              const rawSource = (sourceObj.source || "").toLowerCase();
+              const rawLabel = (sourceObj.sourceLabel || "").toLowerCase();
+
+              if (rawSource.includes("clarin") || rawLabel.includes("clarin")) sourceTag = "CLARÍN";
+              else if (rawSource.includes("lanoticia") || rawLabel.includes("noticia")) sourceTag = "LA NOTICIA";
+              else if (rawSource.includes("infobae") || rawLabel.includes("infobae")) sourceTag = "INFOBAE";
+              else if (rawSource.includes("perfil") || rawLabel.includes("perfil")) sourceTag = "PERFIL";
+              else if (rawSource.includes("ole") || rawLabel.includes("ole")) sourceTag = "OLÉ";
+              else sourceTag = sourceObj.sourceLabel ? sourceObj.sourceLabel.toUpperCase() : "ARGENTINA";
+
+              sourceObj.posts.slice(0, 5).forEach(post => {
+                if (post.title) newsList.push({ text: post.title.trim(), source: sourceTag });
+              });
             }
           });
-          setDebug(`Noticias: ${newsList.length} artículos cargados`);
+          
+          if (newsList.length > 0) {
+            // Guardar en caché local para usar si la API falla en el futuro
+            localStorage.setItem('djtv_news_cache', JSON.stringify(newsList));
+            setDebug(`Noticias: ${newsList.length} artículos cargados`);
+          }
         } else {
-          throw new Error("No se encontraron items en el RSS");
+          throw new Error("Formato de datos inesperado");
         }
       } catch (e) {
-        console.warn("Fallo en RSS, usando fallback local.", e);
-        setDebug("RSS: Falló. Usando fallback local.", true);
-        newsList = [
-          { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas en calidad HD.", source: "DJ TV" },
-          { text: "Seguinos en nuestras redes sociales oficiales y participá de la programación diaria.", source: "REDES" },
-          { text: "Disfrutá de la mejor selección de música retro, pop, reggaeton, electro y rock nacional.", source: "MÚSICA" },
-          { text: "Envianos tus saludos y dedicatorias a través del chat interactivo en pantalla.", source: "CHAT" },
-          { text: "Transmitiendo en vivo desde Posadas, Misiones, para todo el país y el mundo.", source: "ON AIR" }
-        ];
+        console.warn("Fallo en API de Noticias, usando caché o fallback.", e);
+        
+        // INTENTAR RECUPERAR DE CACHÉ LOCAL
+        const cachedNews = localStorage.getItem('djtv_news_cache');
+        if (cachedNews) {
+          newsList = JSON.parse(cachedNews);
+          setDebug("Noticias: Usando caché local (API temporalmente no disponible)", true);
+          useCache = true;
+        } else {
+          // Fallback extremo si no hay caché
+          setDebug("Noticias: Usando fallback local", true);
+          newsList = [
+            { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas en calidad HD.", source: "DJ TV" },
+            { text: "Seguinos en nuestras redes sociales oficiales y participá de la programación diaria.", source: "REDES" },
+            { text: "Disfrutá de la mejor selección de música retro, pop, reggaeton, electro y rock nacional.", source: "MÚSICA" },
+            { text: "Envianos tus saludos y dedicatorias a través del chat interactivo en pantalla.", source: "CHAT" },
+            { text: "Transmitiendo en vivo desde Posadas, Misiones, para todo el país y el mundo.", source: "ON AIR" }
+          ];
+        }
       }
 
       if (newsList.length === 0) {
          newsList = [{ text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas.", source: "DJ TV" }];
-      } else {
-        // Mezclamos un poco para que el ticker no sea siempre el mismo orden si se recarga
+      } else if (!useCache) {
+        // Solo mezclamos si son datos nuevos, para que el caché no salte loco al recargar
         newsList.sort(() => Math.random() - 0.5);
       }
       startTickerAnimation(newsList);
@@ -718,7 +776,7 @@
       }
 
       let htmlContent = '';
-      const newsToRender = [...newsList, ...newsList]; // Duplicamos para loop infinito suave
+      const newsToRender = [...newsList, ...newsList]; 
       newsToRender.forEach(item => {
         htmlContent += `<div class="news-item"><span class="news-source">${item.source}</span> ${item.text}<span class="news-separator">•</span></div>`;
       });
@@ -739,9 +797,9 @@
       setTimeout(step, 100);
     }
 
-    // Cargar noticias al inicio y cada 10 minutos
-    fetchRealNews();
-    setInterval(fetchRealNews, 10 * 60 * 1000);
+    fetchJotformNews();
+    // CAMBIO CLAVE: De 15 min a 30 min. Reduce las solicitudes a la mitad, evitando el bloqueo por "Rate Limit".
+    setInterval(fetchJotformNews, 30 * 60 * 1000);
   </script>
 </body>
 </html>
