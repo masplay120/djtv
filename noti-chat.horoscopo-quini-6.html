@@ -26,9 +26,6 @@
       width: 0 !important; height: 0 !important; overflow: hidden !important;
     }
 
-    /* ---------------------------------------------------
-       1. PISO SUPERIOR: PLACA ESTILO BROADCAST LOWER THIRD
-    --------------------------------------------------- */
     .upper-card {
       position: absolute; bottom: 75px; left: 60px; width: 1800px; height: 135px;
       transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -161,9 +158,6 @@
       position: absolute; left: 30px; will-change: transform; padding-right: 80px;
     }
 
-    /* ---------------------------------------------------
-       2. PISO INFERIOR: TICKER DE NOTICIAS RSS
-    --------------------------------------------------- */
     .news-row {
       position: absolute; bottom: 0; left: 0; width: 1920px; height: 60px;
       background: rgba(8, 8, 14, 0.98); border-top: 2px solid #2563eb;
@@ -285,12 +279,11 @@
     let isMasterLoopRunning = false;
     let activeMarqueeFrame = null;
 
-    // PERRO GUARDIÁN (WATCHDOG): Reinicia si el bucle se congela por más de 4 minutos
     let lastLoopUpdate = Date.now();
     function resetWatchdog() { lastLoopUpdate = Date.now(); }
     setInterval(() => {
       if (Date.now() - lastLoopUpdate > 240000) {
-        console.warn("⚠️ WATCHDOG: Bucle congelado. Recargando página para recuperar estabilidad...");
+        console.warn("⚠️ WATCHDOG: Bucle congelado. Recargando página...");
         window.location.reload();
       }
     }, 60000);
@@ -336,12 +329,13 @@
           ];
         }
       } catch (e) {
-        console.warn("Error cargando loterías, se mantienen datos anteriores o vacíos.", e);
+        console.warn("Error cargando loterías, se mantienen datos anteriores.", e);
       }
     }
 
     loadLotteryData();
-    setInterval(loadLotteryData, 3 * 60 * 1000);
+    // CAMBIO CLAVE: 30 minutos. Suficiente para captar los sorteos (10:30, 12:15, 15:00, 18:00, 21:30, 21:40) sin saturar la API.
+    setInterval(loadLotteryData, 30 * 60 * 1000);
 
     const q = query(collection(db, "mensajes"), where("estado", "==", "aprobado"), orderBy("timestamp", "desc"));
     onSnapshot(q, (snapshot) => {
@@ -367,6 +361,8 @@
       try {
         const fetched = [];
         const cacheBuster = `&_t=${Date.now()}`;
+        let apiSuccess = false;
+
         for (const sign of ZODIAC_CONFIG) {
           let textLoaded = null;
           try {
@@ -376,19 +372,28 @@
               const json = await res.json();
               if (json && json.content && json.content.horoscope) {
                 textLoaded = json.content.horoscope.trim();
+                apiSuccess = true;
               }
             }
-          } catch (e) { /* Silencioso, usa default */ }
-          fetched.push({ ...sign, text: textLoaded || sign.defaultText });
+          } catch (e) { /* Silencioso */ }
+          
+          if (!textLoaded) {
+            const cached = localStorage.getItem(`horoscope_${sign.key}`);
+            textLoaded = cached ? JSON.parse(cached).text : sign.defaultText;
+          } else {
+            localStorage.setItem(`horoscope_${sign.key}`, JSON.stringify({ text: textLoaded }));
+          }
+          fetched.push({ ...sign, text: textLoaded });
         }
         horoscopeList = fetched;
       } catch (e) {
-        console.warn("Error cargando horóscopo, se usan valores por defecto.", e);
+        console.warn("Error cargando horóscopo.", e);
       }
     }
 
     loadHoroscopeAPIs();
-    setInterval(loadHoroscopeAPIs, 10 * 60 * 1000);
+    // Horóscopo cada 6 horas (evita bloqueo)
+    setInterval(loadHoroscopeAPIs, 6 * 60 * 60 * 1000);
 
     function startMasterBroadcastLoop() {
       if (isMasterLoopRunning) return;
@@ -396,36 +401,23 @@
       runNextCard();
     }
 
-    // LÓGICA DE ROTACIÓN MEJORADA Y A PRUEBA DE FALLOS
     function runNextCard() {
-      resetWatchdog(); // Reinicia el temporizador de seguridad
-      
+      resetWatchdog();
       if (activeMarqueeFrame) {
         cancelAnimationFrame(activeMarqueeFrame);
         activeMarqueeFrame = null;
       }
 
-      // Avanzar a la siguiente sección (0 a 5)
       masterSection = (masterSection + 1) % 6;
 
       switch(masterSection) {
-        case 0: // Chat
-          if (chatMessages.length > 0) { renderChatCard(); return; }
-          // Si no hay chat, cae al siguiente caso automáticamente (fallthrough)
-        case 1: // Quini 6
-          if (quiniList.length > 0) { renderQuiniCard(); return; }
-        case 2: // Brinco
-          if (brincoList.length > 0) { renderBrincoCard(); return; }
-        case 3: // Quiniela
-          if (quinielaList.length > 0) { renderQuinielaCard(); return; }
-        case 4: // Horóscopo
-          if (horoscopeList.length > 0) { renderHoroscopeCard(); return; }
-        case 5: // Promo QR (Siempre se muestra si todo lo demás falla)
-          renderPromoQRCard(); 
-          return;
+        case 0: if (chatMessages.length > 0) { renderChatCard(); return; }
+        case 1: if (quiniList.length > 0) { renderQuiniCard(); return; }
+        case 2: if (brincoList.length > 0) { renderBrincoCard(); return; }
+        case 3: if (quinielaList.length > 0) { renderQuinielaCard(); return; }
+        case 4: if (horoscopeList.length > 0) { renderHoroscopeCard(); return; }
+        case 5: renderPromoQRCard(); return;
       }
-      
-      // Fallback extremo: si todo está vacío, mostrar Promo
       renderPromoQRCard();
     }
 
@@ -648,6 +640,7 @@
 
     async function fetchJotformNews() {
       let newsList = [];
+      let apiSuccess = false;
       try {
         const cacheBuster = `&_t=${Date.now()}`;
         const apiUrl = `https://api.jotform.com/website-widgets/templates/019f3bae37487000889dd04d159b98b17f3a/execute-action?action=refreshSocialFeed&widgetID=01a13e9789a87000805d60e413b14e37d5b0${cacheBuster}`;
@@ -674,22 +667,30 @@
               });
             }
           });
+          if (newsList.length > 0) apiSuccess = true;
         }
       } catch (e) {
-        console.warn("Fallo en API de Noticias, usando fallback local.", e);
+        console.warn("Fallo en API de Noticias.", e);
       }
 
-      if (newsList.length === 0) {
-        newsList = [
-          { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas en calidad HD.", source: "DJ TV" },
-          { text: "Seguinos en nuestras redes sociales oficiales y participá de la programación diaria.", source: "REDES" },
-          { text: "Disfrutá de la mejor selección de música retro, pop, reggaeton, electro y rock nacional.", source: "MÚSICA" },
-          { text: "Envianos tus saludos y dedicatorias a través del chat interactivo en pantalla.", source: "CHAT" },
-          { text: "Transmitiendo en vivo desde Posadas, Misiones, para todo el país y el mundo.", source: "ON AIR" }
-        ];
+      if (!apiSuccess || newsList.length === 0) {
+        const cachedNews = localStorage.getItem('djtv_news_cache');
+        if (cachedNews) {
+          newsList = JSON.parse(cachedNews);
+        } else {
+          newsList = [
+            { text: "Bienvenidos a DJ TV Estación Mix - Transmitiendo música y entretenimiento las 24 horas en calidad HD.", source: "DJ TV" },
+            { text: "Seguinos en nuestras redes sociales oficiales y participá de la programación diaria.", source: "REDES" },
+            { text: "Disfrutá de la mejor selección de música retro, pop, reggaeton, electro y rock nacional.", source: "MÚSICA" },
+            { text: "Envianos tus saludos y dedicatorias a través del chat interactivo en pantalla.", source: "CHAT" },
+            { text: "Transmitiendo en vivo desde Posadas, Misiones, para todo el país y el mundo.", source: "ON AIR" }
+          ];
+        }
       } else {
+        localStorage.setItem('djtv_news_cache', JSON.stringify(newsList));
         newsList.sort(() => Math.random() - 0.5);
       }
+      
       startTickerAnimation(newsList);
     }
 
@@ -724,7 +725,8 @@
     }
 
     fetchJotformNews();
-    setInterval(fetchJotformNews, 15 * 60 * 1000);
+    // Noticias cada 6 horas (evita bloqueo)
+    setInterval(fetchJotformNews, 6 * 60 * 60 * 1000);
   </script>
 </body>
 </html>
