@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script type="module" src="/@vite/client"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111b24">
+  <title>El Tiempo · Lower Third</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --yellow: #ffc52f; --ink: #101b25; --muted: #a7b6c0; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: transparent !important; }
+    body { font-family: 'Barlow', 'Trebuchet MS', sans-serif; -webkit-font-smoothing: antialiased; }
+    .lower-third {
+      position: fixed;
+      left: clamp(16px, 4vw, 72px);
+      bottom: clamp(18px, 5vh, 60px);
+      width: min(890px, calc(100vw - 32px));
+      color: #fff;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, .38));
+    }
+    .topline { height: 24px; display: flex; align-items: stretch; gap: 2px; margin-left: 6px; }
+    .topline-label {
+      display: flex; align-items: center; gap: 7px; padding: 0 13px;
+      background: var(--yellow); color: #17202a; font-size: 10px; font-weight: 700;
+      letter-spacing: .13em; text-transform: uppercase;
+      clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+      padding-right: 23px;
+    }
+    .topline-label svg { width: 13px; height: 13px; }
+    .topline-note {
+      display: flex; align-items: center; padding: 0 13px;
+      background: rgba(23, 36, 47, .91); color: #e0e8ea;
+      font-size: 10px; font-weight: 600; letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .panel {
+      position: relative; display: flex; align-items: center; min-width: 0;
+      height: 94px; padding: 0 20px 0 0;
+      background: rgba(13, 25, 35, .95);
+      border-left: 5px solid var(--yellow);
+      border-radius: 0 5px 5px 0;
+      overflow: hidden;
+    }
+    .panel::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(112deg, rgba(255,255,255,.065), transparent 38%, rgba(255,255,255,.02) 75%);
+    }
+    .weather-icon {
+      display: grid; place-items: center; width: 86px; height: 100%; flex: 0 0 86px;
+      color: var(--yellow); border-right: 1px solid rgba(255,255,255,.13);
+    }
+    .weather-icon svg { width: 48px; height: 48px; stroke-width: 1.65; }
+    .location { min-width: 0; flex: 1 1 auto; padding: 0 17px 2px 20px; }
+    .eyebrow { display: block; color: var(--yellow); font-size: 10px; font-weight: 700; letter-spacing: .19em; line-height: 1.2; text-transform: uppercase; }
+    .city {
+      display: block; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      font-family: 'Barlow Condensed', 'Trebuchet MS', sans-serif;
+      font-size: 33px; font-weight: 700; line-height: 1; letter-spacing: .016em; text-transform: uppercase;
+    }
+    .observation { display: block; margin-top: 6px; font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .reading { display: flex; align-items: center; flex: 0 0 auto; gap: 20px; }
+    .temperature { font-family: 'Barlow Condensed', 'Trebuchet MS', sans-serif; color: var(--yellow); font-size: 60px; font-weight: 700; line-height: 1; letter-spacing: -.025em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .temperature .unit { font-size: .46em; vertical-align: .69em; margin-left: 2px; letter-spacing: 0; }
+    .weather-details { width: 169px; padding-left: 17px; border-left: 1px solid rgba(255,255,255,.17); }
+    .condition { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 1.3; font-weight: 700; }
+    .wind { display: block; margin-top: 5px; color: #b4c2ca; font-size: 12px; font-weight: 500; white-space: nowrap; }
+    .progress { height: 3px; overflow: hidden; background: rgba(255,255,255,.2); margin-left: 5px; }
+    .progress-fill { height: 100%; background: var(--yellow); transform-origin: left; animation: countdown 12s linear forwards; }
+    @keyframes countdown { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    .changing { animation: reveal .45s ease both; }
+    @keyframes reveal { from { opacity: .12; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 650px) {
+      .panel { height: 82px; padding-right: 12px; }
+      .weather-icon { width: 65px; flex-basis: 65px; }
+      .weather-icon svg { width: 36px; height: 36px; }
+      .location { padding-left: 12px; padding-right: 8px; }
+      .city { font-size: 25px; }
+      .temperature { font-size: 49px; }
+      .reading { gap: 10px; }
+      .weather-details { width: 109px; padding-left: 10px; }
+      .condition { font-size: 11px; }
+      .wind { font-size: 10px; }
+    }
+    @media (max-width: 430px) {
+      .lower-third { left: 12px; width: calc(100vw - 24px); }
+      .panel { height: 76px; }
+      .weather-icon { width: 52px; flex-basis: 52px; }
+      .weather-icon svg { width: 30px; height: 30px; }
+      .location { padding-left: 9px; }
+      .eyebrow { font-size: 8px; }
+      .city { font-size: 21px; }
+      .observation { font-size: 9px; }
+      .temperature { font-size: 40px; }
+      .weather-details { width: 82px; padding-left: 7px; }
+      .condition { font-size: 10px; }
+      .wind { font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .changing { animation: none; } }
+  </style>
+</head>
+<body>
+  <div class="lower-third" role="group" aria-label="Información meteorológica">
+    <div class="topline">
+      <div class="topline-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg> EL TIEMPO</div>
+      <div class="topline-note">ARGENTINA </div>
+    </div>
+    <div class="panel">
+      <div id="weather-icon" class="weather-icon" aria-hidden="true"></div>
+      <div id="location" class="location">
+        <span class="eyebrow">PRONÓSTICO ACTUAL</span>
+        <span id="city-name" class="city">MISIONES (POSADAS)</span>
+        <span id="observation" class="observation">Consultando datos meteorológicos...</span>
+      </div>
+      <div id="reading" class="reading">
+        <span id="temp" class="temperature">--<span class="unit">°C</span></span>
+        <div class="weather-details">
+          <span id="condition" class="condition">Cargando...</span>
+          <span id="wind" class="wind">Viento -- km/h</span>
+        </div>
+      </div>
+    </div>
+    <div class="progress"><div id="progress-fill" class="progress-fill"></div></div>
+  </div>
+  <script>
+    // Una consulta para todas las ciudades cada 15 minutos; la pantalla rota cada 12 segundos.
+    const locations = [
+      { name: 'Misiones (Posadas)', lat: -27.3671, lon: -55.8961 },
+      { name: 'CABA', lat: -34.6037, lon: -58.3816 },
+      { name: 'Buenos Aires (La Plata)', lat: -34.9215, lon: -57.9545 },
+      { name: 'Córdoba', lat: -31.4135, lon: -64.1810 },
+      { name: 'Santa Fe (Rosario)', lat: -32.9468, lon: -60.6393 },
+      { name: 'Mendoza', lat: -32.8895, lon: -68.8458 },
+      { name: 'Tucumán', lat: -26.8241, lon: -65.2226 },
+      { name: 'Salta', lat: -24.7859, lon: -65.4117 },
+      { name: 'Corrientes', lat: -27.4806, lon: -58.8341 },
+      { name: 'Chaco (Resistencia)', lat: -27.4606, lon: -58.9839 },
+      { name: 'Entre Ríos (Paraná)', lat: -31.7320, lon: -60.5289 },
+      { name: 'Neuquén', lat: -38.9516, lon: -68.0591 },
+      { name: 'Río Negro (Bariloche)', lat: -41.1335, lon: -71.3103 },
+      { name: 'Chubut (Rawson)', lat: -43.3002, lon: -65.1023 },
+      { name: 'Santa Cruz (Río Gallegos)', lat: -51.6226, lon: -69.2181 },
+      { name: 'Tierra del Fuego (Ushuaia)', lat: -54.8019, lon: -68.3030 },
+      { name: 'Jujuy', lat: -24.1858, lon: -65.2995 },
+      { name: 'Catamarca', lat: -28.4696, lon: -65.7852 },
+      { name: 'La Rioja', lat: -29.4131, lon: -66.8558 },
+      { name: 'San Juan', lat: -31.5375, lon: -68.5364 },
+      { name: 'San Luis', lat: -33.2950, lon: -66.3356 },
+      { name: 'Santiago del Estero', lat: -27.7951, lon: -64.2615 },
+      { name: 'Formosa', lat: -26.1849, lon: -58.1731 },
+      { name: 'La Pampa (Santa Rosa)', lat: -36.6167, lon: -64.2833 }
+    ];
+
+    const REFRESH_MS = 15 * 60 * 1000;
+    const RETRY_MS = 2 * 60 * 1000;
+    const ROTATE_MS = 12 * 1000;
+    const CACHE_KEY = 'weather-lower-third-v1';
+    const el = (id) => document.getElementById(id);
+    let currentIndex = 0;
+    let weather = Array(locations.length).fill(null);
+    let lastFetch = 0;
+    let refreshTimer;
+    let loading = false;
+
+    // Íconos vectoriales sin emojis ni dependencias externas.
+    const icons = {
+      sun: '<circle cx="24" cy="24" r="8"/><path d="M24 3v7m0 28v7M3 24h7m28 0h7M9.2 9.2l5 5m19.6 19.6 5 5m0-29.6-5 5m-19.6 19.6-5 5"/>',
+      moon: '<path d="M39 32A17 17 0 0 1 16 9a17 17 0 1 0 23 23Z"/><circle cx="35" cy="10" r="1" fill="currentColor" stroke="none"/>',
+      cloud: '<path d="M12 36h25a9 9 0 0 0 1-18 14 14 0 0 0-27-1 10 10 0 0 0 1 19Z"/>',
+      partly: '<path d="M25 7v4M9 23H5m7-11-3-3m26 3 3-3M15 23a10 10 0 0 1 18-7"/><path d="M13 39h25a8 8 0 0 0 0-16h-2a12 12 0 0 0-23-1 9 9 0 0 0 0 17Z"/>',
+      rain: '<path d="M12 31h25a8 8 0 0 0 0-16h-2a12 12 0 0 0-23-1 9 9 0 0 0 0 17Z"/><path d="m16 37-2 6m12-6-2 6m12-6-2 6"/>',
+      storm: '<path d="M12 29h25a8 8 0 0 0 0-16h-2a12 12 0 0 0-23-1 9 9 0 0 0 0 17Z"/><path d="m26 31-6 9h6l-3 7 11-12h-7l3-4"/>',
+      snow: '<path d="M12 30h25a8 8 0 0 0 0-16h-2a12 12 0 0 0-23-1 9 9 0 0 0 0 17Z"/><path d="M17 38h.1m9 4h.1m9-4h.1" stroke-width="5" stroke-linecap="round"/>',
+      fog: '<path d="M12 25h25a8 8 0 0 0 0-16h-2a12 12 0 0 0-23-1 9 9 0 0 0 0 17ZM8 33h32M13 40h26"/>'
+    };
+
+    function describe(code, isDay) {
+      if (code === 0) return { text: 'Despejado', icon: isDay ? 'sun' : 'moon' };
+      if (code === 1) return { text: 'Mayormente despejado', icon: 'partly' };
+      if (code === 2) return { text: 'Parcialmente nublado', icon: 'partly' };
+      if (code === 3) return { text: 'Nublado', icon: 'cloud' };
+      if (code === 45 || code === 48) return { text: 'Niebla', icon: 'fog' };
+      if (code >= 51 && code <= 55) return { text: 'Llovizna', icon: 'rain' };
+      if (code === 56 || code === 57) return { text: 'Llovizna helada', icon: 'snow' };
+      if (code >= 61 && code <= 65) return { text: 'Lluvia', icon: 'rain' };
+      if (code === 66 || code === 67) return { text: 'Lluvia helada', icon: 'snow' };
+      if (code >= 71 && code <= 77) return { text: 'Nevadas', icon: 'snow' };
+      if (code >= 80 && code <= 82) return { text: 'Chubascos', icon: 'rain' };
+      if (code === 85 || code === 86) return { text: 'Chubascos de nieve', icon: 'snow' };
+      if (code >= 95) return { text: 'Tormentas', icon: 'storm' };
+      return { text: 'Estado no disponible', icon: 'cloud' };
+    }
+
+    function render() {
+      const item = weather[currentIndex];
+      el('city-name').textContent = locations[currentIndex].name;
+      if (item) {
+        const state = describe(item.weather_code, item.is_day !== 0);
+        el('temp').innerHTML = `${Math.round(item.temperature_2m)}<span class="unit">°C</span>`;
+        el('condition').textContent = state.text;
+        el('wind').textContent = `Viento ${Math.round(item.wind_speed_10m)} km/h`;
+        const age = Date.now() - lastFetch;
+        const time = typeof item.time === 'string' ? item.time.slice(11, 16) : '';
+        el('observation').textContent = `${age > 45 * 60 * 1000 ? 'ÚLTIMO REGISTRO' : 'OBSERVADO'} ${time || 'RECIENTE'} · OPEN-METEO`;
+        el('weather-icon').innerHTML = `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[state.icon]}</svg>`;
+      } else {
+        el('temp').innerHTML = '--<span class="unit">°C</span>';
+        el('condition').textContent = 'Sin datos';
+        el('wind').textContent = 'Viento -- km/h';
+        el('observation').textContent = loading ? 'CONSULTANDO DATOS...' : 'ESPERANDO CONEXIÓN · REINTENTANDO';
+        el('weather-icon').innerHTML = `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons.cloud}</svg>`;
+      }
+    }
+
+    function rotate() {
+      currentIndex = (currentIndex + 1) % locations.length;
+      render();
+      for (const id of ['location', 'reading', 'weather-icon']) {
+        const node = el(id);
+        node.classList.remove('changing');
+        void node.offsetWidth;
+        node.classList.add('changing');
+      }
+      const progress = el('progress-fill');
+      progress.style.animation = 'none';
+      void progress.offsetWidth;
+      progress.style.animation = '';
+    }
+
+    async function refreshWeather() {
+      if (loading) return;
+      loading = true;
+      render();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      let successful = false;
+      try {
+        const params = new URLSearchParams({
+          latitude: locations.map((loc) => loc.lat).join(','),
+          longitude: locations.map((loc) => loc.lon).join(','),
+          current: 'temperature_2m,weather_code,wind_speed_10m,is_day',
+          temperature_unit: 'celsius', wind_speed_unit: 'kmh',
+          timezone: 'America/Argentina/Buenos_Aires'
+        });
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { signal: controller.signal, cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (!Array.isArray(data) || data.length !== locations.length) throw new Error('Respuesta incompleta');
+        const next = data.map((entry) => {
+          const value = entry.current;
+          return value && Number.isFinite(value.temperature_2m) && Number.isFinite(value.weather_code) && Number.isFinite(value.wind_speed_10m) ? value : null;
+        });
+        if (!next.some(Boolean)) throw new Error('No hay datos válidos');
+        // Conservar datos previos si una localidad llega sin medición.
+        weather = next.map((item, index) => item || weather[index]);
+        lastFetch = Date.now();
+        successful = true;
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ weather, lastFetch })); } catch (_) { /* Almacenamiento opcional. */ }
+      } catch (error) {
+        console.warn('No se pudo actualizar el clima; se conservan los últimos datos:', error);
+      } finally {
+        clearTimeout(timeout);
+        loading = false;
+        render();
+        clearTimeout(refreshTimer);
+        refreshTimer = setTimeout(refreshWeather, successful ? REFRESH_MS : RETRY_MS);
+      }
+    }
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (saved && Array.isArray(saved.weather) && saved.weather.length === locations.length && Number.isFinite(saved.lastFetch) && Date.now() - saved.lastFetch < 6 * 60 * 60 * 1000) {
+        weather = saved.weather;
+        lastFetch = saved.lastFetch;
+      }
+    } catch (_) { /* La página funciona aunque el almacenamiento esté deshabilitado. */ }
+
+    render();
+    refreshWeather();
+    setInterval(rotate, ROTATE_MS);
+    window.addEventListener('online', () => { if (Date.now() - lastFetch > REFRESH_MS) { clearTimeout(refreshTimer); refreshWeather(); } });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - lastFetch > REFRESH_MS) { clearTimeout(refreshTimer); refreshWeather(); } });
+  </script>
+</body>
+</html>
