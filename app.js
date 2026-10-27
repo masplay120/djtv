@@ -33,6 +33,7 @@ const db = getFirestore(app);
 // ============================================
 // STREAMING HLS EN VIVO
 // ============================================
+// ============================================
 const HLS_URL = "https://mix.fachacarlos1.workers.dev/playlist.m3u8";
 
 function initHLSPlayer() {
@@ -43,7 +44,13 @@ function initHLSPlayer() {
         const hls = new Hls({
             enableWorker: true,
             lowLatencyMode: true,
-            backBufferLength: 30
+            backBufferLength: 30,
+            
+            // --- PARÁMETROS DE ADAPTACIÓN DE RED (ABR) ---
+            capLevelToPlayerSize: true, // Limita la calidad al tamaño visual del reproductor para ahorrar datos
+            abrBandWidthFactor: 0.95,   // Usa un 95% del ancho de banda medido para mayor seguridad contra cortes
+            abrBandWidthUpFactor: 0.7,  // Controla qué tan rápido sube de calidad al mejorar la red (0.5 a 0.8 es ideal)
+            maxMaxBufferLength: 60,     // Segundos máximos de búfer acumulados en memoria
         });
 
         hls.loadSource(HLS_URL);
@@ -54,6 +61,12 @@ function initHLSPlayer() {
             video.play().catch(() => {
                 console.log('Autoplay requiere interacción del usuario');
             });
+        });
+
+        // (Opcional) Puedes escuchar cuando Hls.js cambia de calidad automáticamente
+        hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+            const qualityLevel = hls.levels[data.level];
+            console.log(`Calidad adaptada automáticamente a: ${qualityLevel.height}p (${qualityLevel.bitrate} bps)`);
         });
 
         hls.on(Hls.Events.ERROR, (event, data) => {
@@ -75,7 +88,7 @@ function initHLSPlayer() {
         setupPlayerControls(video);
 
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Soporte nativo para Safari / iOS
+        // Soporte nativo para Safari / iOS (Safari maneja la adaptación de red de forma interna automáticamente)
         video.src = HLS_URL;
         video.muted = true;
         video.play().catch(() => {});
@@ -151,6 +164,8 @@ function setupPlayerControls(video) {
         }
     });
 }
+
+// ============================================
 
 // ============================================
 // FILTRO AUTOMÁTICO DE GROSERÍAS (Bad Words Filter)
