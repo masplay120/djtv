@@ -3,7 +3,7 @@
 
 export default async function handler(req, res) {
   // Configurar cabeceras CORS para permitir solo TU dominio
-  const allowedOrigin = process.env.ALLOWED_ORIGIN || "https://tu-dominio.com";
+  const allowedOrigin = process.env.ALLOWED_ORIGIN || "https://masplay120.github.io";
   
   res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader("Content-Type", "application/json");
